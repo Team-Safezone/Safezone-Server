@@ -1,4 +1,4 @@
-package KickIt.Server;
+package KickIt.server;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
