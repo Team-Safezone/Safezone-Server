@@ -19,6 +19,7 @@ dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter'
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
 	implementation 'org.seleniumhq.selenium:selenium-java:4.20.0'
+	implementation 'org.projectlombok:lombok:1.18.16'
 }
 
 tasks.named('test') {
