@@ -4,24 +4,28 @@ package KickIt.server.global.util;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.chrome.ChromeOptions;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.util.ObjectUtils;
 
 import java.time.Duration;
 
 public class WebDriverUtil {
+    // Mac에서 실행 가능하도록 ID / 경로 삭제
     // web driver ID
-    public static final String WEB_DRIVER_ID = "webdriver.chrome.driver";
+    //public static final String WEB_DRIVER_ID = "webdriver.chrome.driver";
     // web driver의 경로
-    private static final String WEB_DRIVER_PATH = "src/main/java/KickIt/server/global/common/crawler/chromedriver.exe";
+    //private static final String WEB_DRIVER_PATH = "src/main/java/KickIt/server/global/common/crawler/chromedriver.exe";
 
     // chrome driver 생성 함수
     public static WebDriver getChromeDriver(){
+        // Mac에서 실행 가능하도록 ID / 경로 삭제
+        /*
         if (ObjectUtils.isEmpty(System.getProperty(WEB_DRIVER_ID))){
             System.setProperty(WEB_DRIVER_ID, WEB_DRIVER_PATH);
         }
+         */
 
         // webDriver 옵션 설정
-
         ChromeOptions chromeOptions = new ChromeOptions();
 
         chromeOptions.addArguments("--headless=new");
@@ -37,8 +41,9 @@ public class WebDriverUtil {
 
         return driver;
     }
-    /*
 
+    /*
+    // Mac에서 실행 가능하도록 ID / 경로 삭제
     // WEB_DRIVER_PATH 상수에 크롬 드라이버 설치 경로 저장
     @Value("{resource['driver.chrome.driver_path']}")
     public void initDriver(String path){
@@ -46,6 +51,7 @@ public class WebDriverUtil {
     }
 
      */
+
 
     // 모든 탭 종료
     public static void quit(WebDriver driver){
