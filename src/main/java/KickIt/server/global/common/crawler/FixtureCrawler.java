@@ -97,20 +97,22 @@ public class FixtureCrawler {
     }
 
     // 경기 상태를 반환하는 함수 getStatus
-    // 경기 종료: 0 전반전: 1 후반전: 2 경기 전: 3 연기(예외): 4
+    // 경기 종료: 0 전반전: 1 하프 타임: 2 후반전: 3 경기 전: 4 연기(예외): 5
     int getStatus(WebElement row){
         switch (row.findElement(By.className("td_team")).findElement(By.className("state_game")).getText()){
             case "종료":
                 return 0;
             case "경기전":
-                return 3;
+                return 4;
             case "전반전":
                 return 1;
-            case "후반전":
+            case "하프타임":
                 return 2;
+            case "후반전", "추가시간":
+                return 3;
         }
         // 이외의 경우 예외 처리
-        return 4;
+        return 5;
     }
     // 경기 참여하는 두 팀 정보를 담은 webElement를 반환하는 함수 getTeams
     List<WebElement> getTeams(WebElement row){
