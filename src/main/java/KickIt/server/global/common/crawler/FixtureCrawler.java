@@ -14,6 +14,7 @@ import java.time.Duration;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.UUID;
 
 // 경기 일정 정보 크롤링하는 FixtureCrawler
 public class FixtureCrawler {
@@ -30,7 +31,8 @@ public class FixtureCrawler {
             // 페이지 열고 타임 아웃 관련 처리
             driver.get(pageUrl);
             driver.manage().timeouts().implicitlyWait(Duration.ofSeconds(5));
-
+            // 현재 시즌 정보를 불러와 변수로 저장
+            String season = driver.findElement(By.className("emph_day")).getText();
             // 페이지에서 불러온 경기 일정 table fixtureTable에 저장
             List<WebElement> webElementList = driver.findElements(By.id("scheduleList"));
             WebElement fixtureTable = webElementList.get(0);
@@ -43,10 +45,7 @@ public class FixtureCrawler {
                 String trClassName = tr.getAttribute("class");
                 // 경기가 있는 날인 경우
                 if (!trClassName.contains("tr_empty")){
-                    // 경기 연기 시 continue
-                    if(isDelayed(tr))
-                        continue;
-                    // 정상적으로 경기 진행되는 경우 fixtureList에 Fixture build해 삽입
+                    // fixtureList에 Fixture build해 삽입
                     // 각 팀의 정보를 포함하는 tr을 담은 list
                     List<WebElement> teams = getTeams(tr);
                     // 각 팀의 이름 EplTeams 배열로 저장
@@ -55,12 +54,15 @@ public class FixtureCrawler {
                     Integer[] teamScores = getTeamScores(teams);
                     // 한 경기의 날짜 및 시간, 경기 장소, 홈팀 이름, 원정팀 이름, 홈팀 점수, 원정팀 점수를 Fixture 객체에 build
                     Fixture fixture = Fixture.builder()
+                            .id(UUID.randomUUID())
+                            .season(season)
                             .date(getFixtureDate(tr))
-                            .stadium(getStadium(tr))
                             .homeTeam(teamNames[0])
                             .awayTeam(teamNames[1])
                             .homeTeamScore(teamScores[0])
                             .awayteamScore(teamScores[1])
+                            .round(getRound(tr))
+                            .status(getStatus(tr))
                             .build();
                     // fixture 리스트에 삽입
                     fixtureList.add(fixture);
@@ -93,17 +95,21 @@ public class FixtureCrawler {
         return fixtureDate;
     }
 
-    // 경기 장소를 반환하는 함수 getStadium
-    String getStadium(WebElement row){
-        return row.findElement(By.className("td_area")).getText();
-    }
-    // 경기 연기 여부를 반환하는 함수 isDelayed
-    boolean isDelayed(WebElement row){
-        boolean isDelayed = false;
-        if( row.findElement(By.className("td_team")).findElement(By.className("state_game")).getText().equals("연기")){
-            isDelayed = true;
+    // 경기 상태를 반환하는 함수 getStatus
+    // 경기 종료: 0 전반전: 1 후반전: 2 경기 전: 3 연기(예외): 4
+    int getStatus(WebElement row){
+        switch (row.findElement(By.className("td_team")).findElement(By.className("state_game")).getText()){
+            case "종료":
+                return 0;
+            case "경기전":
+                return 3;
+            case "전반전":
+                return 1;
+            case "후반전":
+                return 2;
         }
-        return isDelayed;
+        // 이외의 경우 예외 처리
+        return 4;
     }
     // 경기 참여하는 두 팀 정보를 담은 webElement를 반환하는 함수 getTeams
     List<WebElement> getTeams(WebElement row){
@@ -123,5 +129,8 @@ public class FixtureCrawler {
         String homeTeamScore = row.get(0).findElement(By.className("num_score")).getText().replaceAll("[^0-9]","");
         String awayTeamScore = row.get(1).findElement(By.className("num_score")).getText().replaceAll("[^0-9]","");
         return new Integer[]{homeTeamScore.isEmpty()?null:Integer.parseInt(homeTeamScore), awayTeamScore.isEmpty()?null:Integer.parseInt(awayTeamScore)};
+    }
+    int getRound(WebElement row){
+        return Integer.parseInt(row.findElement(By.className("td_tv")).getText().replaceAll("[^0-9]", ""));
     }
 }
