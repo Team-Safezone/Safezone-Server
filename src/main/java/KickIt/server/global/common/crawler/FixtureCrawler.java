@@ -31,7 +31,7 @@ public class FixtureCrawler {
             // 페이지 열고 타임 아웃 관련 처리
             driver.get(pageUrl);
             driver.manage().timeouts().implicitlyWait(Duration.ofSeconds(5));
-            // 현재 시즌 정보를 불러와 변수로 저장
+            // 현재 시즌 정보를 불러와 변수로 저장 -> 이후 읽어 들인 페이지의 모든 경기에 정보 넣어 줌
             String season = driver.findElement(By.className("emph_day")).getText();
             // 페이지에서 불러온 경기 일정 table fixtureTable에 저장
             List<WebElement> webElementList = driver.findElements(By.id("scheduleList"));
@@ -52,7 +52,8 @@ public class FixtureCrawler {
                     EplTeams[] teamNames = getTeamNames(teams);
                     // 각 팀의 점수 배열로 저장
                     Integer[] teamScores = getTeamScores(teams);
-                    // 한 경기의 날짜 및 시간, 경기 장소, 홈팀 이름, 원정팀 이름, 홈팀 점수, 원정팀 점수를 Fixture 객체에 build
+                    // 한 경기의 경기 고유 id(생성), 시즌 정보, 날짜 및 시간, 홈팀 이름, 원정팀 이름,
+                    // 홈팀 점수, 원정팀 점수, 라운드 정보, 경기 상태를 Fixture 객체에 build
                     Fixture fixture = Fixture.builder()
                             .id(UUID.randomUUID())
                             .season(season)
@@ -130,6 +131,7 @@ public class FixtureCrawler {
         String awayTeamScore = row.get(1).findElement(By.className("num_score")).getText().replaceAll("[^0-9]","");
         return new Integer[]{homeTeamScore.isEmpty()?null:Integer.parseInt(homeTeamScore), awayTeamScore.isEmpty()?null:Integer.parseInt(awayTeamScore)};
     }
+    // 경기 라운드 정보 가져오는 함수 getRound
     int getRound(WebElement row){
         return Integer.parseInt(row.findElement(By.className("td_tv")).getText().replaceAll("[^0-9]", ""));
     }
