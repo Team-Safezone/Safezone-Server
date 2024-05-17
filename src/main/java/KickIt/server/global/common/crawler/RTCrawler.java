@@ -55,6 +55,9 @@ public class RTCrawler {
         boolean eventEnd = false;
 
         try {
+            // 10초마다 한번씩 실행
+            Thread.sleep(10000);
+
             // 이벤트 업데이트 최소 시간 (30분)
             WebDriverWait wait = new WebDriverWait(driver, Duration.ofMinutes(30));
 
@@ -89,6 +92,8 @@ public class RTCrawler {
                     }
                 }
             }
+        } catch(InterruptedException e) {
+            e.printStackTrace();
         } finally {
             // WebDriver 종료
             driver.quit();
