@@ -2,6 +2,7 @@ package KickIt.server.global.common.crawler;
 
 import KickIt.server.domain.fixture.entity.Fixture;
 
+import KickIt.server.domain.fixture.entity.FixtureRT;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
@@ -9,11 +10,12 @@ import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
 import java.time.Duration;
+import java.time.LocalDateTime;
 import java.time.LocalTime;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.time.format.DateTimeFormatter;
+import java.util.*;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 
 public class RTCrawler {
@@ -43,9 +45,11 @@ public class RTCrawler {
         // 변경된 요소를 저장
         Set<String> newList = new HashSet<>();
 
-        // 이벤트 종료 여부를 저장하는 변수 eventEnd
+        // 이벤트 종료 여부를 저장하는 eventEnd
         boolean eventEnd = false;
 
+
+        List<FixtureRT> timeLineList = new ArrayList<>();
 
         try {
             // 이벤트 업데이트 최소 시간 (30분)
@@ -67,17 +71,64 @@ public class RTCrawler {
                 WebElement timeLine = wait.until(ExpectedConditions.visibilityOfElementLocated(By.className("group_timeline")));
                 List<WebElement> timeElements = timeLine.findElements(By.tagName("li"));
 
+
+
                 // 변경된 list 요소 탐색
                 for (WebElement li : timeElements) {
                     String liText = li.getText();
                     if (!previousList.contains(liText)) {
+                        // 찾아온 정보를 인덱스화 하여 개별로 저장
+                        // [0]: 시간, [1]: 이벤트
+                        String[] elements = liText.split("\\s+");
+
+                        FixtureRT fixtureRT = FixtureRT.builder()
+                                        .date(getDateTime())
+                                        .timeline(elements[0])
+                                        .build();
                         newList.add(liText);
                         // 변경된 내용 출력
                         System.out.println(liText);
                         // 요소 저장
                         previousList.add(li.getText());
+
+                        // timeline 리스트에 추가
+                        if (liText.contains("골")) {
+                            for(String element:elements){
+                                System.out.println("요소 확인 " + element);
+                            }
+                            fixtureRT = FixtureRT.builder()
+                                    .timeline(elements[0])
+                                    .event(elements[1])
+                                    .goalPlayer(elements[2])
+                                    .build();
+                        }
+
+                        if(liText.contains("경고")){
+                            for(String element:elements){
+                                System.out.println("요소 확인 " + element);
+                            }
+                            fixtureRT = FixtureRT.builder()
+                                    .timeline(elements[0])
+                                    .event(elements[1])
+                                    .warnPlayer(elements[2])
+                                    .build();
+                        }
+
+                        if(liText.contains("퇴장")){
+                            for(String element:elements){
+                                System.out.println("요소 확인 " + element);
+                            }
+                            fixtureRT = FixtureRT.builder()
+                                    .timeline(elements[0])
+                                    .event(elements[1])
+                                    .warnPlayer(elements[2])
+                                    .build();
+                        }
+
+                        timeLineList.add(fixtureRT);
                     }
                 }
+
 
                 // 이벤트 종료 확인
                 for (WebElement li : timeElements) {
@@ -96,6 +147,15 @@ public class RTCrawler {
         }
 
     }
+
+    static String getDateTime(){
+        LocalDateTime now = LocalDateTime.now();
+
+        String dateTime = now.format(DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm:ss"));
+
+        return dateTime;
+    }
+
 
 }
 
