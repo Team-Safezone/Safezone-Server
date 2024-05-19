@@ -3,6 +3,7 @@ package KickIt.server.global.common.crawler;
 import KickIt.server.domain.fixture.entity.Fixture;
 
 import KickIt.server.domain.fixture.entity.FixtureRT;
+import lombok.ToString;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
@@ -25,7 +26,7 @@ public class RTCrawler {
         //웹 페이지 이동
         WebDriver driver = new ChromeDriver();
         // 임시 페이지 지정 이동
-        driver.get("https://sports.daum.net/match/80074837");
+        driver.get("https://sports.daum.net/match/80074522");
 
         /*
 
@@ -63,13 +64,10 @@ public class RTCrawler {
                 // 10초마다 한번씩 실행
                 Thread.sleep(10000);
 
-                //10초에 한번씩 크롤링 체크(확인)
-                LocalTime now = LocalTime.now();
-                System.out.println(now);
-
                 // list 찾기(타임 라인 이벤트가 list 형식으로 되어있음)
                 WebElement timeLine = wait.until(ExpectedConditions.visibilityOfElementLocated(By.className("group_timeline")));
                 List<WebElement> timeElements = timeLine.findElements(By.tagName("li"));
+
 
 
 
@@ -81,63 +79,138 @@ public class RTCrawler {
                         // [0]: 시간, [1]: 이벤트
                         String[] elements = liText.split("\\s+");
 
-                        FixtureRT fixtureRT = FixtureRT.builder()
+                            FixtureRT fixtureRT = FixtureRT.builder()
                                         .date(getDateTime())
                                         .timeline(elements[0])
                                         .build();
-                        newList.add(liText);
-                        // 변경된 내용 출력
-                        System.out.println(liText);
+
                         // 요소 저장
                         previousList.add(li.getText());
 
                         // timeline 리스트에 추가
                         if (liText.contains("골")) {
-                            for(String element:elements){
-                                System.out.println("요소 확인 " + element);
+                            if(elements.length > 4) {
+                                fixtureRT = FixtureRT.builder()
+                                        .date(getDateTime())
+                                        .timeline(elements[0])
+                                        .event(elements[1])
+                                        .goalPlayer(elements[2])
+                                        .assiPlayer(elements[3] + " " + elements[4])
+                                        .build();
+                                System.out.println(fixtureRT.getDate() + " " + fixtureRT.getTimeline() + " " + fixtureRT.getEvent() + " "
+                                        + fixtureRT.getGoalPlayer() + " " + fixtureRT.getAssiPlayer());
+                            } else {
+                                fixtureRT = FixtureRT.builder()
+                                        .date(getDateTime())
+                                        .timeline(elements[0])
+                                        .event(elements[1])
+                                        .goalPlayer(elements[2])
+                                        .build();
+                                System.out.println(fixtureRT.getDate() + " " +  fixtureRT.getTimeline() + " " +  fixtureRT.getEvent() + " "
+                                        + fixtureRT.getGoalPlayer());
                             }
-                            fixtureRT = FixtureRT.builder()
-                                    .timeline(elements[0])
-                                    .event(elements[1])
-                                    .goalPlayer(elements[2])
-                                    .build();
+
                         }
 
                         if(liText.contains("경고")){
-                            for(String element:elements){
-                                System.out.println("요소 확인 " + element);
-                            }
                             fixtureRT = FixtureRT.builder()
+                                    .date(getDateTime())
                                     .timeline(elements[0])
                                     .event(elements[1])
                                     .warnPlayer(elements[2])
                                     .build();
-                        }
+
+                            System.out.println(fixtureRT.getDate() + " " +  fixtureRT.getTimeline() + " " +  fixtureRT.getEvent() + " "
+                                    + fixtureRT.getWarnPlayer());
+
+                            }
+
 
                         if(liText.contains("퇴장")){
-                            for(String element:elements){
-                                System.out.println("요소 확인 " + element);
-                            }
                             fixtureRT = FixtureRT.builder()
+                                    .date(getDateTime())
                                     .timeline(elements[0])
                                     .event(elements[1])
                                     .warnPlayer(elements[2])
                                     .build();
+
+                            System.out.println(fixtureRT.getDate() + " " +  fixtureRT.getTimeline() + " " +  fixtureRT.getEvent() + " "
+                                    + fixtureRT.getExitPlayer());
+
+                        }
+
+                        if(liText.contains("추가시간")){
+                            fixtureRT = FixtureRT.builder()
+                                    .date(getDateTime())
+                                    .event(elements[0])
+                                    .build();
+
+                            System.out.println(fixtureRT.getDate() + " " +  fixtureRT.getTimeline() + " " +  fixtureRT.getEvent());
+
+
+                        }
+
+                        if(liText.contains("종료")){
+                            fixtureRT = FixtureRT.builder()
+                                    .date(getDateTime())
+                                    .event(elements[0])
+                                    .build();
+
+                            System.out.println(fixtureRT.getDate() + " " +  fixtureRT.getTimeline() + " " +  fixtureRT.getEvent());
+                            }
+
+
+                        if(liText.contains("교체")){
+                            fixtureRT = FixtureRT.builder()
+                                    .date(getDateTime())
+                                    .timeline(elements[0])
+                                    .event(elements[1])
+                                    .inPlayer(elements[2])
+                                    .outPlayer(elements[4])
+                                    .build();
+
+                            System.out.println(fixtureRT.getDate() + " " +  fixtureRT.getTimeline() + " " +  fixtureRT.getEvent() + " "
+                                    + fixtureRT.getInPlayer() + " " + fixtureRT.getOutPlayer());
+                        }
+
+                        if(liText.contains("후반전")){
+                            fixtureRT = FixtureRT.builder()
+                                    .date(getDateTime())
+                                    .event(elements[0])
+                                    .build();
+
+                            System.out.println(fixtureRT.getDate() + " " +  fixtureRT.getTimeline() + " " +  fixtureRT.getEvent());
+
+                        }
+
+                        if(liText.contains("VAR")){
+                            fixtureRT = FixtureRT.builder()
+                                    .date(getDateTime())
+                                    .event(elements[2] + elements[3])
+                                    .varResult(elements[4] + " " + elements[5])
+                                    .build();
+
+                            System.out.println(fixtureRT.getDate() + " " +  fixtureRT.getTimeline() + " " +  fixtureRT.getEvent() + " "
+                                    + fixtureRT.getVarResult());
+
+                        }
+
+                        if(liText.contains("경기종료")){
+                            fixtureRT = FixtureRT.builder()
+                                    .date(getDateTime())
+                                    .event(elements[0])
+                                    .build();
+
+                            eventEnd = true;
+
+                            System.out.println(fixtureRT.getDate() + " " +  fixtureRT.getTimeline() + " " +  fixtureRT.getEvent());
+
                         }
 
                         timeLineList.add(fixtureRT);
                     }
                 }
 
-
-                // 이벤트 종료 확인
-                for (WebElement li : timeElements) {
-                    String liText = li.getText();
-                    if (liText.contains("경기종료")) {
-                        // 경기 끝
-                        eventEnd = true;
-                    }
-                }
             }
         } catch(InterruptedException e) {
             e.printStackTrace();
