@@ -1,6 +1,5 @@
-package KickIt.server.domain.fixture.entity;
+package KickIt.server.domain.realtime;
 
-import KickIt.server.domain.teams.EplTeams;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -12,12 +11,11 @@ import java.time.LocalDateTime;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class FixtureRT {
-
+public class RealTime {
     // 이벤트 발생시간(크롤링 시간)
-    private LocalDateTime dateTime;
+    private String dateTime;
     // 타임라인 시간
-    private String stadium;
+    private String timeLine;
     // 발생 이벤트
     private String event;
     // 골 넣은 선수
