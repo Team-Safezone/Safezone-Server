@@ -1,10 +1,13 @@
 package KickIt.server.domain.lineup.entity;
 
 import KickIt.server.domain.teams.EplTeams;
+import KickIt.server.domain.teams.entity.Player;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+
+import java.util.ArrayList;
 
 @Getter
 @Builder
@@ -17,5 +20,9 @@ public class TeamLineup {
     // 포메이션
     private String form;
     // 선수 리스트
-    private int[] players;
+    private ArrayList<Player> players;
+    // 감독 이름
+    private String director;
+    // 후보 선수 리스트
+    private ArrayList<Player> benchPlayers;
 }

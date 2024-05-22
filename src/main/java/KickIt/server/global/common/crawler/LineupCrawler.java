@@ -2,26 +2,24 @@ package KickIt.server.global.common.crawler;
 
 import KickIt.server.domain.fixture.entity.Fixture;
 import KickIt.server.domain.lineup.entity.MatchLineup;
+import KickIt.server.domain.lineup.entity.TeamLineup;
 import KickIt.server.domain.teams.EplTeams;
 import KickIt.server.domain.teams.entity.Player;
 import KickIt.server.global.util.WebDriverUtil;
-import ch.qos.logback.core.joran.sanity.Pair;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.springframework.util.ObjectUtils;
 
-import java.lang.reflect.Array;
 import java.time.Duration;
 import java.util.*;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 // 경기 선발 라인업을 크롤링하는 LineupCrawler
 public class LineupCrawler {
-    void getLineup(Fixture fixture){
+    MatchLineup getLineup(Fixture fixture){
         WebDriver driver = WebDriverUtil.getChromeDriver();
         String pageUrl = "https://sports.daum.net/" + fixture.getLineupUrl() + "?tab=lineup";
+        MatchLineup matchLineup = new MatchLineup();
         if (!ObjectUtils.isEmpty(driver)) {
             // 페이지 열고 타임 아웃 관련 처리
             driver.get(pageUrl);
@@ -31,46 +29,105 @@ public class LineupCrawler {
             WebElement homeElement = driver.findElement(By.className("lineup_vs1"));
             WebElement awayElement = driver.findElement(By.className("lineup_vs2"));
 
-            String homeForm = homeElement.findElement(By.className("txt_lineup")).getText();
-            String awayForm = awayElement.findElement(By.className("txt_lineup")).getText();
+            // 홈팀과 원정팀의 선발 라인업 포메이션 정보를 문자열로 크롤링
+            String homeForm = getForm(homeElement);
+            String awayForm = getForm(awayElement);
 
-            EplTeams homeTeam = EplTeams.valueOfKrName(homeElement.findElement(By.className("tit_team")).getText());
-            EplTeams awayTeam = EplTeams.valueOfKrName(awayElement.findElement(By.className("tit_team")).getText());
+            // 홈팀과 원정팀의 감독 정보를 담은 element
+            WebElement DirectorsElement = driver.findElement(By.className("substitute_coach"));
+            // 홈팀과 원정팀의 감독 정보를 문자열로 크롤링
+            String homeDirector = getDirector(DirectorsElement)[0];
+            String awayDirector = getDirector(DirectorsElement)[1];
 
-            List<WebElement> homePlayersElement = homeElement.findElements(By.className("txt_name"));
-            List<WebElement> awayPlayersElement = awayElement.findElements(By.className("txt_name"));
+            // 홈팀 선수 리스트와 원정팀 선수 리스트 정보를 크롤링해 Player 객체 List로 저장
+            ArrayList<Player> homePlayers = getPlayers(homeElement, fixture.getHomeTeam());
+            ArrayList<Player> awayPlayers = getPlayers(awayElement, fixture.getAwayTeam());
 
-            ArrayList<Player> homePlayers = new ArrayList<>();
-            ArrayList<Player> awayPlayers = new ArrayList<>();
+            // 각 팀의 후보 선수 리스트를 가져오기 위한 후보 선수 정보가 담긴 Webelement > 그 중 li 요소 찾음
+            List<WebElement> homeBenchElement = driver.findElements(By.className("list_substitute")).get(2).findElements(By.cssSelector("li"));
+            List<WebElement> awayBenchElement = driver.findElements(By.className("list_substitute")).get(3).findElements(By.cssSelector("li"));
 
-            for (int i = 0; i < 11; i++){
-                String homePlayer = homePlayersElement.get(i).getText();
-                String awayPlayer = awayPlayersElement.get(i).getText();
-                homePlayers.add(Player.builder()
-                        .id(UUID.randomUUID())
-                        .team(homeTeam)
-                        .number(Integer.parseInt(homePlayer.replaceAll("[^0-9]", "")))
-                        .name(homePlayer.replaceAll("[^가-힣]", ""))
-                        .build());
+            // 홈팀과 원정팀의 후보 선수 리스트를 크롤링해 Player 객체 List로 저장
+            ArrayList<Player> homeBenchPlayers = getBenchPlayers(homeBenchElement, fixture.getHomeTeam());
+            ArrayList<Player> awayBenchPlayers = getBenchPlayers(awayBenchElement, fixture.getAwayTeam());
 
-                awayPlayers.add(Player.builder()
-                        .id(UUID.randomUUID())
-                        .team(awayTeam)
-                        .number(Integer.parseInt(awayPlayer.replaceAll("[^0-9]", "")))
-                        .name(awayPlayer.replaceAll("[^가-힣]", ""))
-                        .build());
-            }
+            // 위에서 크롤링해 온 정보 바탕으로 홈팀 TeamLineup 클래스 객체 build
+            TeamLineup homeTeamLineup =
+                    TeamLineup.builder()
+                            .team(fixture.getHomeTeam())
+                            .form(homeForm)
+                            .players(homePlayers)
+                            .director(homeDirector)
+                            .benchPlayers(homeBenchPlayers)
+                            .build();
+            // 위에서 크롤링해 온 정보 바탕으로 원정팀 TeamLineup 클래스 객체 build
+            TeamLineup awayTeamLineup =
+                    TeamLineup.builder()
+                            .team(fixture.getAwayTeam())
+                            .form(awayForm)
+                            .players(awayPlayers)
+                            .director(awayDirector)
+                            .benchPlayers(awayBenchPlayers)
+                            .build();
 
-            Logger.getGlobal().log(Level.INFO, homeForm);
-            Logger.getGlobal().log(Level.INFO, awayForm);
-
-            for (int i = 0; i < 11; i++){
-                Logger.getGlobal().log(Level.INFO, String.format("%s %s %s %s", homePlayers.get(i).getId(), homePlayers.get(i).getTeam(), homePlayers.get(i).getNumber(), homePlayers.get(i).getName()));
-            }
-            for (int i = 0; i < 11; i++){
-                Logger.getGlobal().log(Level.INFO, String.format("%s %s %s %s", awayPlayers.get(i).getId(), awayPlayers.get(i).getTeam(), awayPlayers.get(i).getNumber(), awayPlayers.get(i).getName()));
-            }
+            // 위에서 만든 홈팀 / 원정팀 TeamLineup 객체들 포함해 경기의 matchLineup 객체 build
+            matchLineup =
+                    MatchLineup.builder()
+                            .id(fixture.getId())
+                            .homeTeam(fixture.getHomeTeam())
+                            .awayTeam(fixture.getAwayTeam())
+                            .homeTeamForm(homeForm)
+                            .awayTeamForm(awayForm)
+                            .homeTeamLineup(homeTeamLineup)
+                            .awayTeamLineup(awayTeamLineup)
+                            .build();
         }
         driver.quit();
+        return matchLineup;
+    }
+    // 팀별 포메이션 정보 반환하는 함수
+    String getForm(WebElement element){ return element.findElement(By.className("txt_lineup")).getText(); }
+
+    // 팀별 감독 정보 String 배열로 반환하는 함수
+    String[] getDirector(WebElement element){
+        String homeDirector = element.findElements(By.className("item_substitute")).get(0).getText();
+        String awayDirector = element.findElements(By.className("item_substitute")).get(1).getText();
+        return new String[]{homeDirector, awayDirector};
+    }
+
+    // 매개변수로 주어진 WebElement에서 선수 리스트를 가져오는 함수
+    ArrayList<Player> getPlayers(WebElement element, EplTeams teamName){
+        // 반환할 Player 객체 리스트 생성
+        ArrayList<Player> players = new ArrayList<>();
+        // 주어진 매개변수 Element에서 선수 명단이 있는 Element 찾아 가져옴
+        List<WebElement> playersElement = element.findElements(By.className("txt_name"));
+        // 각 팀 선수 인원 수만큼 선수 명단 Element에서 필요한 선수 정보 가져와 Player 객체로 build -> players list에 추가
+        for (int i = 0; i < 11; i++){
+            String playerInfo = playersElement.get(i).getText();
+            players.add(Player.builder()
+                    .id(UUID.randomUUID())
+                    .team(teamName)
+                    .number(Integer.parseInt(playerInfo.replaceAll("[^0-9]", "")))
+                    .name(playerInfo.replaceAll("[^가-힣]", ""))
+                    .build());
+        }
+        return players;
+    }
+
+    // 매개변수로 주어진 WebElement에서 후보 선수 리스트를 가져오는 함수
+    ArrayList<Player> getBenchPlayers(List<WebElement> elements, EplTeams teamName){
+        // 반환할 Player 객체 리스트 생성
+        ArrayList<Player> benchPlayers = new ArrayList<>();
+        for(int i = 0; i < elements.size(); i++) {
+            String playerNum = elements.get(i).findElement(By.className("number_g")).getText();
+            String playerName = elements.get(i).findElement(By.className("txt_name")).getText();
+            benchPlayers.add(Player.builder()
+                    .id(UUID.randomUUID())
+                    .team(teamName)
+                    .number(Integer.parseInt(playerNum.replaceAll("[^0-9]", "")))
+                    .name(playerName)
+                    .build());
+        }
+        return benchPlayers;
     }
 }

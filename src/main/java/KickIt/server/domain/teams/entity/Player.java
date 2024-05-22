@@ -22,4 +22,6 @@ public class Player {
     private int number;
     // 선수 이름
     private String name;
+    // 선수 포지션
+    private String position;
 }
