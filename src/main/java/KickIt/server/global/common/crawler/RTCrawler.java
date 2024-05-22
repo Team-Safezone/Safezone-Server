@@ -20,13 +20,13 @@ public class RTCrawler {
         //웹 페이지 이동
         WebDriver driver = new ChromeDriver();
         // 임시 페이지 지정 이동
-        driver.get("https://sports.daum.net/match/80074522");
+        driver.get("https://sports.daum.net/match/80085251?tab=cast");
 
         /*
 
         // 구현 수정 예정
         // 페이지 이동
-        driver.get("https://sports.daum.net/" + fixture.getLineupUrl());
+        driver.get("https://sports.daum.net/" + fixture.getLineupUrl() + "?tab=cast");
 
         지금은 실시간 랜덤 경기 정보 받아옴
         나중에 선호하는 팀에 대한 경기 정보 받아보는 코드 추가 필요
@@ -34,16 +34,13 @@ public class RTCrawler {
         */
 
 
-        //이전에 저장된 정보
-        Set<String> previousList = new HashSet<>();
-
-        // 변경된 요소를 저장
-        Set<String> newList = new HashSet<>();
-
         // 이벤트 종료 여부를 저장하는 eventEnd
         boolean eventEnd = false;
 
+        // 이전에 저장된 정보
+        Set<String> previousList = new HashSet<>();
 
+        // 저장할 리스트
         List<RealTime> timeLineList = new ArrayList<>();
 
         try {
@@ -51,7 +48,16 @@ public class RTCrawler {
             WebDriverWait wait = new WebDriverWait(driver, Duration.ofMinutes(30));
 
             // "경기 시작 후 업데이트 됩니다." 화면이 없어질 때까지 대기
-            wait.until(ExpectedConditions.not(ExpectedConditions.textToBe(By.className("desc_empty"), "경기 시작 후 업데이트됩니다.")));
+            wait.until(ExpectedConditions.not(ExpectedConditions.textToBe(By.className("txt_status"), "경기 전")));
+            System.out.println("확인용" + getDateTime());
+
+
+            // 전반전 시작 시간
+            RealTime realTime = RealTime.builder()
+                    .dateTime(getDateTime())
+                    .build();
+
+            timeLineList.add(realTime);
 
             // 이벤트가 종료되지 않은 동안 반복
             while (!eventEnd) {
@@ -63,99 +69,56 @@ public class RTCrawler {
                 List<WebElement> timeElements = timeLine.findElements(By.tagName("li"));
 
 
-
-
                 // 변경된 list 요소 탐색
                 for (WebElement li : timeElements) {
                     String liText = li.getText();
                     if (!previousList.contains(liText)) {
                         // 찾아온 정보를 인덱스화 하여 개별로 저장
                         // [0]: 시간, [1]: 이벤트
-                        String[] elements = liText.split("\\s+");
-
-                        RealTime fixtureRT = RealTime.builder()
-                                        .dateTime(getDateTime())
-                                        .timeLine(elements[0])
-                                        .build();
+                        String[] elements = liText.split("\n");
 
                         // 요소 저장
                         previousList.add(li.getText());
 
+                        // 첫 시작
+                        if(liText.contains("0′")){
+                            realTime = RealTime.builder()
+                                    .dateTime(getDateTime())
+                                    .timeLine(elements[0])
+                                    .build();
+                            System.out.println(realTime.getDateTime() + " " + realTime.getTimeLine());
+                        }
+
                         // timeline 리스트에 추가
                         if (liText.contains("골")) {
-                            if(elements.length > 4) {
-                                fixtureRT = RealTime.builder()
+                            // 어시스트 있을 때
+                            if(elements.length > 3) {
+                                realTime = RealTime.builder()
                                         .dateTime(getDateTime())
                                         .timeLine(elements[0])
                                         .event(elements[1])
                                         .goalPlayer(elements[2])
-                                        .assiPlayer(elements[3] + " " + elements[4])
+                                        .assiPlayer(elements[3])
                                         .build();
-                                System.out.println(fixtureRT.getDateTime() + " " + fixtureRT.getTimeLine() + " " + fixtureRT.getEvent() + " "
-                                        + fixtureRT.getGoalPlayer() + " " + fixtureRT.getAssiPlayer());
-                            } else {
-                                fixtureRT = RealTime.builder()
+                                System.out.println(realTime.getDateTime() + " " + realTime.getTimeLine() + " " + realTime.getEvent() + " "
+                                        + realTime.getGoalPlayer() + " " + realTime.getAssiPlayer());
+                            }
+                            // 어시스트 없을 때
+                            else {
+                                realTime = RealTime.builder()
                                         .dateTime(getDateTime())
                                         .timeLine(elements[0])
                                         .event(elements[1])
                                         .goalPlayer(elements[2])
                                         .build();
-                                System.out.println(fixtureRT.getDateTime() + " " +  fixtureRT.getTimeLine() + " " +  fixtureRT.getEvent() + " "
-                                        + fixtureRT.getGoalPlayer());
+                                System.out.println(realTime.getDateTime() + " " +  realTime.getTimeLine() + " " +  realTime.getEvent() + " "
+                                        + realTime.getGoalPlayer());
                             }
 
                         }
-
-                        if(liText.contains("경고")){
-                            fixtureRT = RealTime.builder()
-                                    .dateTime(getDateTime())
-                                    .timeLine(elements[0])
-                                    .event(elements[1])
-                                    .warnPlayer(elements[2])
-                                    .build();
-
-                            System.out.println(fixtureRT.getDateTime() + " " +  fixtureRT.getTimeLine() + " " +  fixtureRT.getEvent() + " "
-                                    + fixtureRT.getWarnPlayer());
-
-                            }
-
-
-                        if(liText.contains("퇴장")){
-                            fixtureRT = RealTime.builder()
-                                    .dateTime(getDateTime())
-                                    .timeLine(elements[0])
-                                    .event(elements[1])
-                                    .warnPlayer(elements[2])
-                                    .build();
-
-                            System.out.println(fixtureRT.getDateTime() + " " +  fixtureRT.getTimeLine() + " " +  fixtureRT.getEvent() + " "
-                                    + fixtureRT.getExitPlayer());
-
-                        }
-
-                        if(liText.contains("추가시간")){
-                            fixtureRT = RealTime.builder()
-                                    .dateTime(getDateTime())
-                                    .event(elements[0])
-                                    .build();
-
-                            System.out.println(fixtureRT.getDateTime() + " " +  fixtureRT.getTimeLine() + " " +  fixtureRT.getEvent());
-
-
-                        }
-
-                        if(liText.contains("종료")){
-                            fixtureRT = RealTime.builder()
-                                    .dateTime(getDateTime())
-                                    .event(elements[0])
-                                    .build();
-
-                            System.out.println(fixtureRT.getDateTime() + " " +  fixtureRT.getTimeLine() + " " +  fixtureRT.getEvent());
-                            }
-
 
                         if(liText.contains("교체")){
-                            fixtureRT = RealTime.builder()
+                            realTime = RealTime.builder()
                                     .dateTime(getDateTime())
                                     .timeLine(elements[0])
                                     .event(elements[1])
@@ -163,45 +126,96 @@ public class RTCrawler {
                                     .outPlayer(elements[4])
                                     .build();
 
-                            System.out.println(fixtureRT.getDateTime() + " " +  fixtureRT.getTimeLine() + " " +  fixtureRT.getEvent() + " "
-                                    + fixtureRT.getInPlayer() + " " + fixtureRT.getOutPlayer());
+                            System.out.println(realTime.getDateTime() + " " +  realTime.getTimeLine() + " " +  realTime.getEvent() + " "
+                                    + realTime.getInPlayer() + " " + realTime.getOutPlayer());
                         }
 
-                        if(liText.contains("후반전")){
-                            fixtureRT = RealTime.builder()
+
+                        if(liText.contains("경고")){
+                            realTime = RealTime.builder()
                                     .dateTime(getDateTime())
-                                    .event(elements[0])
+                                    .timeLine(elements[0])
+                                    .event(elements[1])
+                                    .warnPlayer(elements[2])
                                     .build();
 
-                            System.out.println(fixtureRT.getDateTime() + " " +  fixtureRT.getTimeLine() + " " +  fixtureRT.getEvent());
+                            System.out.println(realTime.getDateTime() + " " +  realTime.getTimeLine() + " " +  realTime.getEvent() + " "
+                                    + realTime.getWarnPlayer());
+
+                            }
+
+
+                        if(liText.contains("퇴장")){
+                            realTime = RealTime.builder()
+                                    .dateTime(getDateTime())
+                                    .timeLine(elements[0])
+                                    .event(elements[1])
+                                    .exitPlayer(elements[2])
+                                    .build();
+
+                            System.out.println(realTime.getDateTime() + " " +  realTime.getTimeLine() + " " +  realTime.getEvent() + " "
+                                    + realTime.getExitPlayer());
 
                         }
 
                         if(liText.contains("VAR")){
-                            fixtureRT = RealTime.builder()
+                            realTime = RealTime.builder()
                                     .dateTime(getDateTime())
-                                    .event(elements[2] + elements[3])
-                                    .varResult(elements[4] + " " + elements[5])
+                                    .timeLine(elements[0])
+                                    .event(elements[2])
+                                    .varResult(elements[3])
                                     .build();
 
-                            System.out.println(fixtureRT.getDateTime() + " " +  fixtureRT.getTimeLine() + " " +  fixtureRT.getEvent() + " "
-                                    + fixtureRT.getVarResult());
+                            System.out.println(realTime.getDateTime() + " " +  realTime.getTimeLine() + " " +  realTime.getEvent() + " "
+                                    + realTime.getVarResult());
 
                         }
 
+                        if(liText.contains("추가시간")){
+                            realTime = RealTime.builder()
+                                    .dateTime(getDateTime())
+                                    .event(elements[0])
+                                    .build();
+
+                            System.out.println(realTime.getDateTime() + " " +  realTime.getTimeLine() + " " +  realTime.getEvent());
+
+
+                        }
+
+                        if(liText.contains("후반전")){
+                            realTime = RealTime.builder()
+                                    .dateTime(getDateTime())
+                                    .event(elements[0])
+                                    .build();
+
+                            System.out.println(realTime.getDateTime() + " " +  realTime.getTimeLine() + " " +  realTime.getEvent());
+
+                        }
+
+                        if(liText.contains("종료")){
+                            realTime = RealTime.builder()
+                                    .dateTime(getDateTime())
+                                    .event(elements[0])
+                                    .build();
+
+                            System.out.println(realTime.getDateTime() + " " +  realTime.getTimeLine() + " " +  realTime.getEvent());
+
+                        }
+
+
                         if(liText.contains("경기종료")){
-                            fixtureRT = RealTime.builder()
+                            realTime = RealTime.builder()
                                     .dateTime(getDateTime())
                                     .event(elements[0])
                                     .build();
 
                             eventEnd = true;
 
-                            System.out.println(fixtureRT.getDateTime() + " " +  fixtureRT.getTimeLine() + " " +  fixtureRT.getEvent());
+                            System.out.println(realTime.getDateTime() + " " +  realTime.getTimeLine() + " " +  realTime.getEvent());
 
                         }
 
-                        timeLineList.add(fixtureRT);
+                        timeLineList.add(realTime);
                     }
                 }
 
@@ -216,14 +230,13 @@ public class RTCrawler {
     }
 
     // 로컬 시간 가져오기
-    static String getDateTime(){
+    public static String getDateTime(){
         LocalDateTime now = LocalDateTime.now();
 
         String dateTime = now.format(DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm:ss"));
 
         return dateTime;
     }
-
 
 }
 

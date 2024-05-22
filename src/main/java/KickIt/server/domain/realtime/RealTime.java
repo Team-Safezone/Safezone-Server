@@ -12,7 +12,7 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @AllArgsConstructor
 public class RealTime {
-    // 이벤트 발생시간(크롤링 시간)
+    // 이벤트 발생시간(전반전, 후반전 시작 시간)
     private String dateTime;
     // 타임라인 시간
     private String timeLine;
@@ -28,14 +28,14 @@ public class RealTime {
     private String warnPlayer2;
     // 퇴장 선수
     private String exitPlayer;
-    // VAR 판독
-    private String var;
-    // VAR 판독 결과
-    private String varResult;
     // 들어오는 선수
     private String inPlayer;
     // 나가는 선수
     private String outPlayer;
+    // VAR 판독
+    private String var;
+    // VAR 판독 결과
+    private String varResult;
     // 전반전 추가시간
     private String addTime;
     // 후반전 추가시간
