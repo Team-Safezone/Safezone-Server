@@ -1,8 +1,6 @@
 package KickIt.server.global.common.crawler;
 
-import KickIt.server.domain.fixture.entity.Fixture;
 import KickIt.server.domain.realtime.RealTime;
-import KickIt.server.global.util.WebDriverUtil;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
@@ -19,11 +17,11 @@ import java.util.*;
 public class RTCrawler {
 
     // 실시간 타임라인을 가져와 출력하는 crawlingRT 함수
-    List<RealTime> getRealTime(String year, String month, String day){
+    public static void main(String[] args) {
         //웹 페이지 이동
-        WebDriver driver = WebDriverUtil.getChromeDriver();
+        WebDriver driver = new ChromeDriver();
         // 임시 페이지 지정 이동
-        driver.get("https://sports.daum.net/match/80085243?tab=cast");
+        driver.get("https://sports.daum.net/match/80075526?tab=cast");
 
         /*
 
@@ -50,10 +48,13 @@ public class RTCrawler {
             // 이벤트 업데이트 최소 시간 (30분)
             WebDriverWait wait = new WebDriverWait(driver, Duration.ofMinutes(30));
 
+            // 크롤링 시간과 전반전 시작 시간 비교용
             System.out.println("크롤링 시작 시간: " + getDateTime());
 
-            // "경기 시작 후 업데이트 됩니다." 화면이 없어질 때까지 대기
-            wait.until(ExpectedConditions.presenceOfAllElementsLocatedBy(By.cssSelector("box_comp.box_relay .empty_data .desc_empty")));
+            // 중계 화면 나타날 때까지 대기
+            wait.until(ExpectedConditions.presenceOfElementLocated(By.className("wrap_relay")));
+
+            // 비교용
             System.out.println("전반전 시작 시간: " + getDateTime());
 
             // 전반전 시작 시간
@@ -230,8 +231,6 @@ public class RTCrawler {
             // WebDriver 종료
             driver.quit();
         }
-
-        return timeLineList;
     }
 
     // 로컬 시간 가져오기
