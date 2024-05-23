@@ -17,6 +17,7 @@ public class test {
         String year = String.valueOf(LocalDate.now().getYear());
         String month = String.format("%02d", LocalDate.now().getMonthValue());
         List<Fixture> fixtureList = mayFixtureCrawler.getFixture(year, month);
+
         // fixtureCrawler 테스트 및 출력
         /*
         for(int i = 0; i < fixtureList.size(); i++){
@@ -26,6 +27,7 @@ public class test {
                     fixture.getHomeTeamScore(), fixture.getAwayteamScore(), fixture.getRound(), fixture.getStatus(), fixture.getLineupUrl()));
         }
         */
+        
         LineupCrawler lineupCrawler = new LineupCrawler();
         MatchLineup lineup = lineupCrawler.getLineup(fixtureList.get(0));
         if (lineup != null){
@@ -49,3 +51,4 @@ public class test {
         }
     }
 }
+
