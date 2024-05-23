@@ -22,14 +22,14 @@ import java.util.logging.Logger;
 public class LineupCrawler {
     MatchLineup getLineup(Fixture fixture){
         WebDriver driver = WebDriverUtil.getChromeDriver();
-        // String pageUrl = "https://sports.daum.net/" + fixture.getLineupUrl() + "?tab=lineup";
-        String pageUrl = "https://sports.daum.net/match/80074533?tab=lineup";
+        String pageUrl = "https://sports.daum.net/" + fixture.getLineupUrl() + "?tab=lineup";
+        // String pageUrl = "https://sports.daum.net/match/80074533?tab=lineup";
         MatchLineup matchLineup = new MatchLineup();
 
         if (!ObjectUtils.isEmpty(driver)) {
             // 페이지 열고 타임 아웃 관련 처리
             driver.get(pageUrl);
-            driver.manage().timeouts().implicitlyWait(Duration.ofSeconds(5));
+            driver.manage().timeouts().implicitlyWait(Duration.ofMinutes(15));
 
             // 선발 라인업 정보 전체 포함하는 WebElement
             WebElement homeElement = driver.findElement(By.className("lineup_vs1"));
