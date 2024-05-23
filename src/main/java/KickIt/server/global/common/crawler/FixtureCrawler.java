@@ -70,9 +70,9 @@ public class FixtureCrawler {
                     fixtureList.add(fixture);
                 }
             }
+            WebDriverUtil.close(driver);
         }
-
-        driver.quit();
+        WebDriverUtil.quit(driver);
         return fixtureList;
     }
 
