@@ -21,7 +21,7 @@ public class RTCrawler {
         //웹 페이지 이동
         WebDriver driver = new ChromeDriver();
         // 임시 페이지 지정 이동
-        driver.get("https://sports.daum.net/match/80075526?tab=cast");
+        driver.get("https://sports.daum.net/match/80085246?tab=cast");
 
         /*
 
@@ -52,7 +52,7 @@ public class RTCrawler {
             System.out.println("크롤링 시작 시간: " + getDateTime());
 
             // 중계 화면 나타날 때까지 대기
-            wait.until(ExpectedConditions.presenceOfElementLocated(By.className("wrap_relay")));
+            wait.until(ExpectedConditions.presenceOfElementLocated(By.className("sr-lmt-clock__time")));
 
             // 비교용
             System.out.println("전반전 시작 시간: " + getDateTime());
