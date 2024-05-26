@@ -21,13 +21,13 @@ public class RTCrawler {
         //웹 페이지 이동
         WebDriver driver = new ChromeDriver();
         // 임시 페이지 지정 이동
-        driver.get("https://sports.daum.net/match/80085246?tab=cast");
+        driver.get("https://sports.daum.net/match/80075525");
 
         /*
 
         // 구현 수정 예정
         // 페이지 이동
-        driver.get("https://sports.daum.net/" + fixture.getLineupUrl() + "?tab=cast");
+        driver.get("https://sports.daum.net/" + fixture.getLineupUrl());
 
         지금은 실시간 랜덤 경기 정보 받아옴
         나중에 선호하는 팀에 대한 경기 정보 받아보는 코드 추가 필요
@@ -37,6 +37,7 @@ public class RTCrawler {
 
         // 이벤트 종료 여부를 저장하는 eventEnd
         boolean eventEnd = false;
+        boolean firstEnd = false;
 
         // 이전에 저장된 정보
         Set<String> previousList = new HashSet<>();
@@ -49,10 +50,10 @@ public class RTCrawler {
             WebDriverWait wait = new WebDriverWait(driver, Duration.ofMinutes(30));
 
             // 크롤링 시간과 전반전 시작 시간 비교용
-            System.out.println("크롤링 시작 시간: " + getDateTime());
+            System.out.println("전반전 시작 전 대기 시작: " + getDateTime());
 
             // 중계 화면 나타날 때까지 대기
-            wait.until(ExpectedConditions.presenceOfElementLocated(By.className("sr-lmt-clock__time")));
+            //wait.until(ExpectedConditions.presenceOfElementLocated(By.className("sr-lmt-clock__time")));
 
             // 비교용
             System.out.println("전반전 시작 시간: " + getDateTime());
@@ -86,7 +87,7 @@ public class RTCrawler {
                         previousList.add(li.getText());
 
                         // 첫 시작
-                        if(liText.contains("0′")){
+                        if (liText.contains("0′")) {
                             realTime = RealTime.builder()
                                     .dateTime(getDateTime())
                                     .timeLine(elements[0])
@@ -97,7 +98,7 @@ public class RTCrawler {
                         // timeline 리스트에 추가
                         if (liText.contains("골")) {
                             // 어시스트 있을 때
-                            if(elements.length > 3) {
+                            if (elements.length > 3) {
                                 realTime = RealTime.builder()
                                         .dateTime(getDateTime())
                                         .timeLine(elements[0])
@@ -116,13 +117,13 @@ public class RTCrawler {
                                         .event(elements[1])
                                         .goalPlayer(elements[2])
                                         .build();
-                                System.out.println(realTime.getDateTime() + " " +  realTime.getTimeLine() + " " +  realTime.getEvent() + " "
+                                System.out.println(realTime.getDateTime() + " " + realTime.getTimeLine() + " " + realTime.getEvent() + " "
                                         + realTime.getGoalPlayer());
                             }
 
                         }
 
-                        if(liText.contains("교체")){
+                        if (liText.contains("교체")) {
                             realTime = RealTime.builder()
                                     .dateTime(getDateTime())
                                     .timeLine(elements[0])
@@ -131,12 +132,12 @@ public class RTCrawler {
                                     .outPlayer(elements[4])
                                     .build();
 
-                            System.out.println(realTime.getDateTime() + " " +  realTime.getTimeLine() + " " +  realTime.getEvent() + " "
+                            System.out.println(realTime.getDateTime() + " " + realTime.getTimeLine() + " " + realTime.getEvent() + " "
                                     + realTime.getInPlayer() + " " + realTime.getOutPlayer());
                         }
 
 
-                        if(liText.contains("경고")){
+                        if (liText.contains("경고")) {
                             realTime = RealTime.builder()
                                     .dateTime(getDateTime())
                                     .timeLine(elements[0])
@@ -144,13 +145,13 @@ public class RTCrawler {
                                     .warnPlayer(elements[2])
                                     .build();
 
-                            System.out.println(realTime.getDateTime() + " " +  realTime.getTimeLine() + " " +  realTime.getEvent() + " "
+                            System.out.println(realTime.getDateTime() + " " + realTime.getTimeLine() + " " + realTime.getEvent() + " "
                                     + realTime.getWarnPlayer());
 
-                            }
+                        }
 
 
-                        if(liText.contains("퇴장")){
+                        if (liText.contains("퇴장")) {
                             realTime = RealTime.builder()
                                     .dateTime(getDateTime())
                                     .timeLine(elements[0])
@@ -158,12 +159,12 @@ public class RTCrawler {
                                     .exitPlayer(elements[2])
                                     .build();
 
-                            System.out.println(realTime.getDateTime() + " " +  realTime.getTimeLine() + " " +  realTime.getEvent() + " "
+                            System.out.println(realTime.getDateTime() + " " + realTime.getTimeLine() + " " + realTime.getEvent() + " "
                                     + realTime.getExitPlayer());
 
                         }
 
-                        if(liText.contains("VAR")){
+                        if (liText.contains("VAR")) {
                             realTime = RealTime.builder()
                                     .dateTime(getDateTime())
                                     .timeLine(elements[0])
@@ -171,44 +172,36 @@ public class RTCrawler {
                                     .varResult(elements[3])
                                     .build();
 
-                            System.out.println(realTime.getDateTime() + " " +  realTime.getTimeLine() + " " +  realTime.getEvent() + " "
+                            System.out.println(realTime.getDateTime() + " " + realTime.getTimeLine() + " " + realTime.getEvent() + " "
                                     + realTime.getVarResult());
 
                         }
 
-                        if(liText.contains("추가시간")){
+                        if (liText.contains("추가시간") || liText.contains("후반전")) {
                             realTime = RealTime.builder()
                                     .dateTime(getDateTime())
                                     .event(elements[0])
                                     .build();
 
-                            System.out.println(realTime.getDateTime() + " " +  realTime.getTimeLine() + " " +  realTime.getEvent());
+                            System.out.println(realTime.getDateTime() + " " + realTime.getTimeLine() + " " + realTime.getEvent());
 
 
                         }
 
-                        if(liText.contains("후반전")){
+                        if (liText.contains("종료")) {
                             realTime = RealTime.builder()
                                     .dateTime(getDateTime())
                                     .event(elements[0])
                                     .build();
 
-                            System.out.println(realTime.getDateTime() + " " +  realTime.getTimeLine() + " " +  realTime.getEvent());
+                            System.out.println(realTime.getDateTime() + " " + realTime.getTimeLine() + " " + realTime.getEvent());
 
-                        }
-
-                        if(liText.contains("종료")){
-                            realTime = RealTime.builder()
-                                    .dateTime(getDateTime())
-                                    .event(elements[0])
-                                    .build();
-
-                            System.out.println(realTime.getDateTime() + " " +  realTime.getTimeLine() + " " +  realTime.getEvent());
-
+                            firstEnd = true;
+                            break;
                         }
 
 
-                        if(liText.contains("경기종료")){
+                        if (liText.contains("경기종료")) {
                             realTime = RealTime.builder()
                                     .dateTime(getDateTime())
                                     .event(elements[0])
@@ -216,14 +209,33 @@ public class RTCrawler {
 
                             eventEnd = true;
 
-                            System.out.println(realTime.getDateTime() + " " +  realTime.getTimeLine() + " " +  realTime.getEvent());
+                            System.out.println(realTime.getDateTime() + " " + realTime.getTimeLine() + " " + realTime.getEvent());
 
                         }
 
                         timeLineList.add(realTime);
                     }
                 }
+                if (firstEnd) {
+                    // 휴식시간 대기
+                    System.out.println("전반전 종료. 15분 후 후반전 시작.");
+                    Thread.sleep(15 * 60 * 1000); // 15분 대기
 
+                    // 후반전 시작 대기
+                    System.out.println("후반전 시작 전 대기 시작: " + getDateTime());
+                    wait.until(ExpectedConditions.presenceOfElementLocated(By.className("sr-lmt-clock__time")));
+
+                    // 후반전 시작 시간 기록
+                    System.out.println("후반전 시작 시간: " + getDateTime());
+                    realTime = RealTime.builder()
+                            .dateTime(getDateTime())
+                            .build();
+                    timeLineList.add(realTime);
+
+                    // 후반전 시작 후 다시 크롤링 계속
+                    firstEnd = false;
+
+                }
             }
         } catch(InterruptedException e) {
             e.printStackTrace();
