@@ -1,6 +1,7 @@
 package KickIt.server.domain.teams.entity;
 
 import KickIt.server.domain.teams.EplTeams;
+import KickIt.server.domain.teams.PlayerPosition;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -19,9 +20,10 @@ public class Player {
     // 선수 소속팀
     private EplTeams team;
     // 선수 등번호
-    private int number;
+    // 선수 번호 데이터가 없는 경우 null 값 주므로 이를 수용하기 위해 int -> Integer로 변경
+    private Integer number;
     // 선수 이름
     private String name;
     // 선수 포지션
-    private String position;
+    private PlayerPosition position;
 }
