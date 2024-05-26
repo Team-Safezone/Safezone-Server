@@ -30,7 +30,7 @@ public class FixtureCrawler {
         if (!ObjectUtils.isEmpty(driver)) {
             // 페이지 열고 타임 아웃 관련 처리
             driver.get(pageUrl);
-            driver.manage().timeouts().implicitlyWait(Duration.ofSeconds(5));
+            driver.manage().timeouts().implicitlyWait(Duration.ofSeconds(10));
             // 현재 시즌 정보를 불러와 변수로 저장 -> 이후 읽어 들인 페이지의 모든 경기에 정보 넣어 줌
             String season = driver.findElement(By.className("emph_day")).getText();
             // 페이지에서 불러온 경기 일정 table fixtureTable에 저장
