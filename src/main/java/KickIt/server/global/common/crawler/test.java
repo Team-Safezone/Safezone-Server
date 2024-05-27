@@ -1,16 +1,29 @@
 package KickIt.server.global.common.crawler;
 
+import KickIt.server.domain.fixture.entity.Fixture;
+import KickIt.server.domain.lineup.entity.MatchLineup;
+import KickIt.server.domain.teams.entity.Player;
+
+import java.time.LocalDate;
+import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
 public class test {
 
     public static void main(String[] args) {
 
         // fixtureCrawler 테스트 및 출력
+
         /*
         FixtureCrawler mayFixtureCrawler = new FixtureCrawler();
         String year = String.valueOf(LocalDate.now().getYear());
         String month = String.format("%02d", LocalDate.now().getMonthValue());
         List<Fixture> fixtureList = mayFixtureCrawler.getFixture(year, month);
 
+         */
+
+        /*
         for(int i = 0; i < fixtureList.size(); i++){
             Fixture fixture = fixtureList.get(i);
             Logger.getGlobal().log(Level.INFO, String.format("%s\n%s\n%s\n%s vs %s\n%s : %s\n%sR\n%s\n%s\n",
@@ -42,10 +55,13 @@ public class test {
                 Logger.getGlobal().log(Level.INFO, String.format("awayteam 후보 선수 명단 \n %s %s %s %s\n", benchPlayer.getId(), benchPlayer.getNumber(), benchPlayer.getName(), benchPlayer.getPosition()));
             }
         }
+
          */
+
         // PlayerCralwer 테스트 및 출력
         SquadCrawler squadCrawler = new SquadCrawler();
         squadCrawler.getTeamSquads();
+
     }
 }
 
