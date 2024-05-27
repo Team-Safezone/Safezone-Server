@@ -1,12 +1,15 @@
 package KickIt.server.global.common.crawler;
 
 import KickIt.server.domain.realtime.RealTime;
+import KickIt.server.global.util.WebDriverUtil;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
+
+import java.sql.SQLOutput;
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -19,9 +22,9 @@ public class RTCrawler {
     // 실시간 타임라인을 가져와 출력하는 crawlingRT 함수
     public static void main(String[] args) {
         //웹 페이지 이동
-        WebDriver driver = new ChromeDriver();
+        WebDriver driver = WebDriverUtil.getChromeDriver();
         // 임시 페이지 지정 이동
-        driver.get("https://sports.daum.net/match/80075525");
+        driver.get("https://sports.daum.net/match/80074531");
 
         /*
 
@@ -97,30 +100,66 @@ public class RTCrawler {
 
                         // timeline 리스트에 추가
                         if (liText.contains("골")) {
-                            // 어시스트 있을 때
-                            if (elements.length > 3) {
-                                realTime = RealTime.builder()
-                                        .dateTime(getDateTime())
-                                        .timeLine(elements[0])
-                                        .event(elements[1])
-                                        .goalPlayer(elements[2])
-                                        .assiPlayer(elements[3])
-                                        .build();
-                                System.out.println(realTime.getDateTime() + " " + realTime.getTimeLine() + " " + realTime.getEvent() + " "
-                                        + realTime.getGoalPlayer() + " " + realTime.getAssiPlayer());
-                            }
-                            // 어시스트 없을 때
-                            else {
-                                realTime = RealTime.builder()
-                                        .dateTime(getDateTime())
-                                        .timeLine(elements[0])
-                                        .event(elements[1])
-                                        .goalPlayer(elements[2])
-                                        .build();
-                                System.out.println(realTime.getDateTime() + " " + realTime.getTimeLine() + " " + realTime.getEvent() + " "
-                                        + realTime.getGoalPlayer());
-                            }
+                            List<WebElement> spans = li.findElements(By.tagName("span"));
+                            for(WebElement span : spans) {
+                                String ownGoal = span.getText();
+                                if(ownGoal.contains("골")){
+                                    String ownGoalClass = span.getAttribute("class");
+                                    if(ownGoalClass.contains("ico_goal_own")){
+                                        if (elements.length > 3) {
+                                            realTime = RealTime.builder()
+                                                    .dateTime(getDateTime())
+                                                    .timeLine(elements[0])
+                                                    .event("자책골")
+                                                    .goalPlayer(elements[2])
+                                                    .assiPlayer(elements[3])
+                                                    .build();
 
+                                            System.out.println(realTime.getDateTime() + " " + realTime.getTimeLine() + " " + realTime.getEvent() + " "
+                                                    + realTime.getGoalPlayer() + " " + realTime.getAssiPlayer());
+
+                                        } else { // 자책골인데 어시스트 없을 경우
+                                            realTime = RealTime.builder()
+                                                    .dateTime(getDateTime())
+                                                    .timeLine(elements[0])
+                                                    .event("자책골")
+                                                    .goalPlayer(elements[2])
+                                                    .build();
+                                            System.out.println(realTime.getDateTime() + " " + realTime.getTimeLine() + " " + realTime.getEvent() + " "
+                                                    + realTime.getGoalPlayer());
+                                        }
+
+                                        break;
+                                }
+                                    else { // 자책골 아닐 때
+                                        // 어시스트 있을 때
+                                        if (elements.length > 3) {
+                                            realTime = RealTime.builder()
+                                                    .dateTime(getDateTime())
+                                                    .timeLine(elements[0])
+                                                    .event(elements[1])
+                                                    .goalPlayer(elements[2])
+                                                    .assiPlayer(elements[3])
+                                                    .build();
+                                            System.out.println(realTime.getDateTime() + " " + realTime.getTimeLine() + " " + realTime.getEvent() + " "
+                                                    + realTime.getGoalPlayer() + " " + realTime.getAssiPlayer());
+                                        }
+                                        // 어시스트 없을 때
+                                        else {
+                                            realTime = RealTime.builder()
+                                                    .dateTime(getDateTime())
+                                                    .timeLine(elements[0])
+                                                    .event(elements[1])
+                                                    .goalPlayer(elements[2])
+                                                    .build();
+                                            System.out.println(realTime.getDateTime() + " " + realTime.getTimeLine() + " " + realTime.getEvent() + " "
+                                                    + realTime.getGoalPlayer());
+                                        }
+
+                                        break;
+                                    }
+                                }
+                            }
                         }
 
                         if (liText.contains("교체")) {
@@ -211,19 +250,21 @@ public class RTCrawler {
 
                             System.out.println(realTime.getDateTime() + " " + realTime.getTimeLine() + " " + realTime.getEvent());
 
+                            break;
+
                         }
 
                         timeLineList.add(realTime);
                     }
                 }
-                if (firstEnd) {
+                if (firstEnd && eventEnd) {
                     // 휴식시간 대기
                     System.out.println("전반전 종료. 15분 후 후반전 시작.");
-                    Thread.sleep(15 * 60 * 1000); // 15분 대기
+                    //Thread.sleep(15 * 60 * 1000); // 15분 대기
 
                     // 후반전 시작 대기
                     System.out.println("후반전 시작 전 대기 시작: " + getDateTime());
-                    wait.until(ExpectedConditions.presenceOfElementLocated(By.className("sr-lmt-clock__time")));
+                    //wait.until(ExpectedConditions.presenceOfElementLocated(By.className("sr-lmt-clock__time")));
 
                     // 후반전 시작 시간 기록
                     System.out.println("후반전 시작 시간: " + getDateTime());
@@ -253,6 +294,15 @@ public class RTCrawler {
 
         return dateTime;
     }
+
+    /*
+    public static String getAssi(){
+
+    }
+    public static String getVAR(){
+
+    }
+   */
 
 }
 
