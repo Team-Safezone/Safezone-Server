@@ -15,6 +15,8 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.UUID;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 // 경기 일정 정보 크롤링하는 FixtureCrawler
 public class FixtureCrawler {
@@ -33,46 +35,54 @@ public class FixtureCrawler {
             driver.manage().timeouts().implicitlyWait(Duration.ofSeconds(5));
             // 현재 시즌 정보를 불러와 변수로 저장 -> 이후 읽어 들인 페이지의 모든 경기에 정보 넣어 줌
             String season = driver.findElement(By.className("emph_day")).getText();
-            // 페이지에서 불러온 경기 일정 table fixtureTable에 저장
-            List<WebElement> webElementList = driver.findElements(By.id("scheduleList"));
-            WebElement fixtureTable = webElementList.get(0);
-            // fixtureTable의 행(tr)들을 담은 list fixtureTrList
-            List<WebElement> fixtureTrList = fixtureTable.findElements(By.tagName("tr"));
 
-            // fixtureTrList의 요소마다 내부 정보 parsing해 Fixture 객체로 build해 list에 추가하는 과정
-            for (int i = 0; i < fixtureTrList.size(); i++) {
-                WebElement tr = fixtureTrList.get(i);
-                String trClassName = tr.getAttribute("class");
-                // 경기가 있는 날인 경우
-                if (!trClassName.contains("tr_empty")) {
-                    // fixtureList에 Fixture build해 삽입
-                    // 각 팀의 정보를 포함하는 tr을 담은 list
-                    List<WebElement> teams = getTeams(tr);
-                    // 각 팀의 이름 EplTeams 배열로 저장
-                    EplTeams[] teamNames = getTeamNames(teams);
-                    // 각 팀의 점수 배열로 저장
-                    Integer[] teamScores = getTeamScores(teams);
-                    // 한 경기의 경기 고유 id(생성), 시즌 정보, 날짜 및 시간, 홈팀 이름, 원정팀 이름,
-                    // 홈팀 점수, 원정팀 점수, 라운드 정보, 경기 상태를 Fixture 객체에 build
-                    Fixture fixture = Fixture.builder()
-                            .id(UUID.randomUUID())
-                            .season(season)
-                            .date(getFixtureDate(tr))
-                            .homeTeam(teamNames[0])
-                            .awayTeam(teamNames[1])
-                            .homeTeamScore(teamScores[0])
-                            .awayteamScore(teamScores[1])
-                            .round(getRound(tr))
-                            .status(getStatus(tr))
-                            .lineupUrl(getLineupUrl(tr))
-                            .build();
-                    // fixture 리스트에 삽입
-                    fixtureList.add(fixture);
+            try{
+                // 페이지에서 불러온 경기 일정 table fixtureTable에 저장
+                List<WebElement> webElementList = driver.findElements(By.id("scheduleList"));
+                WebElement fixtureTable = webElementList.get(0);
+                // fixtureTable의 행(tr)들을 담은 list fixtureTrList
+                List<WebElement> fixtureTrList = fixtureTable.findElements(By.tagName("tr"));
+
+                // fixtureTrList의 요소마다 내부 정보 parsing해 Fixture 객체로 build해 list에 추가하는 과정
+                for (int i = 0; i < fixtureTrList.size(); i++) {
+                    WebElement tr = fixtureTrList.get(i);
+                    String trClassName = tr.getAttribute("class");
+                    // 경기가 있는 날인 경우
+                    if (!trClassName.contains("tr_empty")) {
+                        // fixtureList에 Fixture build해 삽입
+                        // 각 팀의 정보를 포함하는 tr을 담은 list
+                        List<WebElement> teams = getTeams(tr);
+                        // 각 팀의 이름 EplTeams 배열로 저장
+                        EplTeams[] teamNames = getTeamNames(teams);
+                        // 각 팀의 점수 배열로 저장
+                        Integer[] teamScores = getTeamScores(teams);
+                        // 한 경기의 경기 고유 id(생성), 시즌 정보, 날짜 및 시간, 홈팀 이름, 원정팀 이름,
+                        // 홈팀 점수, 원정팀 점수, 라운드 정보, 경기 상태를 Fixture 객체에 build
+                        Fixture fixture = Fixture.builder()
+                                .id(UUID.randomUUID())
+                                .season(season)
+                                .date(getFixtureDate(tr))
+                                .homeTeam(teamNames[0])
+                                .awayTeam(teamNames[1])
+                                .homeTeamScore(teamScores[0])
+                                .awayteamScore(teamScores[1])
+                                .round(getRound(tr))
+                                .status(getStatus(tr))
+                                .lineupUrl(getLineupUrl(tr))
+                                .build();
+                        // fixture 리스트에 삽입
+                        fixtureList.add(fixture);
+                    }
                 }
             }
-            WebDriverUtil.close(driver);
+            catch (Exception e){
+                fixtureList = null;
+                Logger.getGlobal().log(Level.WARNING, String.format("fixture 크롤링 오류: %s", e.toString()));
+            }
+            finally {
+                WebDriverUtil.quit(driver);
+            }
         }
-        WebDriverUtil.quit(driver);
         return fixtureList;
     }
 
