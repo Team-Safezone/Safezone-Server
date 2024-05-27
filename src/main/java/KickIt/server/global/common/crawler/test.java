@@ -5,6 +5,7 @@ import KickIt.server.domain.lineup.entity.MatchLineup;
 import KickIt.server.domain.teams.entity.Player;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -32,14 +33,27 @@ public class test {
         MatchLineup lineup = lineupCrawler.getLineup(fixtureList.get(0));
         if (lineup != null){
             Logger.getGlobal().log(Level.INFO, String.format("%s\n %s\n %s\n %s\n %s\n %s\n %s\n", lineup.getId(), lineup.getHomeTeam(), lineup.getAwayTeam(), lineup.getHomeTeamForm(), lineup.getAwayTeamForm(), lineup.getHomeTeamLineup().getDirector(), lineup.getAwayTeamLineup().getDirector()));
-            for (int i = 0; i < 11; i++){
-                Player player =  lineup.getHomeTeamLineup().getPlayers().get(i);
-                Logger.getGlobal().log(Level.INFO, String.format("hometeam 선수 명단 \n %s %s %s %s\n", player.getId(), player.getNumber(), player.getName(), player.getPosition()));
+
+            ArrayList<List<Player>> homePlayers = lineup.getHomeTeamLineup().getPlayers();
+            for (int i = 0; i < homePlayers.size(); i++){
+                List<Player> homeSubPlayers = homePlayers.get(i);
+                for(int j = 0; j < homeSubPlayers.size(); j++){
+                    Player homePlayer = homeSubPlayers.get(j);
+                    Logger.getGlobal().log(Level.INFO, String.format("hometeam 선수 명단 %s\n %s %s %s %s\n", i, homePlayer.getId(),
+                            homePlayer.getNumber(), homePlayer.getName(), homePlayer.getPosition()));
+                }
             }
-            for (int i = 0; i < 11; i++){
-                Player player =  lineup.getAwayTeamLineup().getPlayers().get(i);
-                Logger.getGlobal().log(Level.INFO, String.format("awayteam 선수 명단 \n %s %s %s %s\n", player.getId(), player.getNumber(), player.getName(), player.getPosition()));
+
+            ArrayList<List<Player>> awayPlayers = lineup.getAwayTeamLineup().getPlayers();
+            for (int i = 0; i < awayPlayers.size(); i++){
+                List<Player> awaySubPlayers = awayPlayers.get(i);
+                for(int j = 0; j < awaySubPlayers.size(); j++){
+                    Player awayPlayer = awaySubPlayers.get(j);
+                    Logger.getGlobal().log(Level.INFO, String.format("awayteam 선수 명단 %s\n %s %s %s %s\n", i, awayPlayer.getId(),
+                            awayPlayer.getNumber(), awayPlayer.getName(), awayPlayer.getPosition()));
+                }
             }
+
             for (int i = 0; i < lineup.getHomeTeamLineup().getBenchPlayers().size(); i++){
                 Player benchPlayer =  lineup.getHomeTeamLineup().getBenchPlayers().get(i);
                 Logger.getGlobal().log(Level.INFO, String.format("hometeam 후보 선수 명단 \n %s %s %s %s\n", benchPlayer.getId(), benchPlayer.getNumber(), benchPlayer.getName(), benchPlayer.getPosition()));

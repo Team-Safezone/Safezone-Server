@@ -8,6 +8,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import java.util.ArrayList;
+import java.util.List;
 
 @Getter
 @Builder
@@ -20,7 +21,8 @@ public class TeamLineup {
     // 포메이션
     private String form;
     // 선수 리스트
-    private ArrayList<Player> players;
+    // 0 번째 배열은 골키퍼 포함
+    private ArrayList<List<Player>> players;
     // 감독 이름
     private String director;
     // 후보 선수 리스트
