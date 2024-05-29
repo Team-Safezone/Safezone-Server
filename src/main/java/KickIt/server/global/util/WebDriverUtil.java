@@ -30,7 +30,6 @@ public class WebDriverUtil {
 
         //chromeOptions.addArguments("--headless=new");
         chromeOptions.addArguments("--lang=ko");
-        chromeOptions.addArguments("--no-sandbox");
         chromeOptions.addArguments("--disable-dev-shm-usage");
         chromeOptions.addArguments("--disable-gpu");
         //chromeOptions.setCapability("ignoreProtectedModeSettings", true);

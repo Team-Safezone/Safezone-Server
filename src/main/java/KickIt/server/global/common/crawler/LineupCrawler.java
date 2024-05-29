@@ -56,8 +56,30 @@ public class LineupCrawler {
                 String awayDirector = getDirector(DirectorsElement)[1];
 
                 // 홈팀 선수 리스트와 원정팀 선수 리스트 정보를 크롤링해 Player 객체 List로 저장
-                ArrayList<Player> homePlayers = getPlayers(homeElement, fixture.getHomeTeam());
-                ArrayList<Player> awayPlayers = getPlayers(awayElement, fixture.getAwayTeam());
+                // 이때 포메이션대로 getPlayers 함수에서 반환한 전체 선수 리스트를 분할해 저장
+                String[] homeFormNum = homeForm.split("-");
+                ArrayList<List<Player>> homePlayers = new ArrayList<>();
+                ArrayList<Player> homeTotalPlayer = getPlayers(homeElement, fixture.getHomeTeam());
+                int startIndex = 0;
+                int endIndex = Integer.parseInt(homeFormNum[0]) + 1;
+                homePlayers.add(homeTotalPlayer.subList(startIndex, endIndex));
+                for(int i = 1; i < homeFormNum.length; i++){
+                    startIndex = endIndex;
+                    endIndex = startIndex + Integer.parseInt(homeFormNum[i]);
+                    homePlayers.add(homeTotalPlayer.subList(startIndex, endIndex));
+                }
+
+                String[] awayFormNum = awayForm.split("-");
+                ArrayList<List<Player>> awayPlayers = new ArrayList<>();
+                ArrayList<Player> awayTotalPlayer = getPlayers(awayElement, fixture.getAwayTeam());
+                startIndex = 0;
+                endIndex = Integer.parseInt(awayFormNum[0]) + 1;
+                awayPlayers.add(awayTotalPlayer.subList(startIndex, endIndex));
+                for(int i = 1; i < awayFormNum.length; i++){
+                    startIndex = endIndex;
+                    endIndex = startIndex + Integer.parseInt(awayFormNum[i]);
+                    awayPlayers.add(awayTotalPlayer.subList(startIndex, endIndex));
+                }
 
                 // 각 팀의 후보 선수 리스트를 가져오기 위한 후보 선수 정보가 담긴 Webelement > 그 중 li 요소 찾음
                 List<WebElement> homeBenchElement = driver.findElements(By.className("list_substitute")).get(2).findElements(By.cssSelector("li"));
@@ -101,9 +123,10 @@ public class LineupCrawler {
                 Logger.getGlobal().log(Level.INFO, "lineup driver 로딩 시간 초과");
                 matchLineup = null;
             }
-            WebDriverUtil.close(driver);
+            finally {
+                WebDriverUtil.quit(driver);
+            }
         }
-        WebDriverUtil.quit(driver);
         return matchLineup;
     }
     // 팀별 포메이션 정보 반환하는 함수
