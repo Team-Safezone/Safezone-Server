@@ -242,21 +242,27 @@ public class RTCrawler {
                                     realTime.getInform1() + " " + realTime.getInform2());
                         }
 
-                        if (liText.contains("종료")) {
+                        if (liText.equals("종료")) {
                             realTime = RealTime.builder()
                                     .dateTime(getDateTime())
-                                    .event(elements[0])
+                                    .event("하프타임")
                                     .build();
-                            if(liText.contains("경기종료")) {
-                                System.out.println(realTime.getDateTime() + " " + realTime.getTimeLine() + " " + realTime.getEvent() + " " +
-                                        realTime.getInform1() + " " + realTime.getInform2());
-                                eventEnd = true;
-                                break;
-                            }
 
                             System.out.println(realTime.getDateTime() + " " + realTime.getTimeLine() + " " + realTime.getEvent() + " " +
                                     realTime.getInform1() + " " + realTime.getInform2());
                             firstEnd = true;
+                            break;
+                        }
+
+                        if(liText.contains("경기종료")) {
+                            realTime = RealTime.builder()
+                                    .dateTime(getDateTime())
+                                    .event(elements[0])
+                                    .build();
+
+                            System.out.println(realTime.getDateTime() + " " + realTime.getTimeLine() + " " + realTime.getEvent() + " " +
+                                    realTime.getInform1() + " " + realTime.getInform2());
+                            eventEnd = true;
                             break;
                         }
 
