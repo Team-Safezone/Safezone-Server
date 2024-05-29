@@ -6,8 +6,11 @@ import KickIt.server.domain.teams.entity.Player;
 import KickIt.server.domain.teams.entity.Squad;
 import KickIt.server.global.util.WebDriverUtil;
 import org.openqa.selenium.By;
+import org.openqa.selenium.Cookie;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
+import org.openqa.selenium.support.ui.ExpectedConditions;
+import org.openqa.selenium.support.ui.WebDriverWait;
 import org.springframework.util.ObjectUtils;
 
 import java.time.Duration;
@@ -23,11 +26,17 @@ public class SquadCrawler {
         String pageUrl = "https://sports.daum.net/team/epl";
         // 현 시즌의 각 팀 선수 명단을 저장하고 있는 Map 객체 seasonSquads
         Map<EplTeams, Squad> seasonSquads = new HashMap<>();
+        // 다음 스포츠 팀 페이지 주소를 저장할 리스트
         List<String> teamPageUrls = new ArrayList<>();
+        //  English Premier league 공식 사이트 팀 페이지 주소를 저장할 리스트
+        List<String> officialPageUrls = new ArrayList<>();
+        //  팀별 선수 공식 이미지 주소를 저장할 hashmap
+        Map<EplTeams, Map<Integer, String>> imageUrls = new HashMap<>();
+
         if (!ObjectUtils.isEmpty(driver)) {
-            driver.get(pageUrl);
-            driver.manage().timeouts().implicitlyWait(Duration.ofSeconds(10));
             try{
+                driver.get(pageUrl);
+                driver.manage().timeouts().implicitlyWait(Duration.ofSeconds(10));
                 // 다음 스포츠의 팀 페이지에서 각 팀의 상세 페이지 url을 가져 온다.
                 List<WebElement> teamPages = driver.findElements(By.cssSelector("div.cont_item > a.link_cont"));
                 for (int i = 0; i < teamPages.size(); i++){
@@ -36,29 +45,59 @@ public class SquadCrawler {
                     // 이후 해당 문자열을 teamPageUrls에 저장한다.
                     teamPageUrls.add(href.substring(0, href.length()-4) + "squad");
                 }
+                driver.manage().timeouts().implicitlyWait(Duration.ofSeconds(10));
 
+                WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(60));
+                try{
+                    driver.get("https://www.premierleague.com");
+
+                    wait.until(ExpectedConditions.elementToBeClickable(By.cssSelector("Button#onetrust-accept-btn-handler")));
+                    driver.findElement(By.cssSelector("Button#onetrust-accept-btn-handler")).click();
+                    driver.manage().addCookie(new Cookie("eplOfficial", "accept"));
+                }
+                catch (Exception e){
+                    Logger.getGlobal().log(Level.WARNING, e.toString());
+                }
+                try{
+                    driver.get("https://www.premierleague.com");
+                    driver.manage().getCookieNamed("eplOfficial");
+
+                    wait.until(ExpectedConditions.presenceOfElementLocated(By.cssSelector("td.team")));
+                    driver.findElements(By.cssSelector("td.team > a")).forEach(s -> officialPageUrls.add(s.getAttribute("href").replace("overview", "squad")));
+                    /* 가져온 EPL 공식 사이트 팀별 url 출력하는 코드 추후 삭제 예정 */
+                    officialPageUrls.forEach(s -> Logger.getGlobal().log(Level.INFO, s));
+                }
+                catch(Exception e){
+                    Logger.getGlobal().log(Level.WARNING, e.toString());
+                }
+
+                for (int i = 0; i < teamPages.size(); i++){
+
+                }
+
+                /*
                 // 위에서 가져온 각 팀별 상세 페이지 url을 크롤링 완료 후 squad 객체를 반환하는 getSquad 메소드에 매개변수로 전달한다.
                 // 이후 결과로 전달 받은 sqaud 객체를 Map<EplTeam, Squad>로 만들어 크롤러가 결과로 반환할 seasonSquads에 추가한다.
                 for (int i = 0; i < 20; i++){
-                    /* page url 제대로 크롤링했는지 확인하기 위한 코드. 추후 삭제 예정. */
+                    // page url 제대로 크롤링했는지 확인하기 위한 코드. 추후 삭제 예정.
                     System.out.println(teamPageUrls.get(i));
                     Squad squad = getSquad(driver, teamPageUrls.get(i));
                     seasonSquads.put(squad.getTeam(), squad);
                 }
+                */
 
+                Thread.sleep(10);
+                driver.quit();
             }
             // 예외 처리
             catch (Exception e){
                 Logger.getGlobal().log(Level.INFO, e.toString());
                 // 문제 있는 경우 null 반환
                 seasonSquads = null;
-            }
-            // 완료 후 모든 창 종료
-            finally {
                 driver.quit();
             }
         }
-
+        driver.quit();
         return seasonSquads;
     }
 
@@ -101,7 +140,7 @@ public class SquadCrawler {
                     .position(pos)
                     .build();
             /* 각 선수 정보 제대로 크롤링했는지 확인하기 위한 코드. 추후 삭제 예정. */
-            Logger.getGlobal().log(Level.INFO, String.format("%s %s %s %s", player.getId(), player.getNumber(), player.getName(), player.getPosition().toString()));
+            //Logger.getGlobal().log(Level.INFO, String.format("%s %s %s %s", player.getId(), player.getNumber(), player.getName(), player.getPosition().toString()));
             posPlayers.add(player);
         }
         return posPlayers;
