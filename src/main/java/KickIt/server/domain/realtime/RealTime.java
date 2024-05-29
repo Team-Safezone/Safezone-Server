@@ -12,12 +12,18 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @AllArgsConstructor
 public class RealTime {
-    // 이벤트 발생시간(전반전, 후반전 시작 시간)
+    // 이벤트 발생시간(크롤링 발생 시간 + 전반전, 후반전 시작 시간)
     private String dateTime;
     // 타임라인 시간
     private String timeLine;
     // 발생 이벤트
     private String event;
+    // 첫 번째 정보
+    private String inform1;
+    // 두 번째 정보
+    private String inform2;
+
+    /*
     // 골 넣은 선수
     private String goalPlayer;
     // 어시스트 선수
@@ -44,5 +50,7 @@ public class RealTime {
     private String finish;
     // 경기 종료
     private String finishAll;
+
+     */
 
 }

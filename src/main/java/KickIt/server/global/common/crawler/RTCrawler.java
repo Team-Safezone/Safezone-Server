@@ -14,7 +14,8 @@ import java.time.Duration;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
-
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 
 public class RTCrawler {
@@ -30,7 +31,7 @@ public class RTCrawler {
 
         // 구현 수정 예정
         // 페이지 이동
-        driver.get("https://sports.daum.net/" + fixture.getLineupUrl());
+        driver.get("https:/ /sports.daum.net/" + fixture.getLineupUrl());
 
         지금은 실시간 랜덤 경기 정보 받아옴
         나중에 선호하는 팀에 대한 경기 정보 받아보는 코드 추가 필요
@@ -53,20 +54,21 @@ public class RTCrawler {
             WebDriverWait wait = new WebDriverWait(driver, Duration.ofMinutes(30));
 
             // 크롤링 시간과 전반전 시작 시간 비교용
-            System.out.println("전반전 시작 전 대기 시작: " + getDateTime());
+            System.out.println("전반전 시작 전 대기 시작(리스트 포함X): " + getDateTime());
 
             // 중계 화면 나타날 때까지 대기
             //wait.until(ExpectedConditions.presenceOfElementLocated(By.className("sr-lmt-clock__time")));
 
-            // 비교용
-            System.out.println("전반전 시작 시간: " + getDateTime());
-
             // 전반전 시작 시간
             RealTime realTime = RealTime.builder()
                     .dateTime(getDateTime())
+                    .event("전반전 시작")
                     .build();
 
             timeLineList.add(realTime);
+
+            System.out.println(realTime.getDateTime() + " " + realTime.getTimeLine() + " " + realTime.getEvent() + " " +
+                    realTime.getInform1() + " " + realTime.getInform2());
 
             // 이벤트가 종료되지 않은 동안 반복
             while (!eventEnd) {
@@ -95,7 +97,8 @@ public class RTCrawler {
                                     .dateTime(getDateTime())
                                     .timeLine(elements[0])
                                     .build();
-                            System.out.println(realTime.getDateTime() + " " + realTime.getTimeLine());
+                            System.out.println(realTime.getDateTime() + " " + realTime.getTimeLine() + " " + realTime.getEvent() + " " +
+                                    realTime.getInform1() + " " + realTime.getInform2());
                         }
 
                         // timeline 리스트에 추가
@@ -111,22 +114,22 @@ public class RTCrawler {
                                                     .dateTime(getDateTime())
                                                     .timeLine(elements[0])
                                                     .event("자책골")
-                                                    .goalPlayer(elements[2])
-                                                    .assiPlayer(elements[3])
+                                                    .inform1(elements[2])
+                                                    .inform2(rmBracket(elements[3]))
                                                     .build();
 
                                             System.out.println(realTime.getDateTime() + " " + realTime.getTimeLine() + " " + realTime.getEvent() + " "
-                                                    + realTime.getGoalPlayer() + " " + realTime.getAssiPlayer());
+                                                    + realTime.getInform1() + " " + realTime.getInform2());
 
                                         } else { // 자책골인데 어시스트 없을 경우
                                             realTime = RealTime.builder()
                                                     .dateTime(getDateTime())
                                                     .timeLine(elements[0])
                                                     .event("자책골")
-                                                    .goalPlayer(elements[2])
+                                                    .inform1(elements[2])
                                                     .build();
-                                            System.out.println(realTime.getDateTime() + " " + realTime.getTimeLine() + " " + realTime.getEvent() + " "
-                                                    + realTime.getGoalPlayer());
+                                            System.out.println(realTime.getDateTime() + " " + realTime.getTimeLine() + " " + realTime.getEvent() + " " +
+                                                    realTime.getInform1() + " " + realTime.getInform2());
                                         }
 
                                         break;
@@ -137,23 +140,23 @@ public class RTCrawler {
                                             realTime = RealTime.builder()
                                                     .dateTime(getDateTime())
                                                     .timeLine(elements[0])
-                                                    .event(elements[1])
-                                                    .goalPlayer(elements[2])
-                                                    .assiPlayer(elements[3])
+                                                    .event(elements[1] + "!")
+                                                    .inform1(elements[2])
+                                                    .inform2(rmBracket(elements[3]))
                                                     .build();
                                             System.out.println(realTime.getDateTime() + " " + realTime.getTimeLine() + " " + realTime.getEvent() + " "
-                                                    + realTime.getGoalPlayer() + " " + realTime.getAssiPlayer());
+                                                    + realTime.getInform1() + " " + realTime.getInform2());
                                         }
                                         // 어시스트 없을 때
                                         else {
                                             realTime = RealTime.builder()
                                                     .dateTime(getDateTime())
                                                     .timeLine(elements[0])
-                                                    .event(elements[1])
-                                                    .goalPlayer(elements[2])
+                                                    .event(elements[1] + "!")
+                                                    .inform1(elements[2])
                                                     .build();
-                                            System.out.println(realTime.getDateTime() + " " + realTime.getTimeLine() + " " + realTime.getEvent() + " "
-                                                    + realTime.getGoalPlayer());
+                                            System.out.println(realTime.getDateTime() + " " + realTime.getTimeLine() + " " + realTime.getEvent() + " " +
+                                                    realTime.getInform1() + " " + realTime.getInform2());
                                         }
 
                                         break;
@@ -167,12 +170,12 @@ public class RTCrawler {
                                     .dateTime(getDateTime())
                                     .timeLine(elements[0])
                                     .event(elements[1])
-                                    .inPlayer(elements[2])
-                                    .outPlayer(elements[4])
+                                    .inform1(elements[2])
+                                    .inform2(elements[4])
                                     .build();
 
                             System.out.println(realTime.getDateTime() + " " + realTime.getTimeLine() + " " + realTime.getEvent() + " "
-                                    + realTime.getInPlayer() + " " + realTime.getOutPlayer());
+                                    + realTime.getInform1() + " " + realTime.getInform2());
                         }
 
 
@@ -181,11 +184,11 @@ public class RTCrawler {
                                     .dateTime(getDateTime())
                                     .timeLine(elements[0])
                                     .event(elements[1])
-                                    .warnPlayer(elements[2])
+                                    .inform1(elements[2])
                                     .build();
 
-                            System.out.println(realTime.getDateTime() + " " + realTime.getTimeLine() + " " + realTime.getEvent() + " "
-                                    + realTime.getWarnPlayer());
+                            System.out.println(realTime.getDateTime() + " " + realTime.getTimeLine() + " " + realTime.getEvent() + " " +
+                                    realTime.getInform1() + " " + realTime.getInform2());
 
                         }
 
@@ -195,11 +198,11 @@ public class RTCrawler {
                                     .dateTime(getDateTime())
                                     .timeLine(elements[0])
                                     .event(elements[1])
-                                    .exitPlayer(elements[2])
+                                    .inform1(elements[2])
                                     .build();
 
-                            System.out.println(realTime.getDateTime() + " " + realTime.getTimeLine() + " " + realTime.getEvent() + " "
-                                    + realTime.getExitPlayer());
+                            System.out.println(realTime.getDateTime() + " " + realTime.getTimeLine() + " " + realTime.getEvent() + " " +
+                                    realTime.getInform1() + " " + realTime.getInform2());
 
                         }
 
@@ -207,24 +210,36 @@ public class RTCrawler {
                             realTime = RealTime.builder()
                                     .dateTime(getDateTime())
                                     .timeLine(elements[0])
-                                    .event(elements[2])
-                                    .varResult(elements[3])
+                                    .event(elements[1])
+                                    .inform1(elements[2])
+                                    .inform2(rmBracket(elements[3]))
                                     .build();
 
-                            System.out.println(realTime.getDateTime() + " " + realTime.getTimeLine() + " " + realTime.getEvent() + " "
-                                    + realTime.getVarResult());
+                            System.out.println(realTime.getDateTime() + " " + realTime.getTimeLine() + " " + realTime.getEvent() + " " +
+                                    realTime.getInform1() + " " + realTime.getInform2());
 
                         }
 
-                        if (liText.contains("추가시간") || liText.contains("후반전")) {
+                        if (liText.contains("추가시간")) {
+                            realTime = RealTime.builder()
+                                    .dateTime(getDateTime())
+                                    .timeLine(getAddTime(elements[0]))
+                                    .event(getAddEvent(elements[0]))
+                                    .build();
+
+                            System.out.println(realTime.getDateTime() + " " + realTime.getTimeLine() + " " + realTime.getEvent() + " " +
+                                    realTime.getInform1() + " " + realTime.getInform2());
+
+                        }
+
+                        if(liText.contains("후반전")){
                             realTime = RealTime.builder()
                                     .dateTime(getDateTime())
                                     .event(elements[0])
                                     .build();
 
-                            System.out.println(realTime.getDateTime() + " " + realTime.getTimeLine() + " " + realTime.getEvent());
-
-
+                            System.out.println(realTime.getDateTime() + " " + realTime.getTimeLine() + " " + realTime.getEvent() + " " +
+                                    realTime.getInform1() + " " + realTime.getInform2());
                         }
 
                         if (liText.contains("종료")) {
@@ -233,14 +248,14 @@ public class RTCrawler {
                                     .event(elements[0])
                                     .build();
                             if(liText.contains("경기종료")) {
-                                System.out.println(realTime.getDateTime() + " " + realTime.getTimeLine() + " " + realTime.getEvent());
-
+                                System.out.println(realTime.getDateTime() + " " + realTime.getTimeLine() + " " + realTime.getEvent() + " " +
+                                        realTime.getInform1() + " " + realTime.getInform2());
                                 eventEnd = true;
                                 break;
                             }
 
-                            System.out.println(realTime.getDateTime() + " " + realTime.getTimeLine() + " " + realTime.getEvent());
-
+                            System.out.println(realTime.getDateTime() + " " + realTime.getTimeLine() + " " + realTime.getEvent() + " " +
+                                    realTime.getInform1() + " " + realTime.getInform2());
                             firstEnd = true;
                             break;
                         }
@@ -248,21 +263,24 @@ public class RTCrawler {
                         timeLineList.add(realTime);
                     }
                 }
+                // 전반전 끝나고 15분동안 크롤링 중지, 15분 이후 크롤링 시작 + 후반전 시작 기다리기
                 if (firstEnd) {
                     // 휴식시간 대기
-                    System.out.println("전반전 종료. 15분 후 후반전 시작.");
+                    System.out.println("전반전 종료. 15분 후 후반전 시작.(리스트 포함X)");
                     //Thread.sleep(15 * 60 * 1000); // 15분 대기
 
                     // 후반전 시작 대기
-                    System.out.println("후반전 시작 전 대기 시작: " + getDateTime());
+                    System.out.println("후반전 시작 전 대기 시작(리스트 포함X): " + getDateTime());
                     //wait.until(ExpectedConditions.presenceOfElementLocated(By.className("sr-lmt-clock__time")));
 
-                    // 후반전 시작 시간 기록
-                    System.out.println("후반전 시작 시간: " + getDateTime());
                     realTime = RealTime.builder()
                             .dateTime(getDateTime())
+                            .event("후반전 시작")
                             .build();
                     timeLineList.add(realTime);
+
+                    System.out.println(realTime.getDateTime() + " " + realTime.getTimeLine() + " " + realTime.getEvent() + " " +
+                            realTime.getInform1() + " " + realTime.getInform2());
 
                     // 후반전 시작 후 다시 크롤링 계속
                     firstEnd = false;
@@ -286,14 +304,35 @@ public class RTCrawler {
         return dateTime;
     }
 
-    /*
-    public static String getAssi(){
 
-    }
-    public static String getVAR(){
+    // 추가시간 숫자만 출력
+    public static String getAddTime(String elements){
+        String[] addTime = elements.split("′");
 
+        return addTime[0];
     }
-   */
+
+
+    // 추가시간 이벤트만 출력
+    public static String getAddEvent(String elements){
+        String[] addEvent = elements.split("′");
+
+        return addEvent[1];
+    }
+
+
+    // VAR 결과, 어시스트 괄호 제거
+    public static String rmBracket(String elements) {
+        Pattern pattern = Pattern.compile("\\((.*?)\\)");
+        Matcher varResult = pattern.matcher(elements);
+
+        if (varResult.find()) {
+            return varResult.group(1);
+        }
+
+        return "";
+    }
+
 
 }
 
