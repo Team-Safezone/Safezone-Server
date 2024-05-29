@@ -232,6 +232,12 @@ public class RTCrawler {
                                     .dateTime(getDateTime())
                                     .event(elements[0])
                                     .build();
+                            if(liText.contains("경기종료")) {
+                                System.out.println(realTime.getDateTime() + " " + realTime.getTimeLine() + " " + realTime.getEvent());
+
+                                eventEnd = true;
+                                break;
+                            }
 
                             System.out.println(realTime.getDateTime() + " " + realTime.getTimeLine() + " " + realTime.getEvent());
 
@@ -239,25 +245,10 @@ public class RTCrawler {
                             break;
                         }
 
-
-                        if (liText.contains("경기종료")) {
-                            realTime = RealTime.builder()
-                                    .dateTime(getDateTime())
-                                    .event(elements[0])
-                                    .build();
-
-                            eventEnd = true;
-
-                            System.out.println(realTime.getDateTime() + " " + realTime.getTimeLine() + " " + realTime.getEvent());
-
-                            break;
-
-                        }
-
                         timeLineList.add(realTime);
                     }
                 }
-                if (firstEnd && eventEnd) {
+                if (firstEnd) {
                     // 휴식시간 대기
                     System.out.println("전반전 종료. 15분 후 후반전 시작.");
                     //Thread.sleep(15 * 60 * 1000); // 15분 대기
