@@ -20,18 +20,18 @@ import java.util.logging.Logger;
 // 현재 시즌의 팀별 선수 명단을 크롤링하기 위한 SquadCrawler
 public class SquadCrawler {
     Map<EplTeams, Squad> getTeamSquads(){
-        WebDriver driver = WebDriverUtil.getChromeDriver();
         // 다음 스포츠의 프리미어리그 팀 페이지
         String pageUrl = "https://sports.daum.net/team/epl";
         // 현 시즌의 각 팀 선수 명단을 저장하고 있는 Map 객체 seasonSquads
         Map<EplTeams, Squad> seasonSquads = new HashMap<>();
         // 다음 스포츠 팀 페이지 주소를 저장할 리스트
         List<String> teamPageUrls = new ArrayList<>();
-        //  English Premier league 공식 사이트 팀 페이지 주소를 저장할 리스트
-        List<String> officialPageUrls = new ArrayList<>();
         //  팀별 선수 공식 이미지 주소를 저장할 hashmap
         Map<EplTeams, Map<Integer, String>> imageUrls = new HashMap<>();
 
+        getImageUrls(imageUrls);
+
+        WebDriver driver = WebDriverUtil.getChromeDriver();
         if (!ObjectUtils.isEmpty(driver)) {
             try{
                 driver.get(pageUrl);
@@ -45,30 +45,6 @@ public class SquadCrawler {
                     teamPageUrls.add(href.substring(0, href.length()-4) + "squad");
                 }
                 Thread.sleep(50);
-
-                // EPL 공식 사이트의 랭킹 table에서 각 팀 페이지 주소를 가져와 teamPageUrls에 저장한다.
-                try{
-                    // flex layout element에서 stale error 발생 방지하기 위한 브라우저 크기 조절
-                    driver.manage().window().setSize(new org.openqa.selenium.Dimension(1400, 800));
-                    // EPL 공식 사이트 크롤링
-                    driver.get("https://www.premierleague.com/home");
-
-                    // 첫 방문 시 쿠키 허용을 위해 accept button 클릭 가능할 때까지 명시적으로 대기 -> 클릭
-                    new WebDriverWait(driver, Duration.ofSeconds(30)).until(ExpectedConditions.elementToBeClickable(By.cssSelector("Button#onetrust-accept-btn-handler")));
-                    driver.findElement(By.cssSelector("Button#onetrust-accept-btn-handler")).click();
-
-                    // 본 페이지의 랭킹 테이블의 td.teams 모두 보일 때까지 100 밀리초 대기 + 명시적 대기
-                    Thread.sleep(100);
-                    new WebDriverWait(driver, Duration.ofSeconds(30)).until(ExpectedConditions.visibilityOfAllElementsLocatedBy(By.cssSelector("td.team > a")));
-
-                    // 각 팀 페이지 url 가져와 저장
-                    driver.findElements(By.cssSelector("td.team > a")).forEach(s -> officialPageUrls.add(s.getAttribute("href").replace("overview", "squad")));
-                    officialPageUrls.forEach(s -> getPlayerImgs(imageUrls, driver, s));
-                }
-                // 예외 처리
-                catch (Exception e){
-                    Logger.getGlobal().log(Level.WARNING, e.toString());
-                }
 
                 // 위에서 가져온 각 팀별 상세 페이지 url을 크롤링 완료 후 squad 객체를 반환하는 getSquad 메소드에 매개변수로 전달한다.
                 // 이후 결과로 전달 받은 sqaud 객체를 Map<EplTeam, Squad>로 만들어 크롤러가 결과로 반환할 seasonSquads에 추가한다.
@@ -92,6 +68,35 @@ public class SquadCrawler {
         }
         driver.quit();
         return seasonSquads;
+    }
+
+    // EPL 공식 페이지에서 각 팀 상세 페이지 주소를 크롤링해 오기 위한 method
+    // 이후 가져온 상세 페이지 주소는 official
+    void getImageUrls(Map<EplTeams, Map<Integer, String>> imageUrls){
+        List<String> officialPageUrls = new ArrayList<>();
+        WebDriver imageDriver = WebDriverUtil.getChromeDriver();
+        if (!ObjectUtils.isEmpty(imageDriver)) {
+            try {
+                imageDriver.manage().window().setSize(new org.openqa.selenium.Dimension(1400, 680));
+                WebDriverWait wait = new WebDriverWait(imageDriver, Duration.ofSeconds(30));
+                imageDriver.get("https://www.premierleague.com/home");
+
+                WebElement acceptCookiesButton = wait.until(ExpectedConditions.elementToBeClickable(By.id("onetrust-accept-btn-handler")));
+                acceptCookiesButton.click();
+
+                wait.until(ExpectedConditions.visibilityOfElementLocated(By.cssSelector("td.team > a")));
+                Thread.sleep(5000);
+                imageDriver.findElements(By.cssSelector("td.team > a")).forEach(e -> officialPageUrls.add(e.getAttribute("href").replace("overview", "squad")));
+                Thread.sleep(5000);
+                officialPageUrls.forEach(s -> getPlayerImgs(imageUrls, imageDriver, s));
+
+                // 추가적인 크롤링 작업 수행
+
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+        imageDriver.quit();
     }
 
     // 각 팀 페이지에 방문해 해당 팀 EplTeams를 key 값으로, 선수 이미지 목록을 담은 Map<선수 번호, 이미지 주소>를 value 값으로 map에 넣어 줌
