@@ -39,11 +39,14 @@ public enum EplTeams {
     private static final Map<String, EplTeams> BY_KRNAME = new HashMap<>();
     // 한국어 풀네임으로 EplTeam 찾을 수 있도록 Map 사용
     private static final Map<String, EplTeams> BY_KRFULLNAME = new HashMap<>();
+    // 영어 풀네임으로 EplTeam 찾을 수 있도록 Map 사용
+    private static final Map<String, EplTeams> BY_ENGNAME = new HashMap<>();
 
     static {
         for(EplTeams e : values()){
             BY_KRNAME.put(e.krName, e);
             BY_KRFULLNAME.put(e.krFullName, e);
+            BY_ENGNAME.put(e.engName, e);
         }
     }
 
@@ -55,4 +58,6 @@ public enum EplTeams {
     public static EplTeams valueOfKrFullName(String krFullName){
         return BY_KRFULLNAME.get(krFullName);
     }
+    // 영어 이름으로 해당되는 EplTeam 찾아 반환
+    public static EplTeams valueOfEngName(String engName){ return BY_ENGNAME.get(engName); }
 }

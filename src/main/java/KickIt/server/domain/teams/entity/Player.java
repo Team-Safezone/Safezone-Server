@@ -26,4 +26,6 @@ public class Player {
     private String name;
     // 선수 포지션
     private PlayerPosition position;
+    // 이미지 주소
+    private String profileImg;
 }
