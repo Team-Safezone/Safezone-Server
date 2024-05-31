@@ -1,12 +1,11 @@
 package KickIt.server.domain.fixture.controller;
-import KickIt.server.domain.fixture.dto.FixtureDto;
+
 import KickIt.server.domain.fixture.entity.Fixture;
 import KickIt.server.domain.fixture.service.FixtureService;
 import KickIt.server.global.common.crawler.FixtureCrawler;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
@@ -26,10 +25,11 @@ public class FixtureController {
             fixtureList = fixtureCrawler.getFixture(year, month);
             Thread.sleep(5000);
             fixtureService.saveFixtures(fixtureList);
-            return ResponseEntity.ok("크롤링 성공");
+            //fixtureService.saveFixture(fixtureList.get(0));
+            return ResponseEntity.ok("저장 성공");
         }
         catch (Exception e){
-            return ResponseEntity.status(500).body("크롤링이 실패했습니다.");
+            return ResponseEntity.status(500).body("저장 실패");
         }
     }
 

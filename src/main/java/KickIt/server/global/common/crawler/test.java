@@ -20,7 +20,8 @@ public class test {
         // fixtureCrawler 테스트 및 출력
         FixtureCrawler mayFixtureCrawler = new FixtureCrawler();
         String year = String.valueOf(LocalDate.now().getYear());
-        String month = String.format("%02d", LocalDate.now().getMonthValue());
+        //String month = String.format("%02d", LocalDate.now().getMonthValue());
+        String month = "05";
         List<Fixture> fixtureList = mayFixtureCrawler.getFixture(year, month);
 
 
@@ -31,6 +32,7 @@ public class test {
                     fixture.getHomeTeamScore(), fixture.getAwayteamScore(), fixture.getRound(), fixture.getStatus(), fixture.getLineupUrl()));
         }
 
+        /*
         LineupCrawler lineupCrawler = new LineupCrawler();
         MatchLineup lineup = lineupCrawler.getLineup(fixtureList.get(0));
         if (lineup != null){
@@ -65,9 +67,10 @@ public class test {
                 Logger.getGlobal().log(Level.INFO, String.format("awayteam 후보 선수 명단 \n %s %s %s %s\n", benchPlayer.getId(), benchPlayer.getNumber(), benchPlayer.getName(), benchPlayer.getPosition()));
             }
         }
-/*
+
         // PlayerCralwer 테스트 및 출력
         SquadCrawler squadCrawler = new SquadCrawler();
-        squadCrawler.getTeamSquads();*/
+        squadCrawler.getTeamSquads();
+        */
     }
 }

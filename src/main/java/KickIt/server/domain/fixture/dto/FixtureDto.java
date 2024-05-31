@@ -4,6 +4,7 @@ import KickIt.server.domain.fixture.entity.Fixture;
 import KickIt.server.domain.teams.EplTeams;
 import lombok.*;
 
+import java.sql.Timestamp;
 import java.util.Date;
 import java.util.UUID;
 
@@ -28,7 +29,7 @@ public class FixtureDto {
             Fixture fixture = Fixture.builder()
                     .id(this.id)
                     .season(this.season)
-                    .date(this.dateTime)
+                    .date((Timestamp) this.dateTime)
                     .homeTeam(this.homeTeam)
                     .awayTeam(this.awayTeam)
                     .homeTeamScore(this.homeTeamScore)
