@@ -21,7 +21,7 @@ import java.util.logging.Logger;
 // 경기 일정 정보 크롤링하는 FixtureCrawler
 public class FixtureCrawler {
     // YYYY년 MM 월의 경기 일정 정보를 가져와 Fixture 객체 리스트로 반환하는 getFixture 함수
-    List<Fixture> getFixture(String year, String month) {
+    public List<Fixture> getFixture(String year, String month) {
         WebDriver driver = WebDriverUtil.getChromeDriver();
         // 입력받은 연도와 월을 합쳐 page 주소 가져옴
         // daum 스포츠 프리미어리그 경기 일정 페이지

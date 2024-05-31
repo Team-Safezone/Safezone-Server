@@ -60,4 +60,5 @@ public enum EplTeams {
     }
     // 영어 이름으로 해당되는 EplTeam 찾아 반환
     public static EplTeams valueOfEngName(String engName){ return BY_ENGNAME.get(engName); }
+    public static String getKrName(EplTeams team){ return team.krName; }
 }
