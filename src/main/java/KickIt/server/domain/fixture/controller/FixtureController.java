@@ -1,15 +1,19 @@
 package KickIt.server.domain.fixture.controller;
 
+import KickIt.server.domain.exceptionHandler.GlobalExceptionHandler;
 import KickIt.server.domain.fixture.entity.Fixture;
 import KickIt.server.domain.fixture.service.FixtureService;
 import KickIt.server.global.common.crawler.FixtureCrawler;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/fixture")
@@ -17,20 +21,20 @@ public class FixtureController {
     @Autowired
     private FixtureService fixtureService;
 
+    // 입력 받은 year과 month의 경기 일정을 크롤링해 중복하지 않은 fixture만 db에 save
     @PostMapping("/{year}/{month}")
-    public ResponseEntity crawlFixtures (@PathVariable("year") String year, @PathVariable("month") String month){
+    @ResponseStatus(HttpStatus.CREATED)
+    public ResponseEntity<Map<String, Object>> crawlFixtures (@PathVariable("year") String year, @PathVariable("month") String month){
         FixtureCrawler fixtureCrawler = new FixtureCrawler();
         List<Fixture> fixtureList = new ArrayList<>();
-        try{
-            fixtureList = fixtureCrawler.getFixture(year, month);
-            Thread.sleep(5000);
-            fixtureService.saveFixtures(fixtureList);
-            //fixtureService.saveFixture(fixtureList.get(0));
-            return ResponseEntity.ok("저장 성공");
-        }
-        catch (Exception e){
-            return ResponseEntity.status(500).body("저장 실패");
-        }
+        fixtureList = fixtureCrawler.getFixture(year, month);
+
+        fixtureService.saveFixtures(fixtureList);
+        Map<String, Object> responseBody = new HashMap<>();
+        responseBody.put("status", HttpStatus.OK.value());
+        responseBody.put("message", "success");
+        responseBody.put("data", fixtureList);
+        return new ResponseEntity<>(responseBody, HttpStatus.OK);
     }
 
 

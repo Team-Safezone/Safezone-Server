@@ -31,11 +31,9 @@ public class Fixture {
     private Timestamp date; // 경기 날짜 및 시간
 
     @Enumerated(EnumType.STRING)
-    @Column(name="homeTeam")
     private EplTeams homeTeam; // 홈팀 이름
 
     @Enumerated(EnumType.STRING)
-    @Column
     private EplTeams awayTeam; // 원정팀 이름
 
     @Column

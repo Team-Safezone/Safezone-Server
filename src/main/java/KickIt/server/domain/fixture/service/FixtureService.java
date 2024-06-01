@@ -13,49 +13,34 @@ public class FixtureService {
     @Autowired
     private FixtureRepository fixtureRepository;
 
+    // fixture List 중 중복되지 않은 fixture만을 저장
     @Transactional
     public String saveFixtures(List<Fixture> fixtureList){
-        for(Fixture fixture : fixtureList){
-            try{
+        try{
+            for(Fixture fixture : fixtureList){
                 if(!isFixtureExist(fixture)){
                     fixtureRepository.save(fixture);
                     System.out.println("해당 열 저장됨");
                 }
-                else{
-                    System.out.println("해당 열 저장 안됨");
-                }
             }
-            catch(Exception e){
-                System.out.println(e);
-            }
+        }
+        catch (Exception e){
+            System.out.println("해당 열 저장 실패" + e.toString());
         }
         return "저장 완료";
     }
 
+    // fixture가 중복되지 않은 경우 저장
     @Transactional
     public String saveFixture(Fixture fixture){
         if(!isFixtureExist(fixture)){
             fixtureRepository.save(fixture);
-            System.out.println("해당 열 저장됨");
-            }
-        else {
-            System.out.println("해당 열 저장 안됨");
         }
         return "저장 완료";
     }
 
+    // fixture의 중복 여부를 검사
     private boolean isFixtureExist(Fixture fixture){
-        try{
-            System.out.println("exist 통과");
-            return fixtureRepository.findByDateAndHomeTeamAndAwayTeam(
-                    fixture.getDate(), fixture.getHomeTeam(), fixture.getAwayTeam()
-            ).isPresent();
-        }
-        catch (Exception e){
-            System.out.println(e);
-            return fixtureRepository.findByDateAndHomeTeamAndAwayTeam(
-                    fixture.getDate(), fixture.getHomeTeam(), fixture.getAwayTeam()
-            ).isPresent();
-        }
+        return fixtureRepository.findByDateAndHomeTeamAndAwayTeam(fixture.getDate(), fixture.getHomeTeam(), fixture.getAwayTeam()).isPresent();
     }
 }
