@@ -22,7 +22,7 @@ public class FixtureController {
     private FixtureService fixtureService;
 
     // 입력 받은 year과 month의 경기 일정을 크롤링해 중복하지 않은 fixture만 db에 save
-    @PostMapping("/{year}/{month}")
+    @PostMapping("/crawl/{year}/{month}")
     @ResponseStatus(HttpStatus.CREATED)
     public ResponseEntity<Map<String, Object>> crawlFixtures (@PathVariable("year") String year, @PathVariable("month") String month){
         FixtureCrawler fixtureCrawler = new FixtureCrawler();
