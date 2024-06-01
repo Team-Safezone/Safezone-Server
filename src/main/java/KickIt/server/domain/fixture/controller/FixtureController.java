@@ -12,9 +12,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.sql.Timestamp;
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.*;
 
 @RestController
@@ -41,9 +38,17 @@ public class FixtureController {
 
     // 입력 받은 yyyy-MM-dd로 일치하는 날짜의 경기 일정 반환
     @GetMapping()
-    public ResponseEntity<Map<String, Object>> getFixturesByDate (@RequestParam("date") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) Date date){
+    public ResponseEntity<Map<String, Object>> getFixturesByDate (@RequestParam("date") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) Date date, @RequestParam(value="teamName", required = false) String teamName){
         Map<String, Object> responseBody = new HashMap<>();
-        List<FixtureDto.FixtureResponse> responseList = fixtureService.findFixturesByDate(date);
+        List<FixtureDto.FixtureResponse> responseList;
+        // teamName이 입력되지 않은 경우 날짜만으로 경기 조회
+        if(teamName == null){
+            responseList = fixtureService.findFixturesByDate(date);
+        }
+        // teamName이 입력된 경우 날짜와 팀으로 경기 조회
+        else {
+            responseList = fixtureService.findFixturesByDateAndTeam(date, teamName);
+        }
         // 조회해 가져온 데이터가 존재하는 경우 성공, OK status로 반환
         if(!responseList.isEmpty()){
             responseBody.put("status", HttpStatus.OK.value());

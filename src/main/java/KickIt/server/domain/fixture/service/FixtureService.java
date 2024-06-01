@@ -3,6 +3,7 @@ package KickIt.server.domain.fixture.service;
 import KickIt.server.domain.fixture.dto.FixtureDto;
 import KickIt.server.domain.fixture.entity.Fixture;
 import KickIt.server.domain.fixture.entity.FixtureRepository;
+import KickIt.server.domain.teams.EplTeams;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -50,7 +51,18 @@ public class FixtureService {
         List<FixtureDto.FixtureResponse> responseList = new ArrayList<>();
         for (Fixture fixture : fixtureList){
             responseList.add(new FixtureDto.FixtureResponse(fixture));
-            System.out.println(fixture.getId());
+        }
+        return responseList;
+    }
+
+    // findByDateAndTeam으로 가져온 List<Fixture>의 Fixture들 DTO의 Response 형태로 변환 후 반환
+    @Transactional
+    public List<FixtureDto.FixtureResponse> findFixturesByDateAndTeam(Date date, String teamName){
+        EplTeams team = EplTeams.valueOfKrName(teamName);
+        List<Fixture> fixtureList = fixtureRepository.findByDateAndTeam(new Timestamp(date.getTime()), team);
+        List<FixtureDto.FixtureResponse> responseList = new ArrayList<>();
+        for (Fixture fixture: fixtureList){
+            responseList.add(new FixtureDto.FixtureResponse(fixture));
         }
         return responseList;
     }
