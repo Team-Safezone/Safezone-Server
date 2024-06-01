@@ -4,6 +4,7 @@ import KickIt.server.domain.fixture.dto.FixtureDto;
 import KickIt.server.domain.fixture.entity.Fixture;
 import KickIt.server.domain.fixture.entity.FixtureRepository;
 import KickIt.server.domain.fixture.service.FixtureService;
+import KickIt.server.domain.teams.EplTeams;
 import KickIt.server.global.common.crawler.FixtureCrawler;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -47,7 +48,14 @@ public class FixtureController {
         }
         // teamName이 입력된 경우 날짜와 팀으로 경기 조회
         else {
-            responseList = fixtureService.findFixturesByDateAndTeam(date, teamName);
+            EplTeams team = EplTeams.valueOfKrName(teamName);
+            // 입력된 teamName으로 EplTeam이 찾아지지 않는 경우 Bad Request 처리
+            if(team == null){
+                responseBody.put("status", HttpStatus.BAD_REQUEST.value());
+                responseBody.put("message", "팀 이름 입력 오류");
+                return new ResponseEntity<>(responseBody, HttpStatus.BAD_REQUEST);
+            }
+            responseList = fixtureService.findFixturesByDateAndTeam(date, team);
         }
         // 조회해 가져온 데이터가 존재하는 경우 성공, OK status로 반환
         if(!responseList.isEmpty()){

@@ -57,8 +57,7 @@ public class FixtureService {
 
     // findByDateAndTeam으로 가져온 List<Fixture>의 Fixture들 DTO의 Response 형태로 변환 후 반환
     @Transactional
-    public List<FixtureDto.FixtureResponse> findFixturesByDateAndTeam(Date date, String teamName){
-        EplTeams team = EplTeams.valueOfKrName(teamName);
+    public List<FixtureDto.FixtureResponse> findFixturesByDateAndTeam(Date date, EplTeams team){
         List<Fixture> fixtureList = fixtureRepository.findByDateAndTeam(new Timestamp(date.getTime()), team);
         List<FixtureDto.FixtureResponse> responseList = new ArrayList<>();
         for (Fixture fixture: fixtureList){
