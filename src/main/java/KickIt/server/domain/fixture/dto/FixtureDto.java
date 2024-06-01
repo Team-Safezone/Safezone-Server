@@ -6,6 +6,7 @@ import lombok.*;
 
 import java.sql.Timestamp;
 import java.util.Date;
+import java.util.TimeZone;
 import java.util.UUID;
 
 public class FixtureDto {
@@ -56,20 +57,23 @@ public class FixtureDto {
         private Integer awayteamScore;
         private int round;
         private int status;
-        private String lineupUrl;
 
         // entity to dto
         public FixtureResponse(Fixture fixture){
             this.id = fixture.getId();
             this.season = fixture.getSeason();
-            this.dateTime = fixture.getDate();
+
+            // Date로 받아올 때 Timezone에 의한 오차 생김 -> 한국 시간대로 변환
+            TimeZone krTimeZone = TimeZone.getTimeZone("Asia/Seoul");
+            int offset = krTimeZone.getOffset(fixture.getDate().getTime());
+            this.dateTime = new Date(fixture.getDate().getTime() + offset);
+
             this.homeTeam = EplTeams.getKrName(fixture.getHomeTeam());
             this.awayTeam = EplTeams.getKrName(fixture.getAwayTeam());
             this.homeTeamScore = fixture.getHomeTeamScore();
             this.awayteamScore = fixture.getAwayteamScore();
             this.round = fixture.getRound();
             this.status = fixture.getStatus();
-            this.lineupUrl = fixture.getLineupUrl();
         }
     }
 }
