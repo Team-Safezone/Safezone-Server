@@ -132,13 +132,17 @@ public class SquadCrawler {
         List<WebElement> squadElements = driver.findElements(By.className("list_member"));
         // 팀 이름 문자열 가져온 후 팀의 한국어 풀네임으로 EplTeams를 찾아 반환 받는다.
         EplTeams team = EplTeams.valueOfKrFullName(driver.findElement(By.cssSelector("div.basic_feature > div.cont_thumb > h3.tit_thumb ")).getText());
+        // 팀 로고 이미지 url
+        String logoUrl = getLogoImg(driver);
         /* team data 제대로 크롤링했는지 확인하기 위한 코드. 추후 삭제 예정. */
         Logger.getGlobal().log(Level.INFO, String.format("%s", team));
+        Logger.getGlobal().log(Level.INFO, "로고 URL: " + logoUrl);
         // 포지션별 선수 명단 element마다 getPosPlayers 함수를 호출해, Player list를 반환 받는다.
         // 이후 team과 포지션별 선수 명단 데이터로 Squad 객체 teamSquad를 build 후 반환한다.
         Map<Integer, String> images = imageUrl.get(team);
         Squad teamSquad = Squad.builder()
                             .team(team)
+                            .logoImg(logoUrl)
                             .FWplayers(getPosPlayers(squadElements.get(0).findElements(By.tagName("li")), team, PlayerPosition.FW, images))
                             .MFplayers(getPosPlayers(squadElements.get(1).findElements(By.tagName("li")), team, PlayerPosition.MF, images))
                             .DFplayers(getPosPlayers(squadElements.get(2).findElements(By.tagName("li")), team, PlayerPosition.DF, images))
@@ -175,5 +179,15 @@ public class SquadCrawler {
             posPlayers.add(player);
         }
         return posPlayers;
+    }
+    String getLogoImg(WebDriver driver) {
+        try {
+            WebElement logoImg = driver.findElement(By.cssSelector("div.basic_feature > span.wrap_thumb > span.info_thumb > img"));
+            String logoUrl = logoImg.getAttribute("src");
+            return logoUrl;
+        } catch (Exception e) {
+            Logger.getGlobal().log(Level.WARNING, "등록된 로고가 없습니다.: " + e.toString());
+            return null;
+        }
     }
 }

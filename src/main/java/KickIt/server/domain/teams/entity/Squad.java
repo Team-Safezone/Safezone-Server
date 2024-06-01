@@ -16,6 +16,8 @@ import java.util.ArrayList;
 public class Squad {
     // 팀 이름
     private EplTeams team;
+    // 팀 로고 url
+    private String logoImg;
     // 공격수(Forward) 선수 리스트
     private ArrayList<Player> FWplayers;
     // 미드필더(Midfielder) 선수 리스트
