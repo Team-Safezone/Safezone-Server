@@ -15,7 +15,7 @@ public class FixtureDto {
     @Builder
     // fixture request
     public static class FixtureRequest {
-        private UUID id;
+        private Long id;
         private String season;
         private Date dateTime;
         private EplTeams homeTeam;
@@ -47,7 +47,7 @@ public class FixtureDto {
     // fixture response
     @Getter
     public static class FixtureResponse{
-        private UUID id;
+        private Long id;
         private String season;
         private Date dateTime;
         private String homeTeam;

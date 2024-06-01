@@ -6,10 +6,8 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import org.hibernate.annotations.GenericGenerator;
 
 import java.sql.Timestamp;
-import java.util.UUID;
 
 // 한 경기의 정보를 담을 class Fixture
 @Entity
@@ -19,10 +17,10 @@ import java.util.UUID;
 @AllArgsConstructor
 public class Fixture {
     @Id
-    @GeneratedValue(generator = "uuid2")
-    @GenericGenerator(name="uuid2", strategy = "uuid2")
-    @Column(columnDefinition = "BINARY(16)")
-    private UUID id; // 경기 고유 id
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "fixtureIdSeq")
+    @SequenceGenerator(name="fixtureIdSeq", sequenceName = "fixtureIdSeq", allocationSize = 50, initialValue = 1)
+    @Column(columnDefinition = "long")
+    private Long id; // 경기 고유 id
 
     @Column(nullable=false)
     private String season; // 시즌 정보

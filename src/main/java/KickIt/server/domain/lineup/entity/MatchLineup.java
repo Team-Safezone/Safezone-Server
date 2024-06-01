@@ -15,7 +15,7 @@ import java.util.UUID;
 // 경기별 선발 라인업 정보를 담을 class MatchLineup
 public class MatchLineup {
     // 경기 고유 id
-    private UUID id;
+    private Long id;
     // 홈팀
     private EplTeams homeTeam;
     // 원정팀
