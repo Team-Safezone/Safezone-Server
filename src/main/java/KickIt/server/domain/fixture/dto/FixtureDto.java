@@ -13,6 +13,7 @@ public class FixtureDto {
     @AllArgsConstructor
     @NoArgsConstructor
     @Builder
+    // fixture request
     public static class FixtureRequest {
         private UUID id;
         private String season;
@@ -25,6 +26,7 @@ public class FixtureDto {
         private int status;
         private String lineupUrl;
 
+        // dto to entity
         public Fixture toEntity(){
             Fixture fixture = Fixture.builder()
                     .id(this.id)
@@ -42,6 +44,7 @@ public class FixtureDto {
         }
     }
 
+    // fixture response
     @Getter
     public static class FixtureResponse{
         private UUID id;
@@ -55,6 +58,7 @@ public class FixtureDto {
         private int status;
         private String lineupUrl;
 
+        // entity to dto
         public FixtureResponse(Fixture fixture){
             this.id = fixture.getId();
             this.season = fixture.getSeason();
