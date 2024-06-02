@@ -26,6 +26,7 @@ public class FixtureDto {
         private Integer awayteamScore;
         private int round;
         private int status;
+        private String stadium;
         private String lineupUrl;
 
         // dto to entity
@@ -59,26 +60,24 @@ public class FixtureDto {
         private Integer awayteamScore;
         private int round;
         private int status;
+        private String stadium;
 
         // entity to dto
         public FixtureResponse(Fixture fixture){
             this.id = fixture.getId();
             this.season = fixture.getSeason();
-
-            // Date로 받아올 때 Timezone에 의한 오차 생김 -> 한국 시간대로 변환
-            TimeZone krTimeZone = TimeZone.getTimeZone("Asia/Seoul");
-            int offset = krTimeZone.getOffset(fixture.getDate().getTime());
-            Date date = new Date(fixture.getDate().getTime() + offset);
-            // 가져온 Date를 yyyy-MM-dd와 HH:mm 두 개로 나누어 문자열로 반환
-            this.dateStr = new SimpleDateFormat("yyyy-MM-dd").format(date);
-            this.timeStr = new SimpleDateFormat("HH:mm").format(date);
             
+            // 가져온 Date를 yyyy-MM-dd와 HH:mm 두 개로 나누어 문자열로 반환
+            this.dateStr = new SimpleDateFormat("yyyy-MM-dd").format(fixture.getDate());
+            this.timeStr = new SimpleDateFormat("HH:mm").format(fixture.getDate());
+
             this.homeTeam = EplTeams.getKrName(fixture.getHomeTeam());
             this.awayTeam = EplTeams.getKrName(fixture.getAwayTeam());
             this.homeTeamScore = fixture.getHomeTeamScore();
             this.awayteamScore = fixture.getAwayteamScore();
             this.round = fixture.getRound();
             this.status = fixture.getStatus();
+            this.stadium = fixture.getStadium();
         }
     }
 }
