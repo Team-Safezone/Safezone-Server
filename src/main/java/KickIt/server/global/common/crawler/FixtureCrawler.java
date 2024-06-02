@@ -69,6 +69,7 @@ public class FixtureCrawler {
                                 .awayteamScore(teamScores[1])
                                 .round(getRound(tr))
                                 .status(getStatus(tr))
+                                .stadium(getStadium(tr))
                                 .lineupUrl(getLineupUrl(tr))
                                 .build();
                         // fixture 리스트에 삽입
@@ -100,6 +101,10 @@ public class FixtureCrawler {
         Timestamp fixtureDate = Timestamp.valueOf(String.format("%s-%s-%s %s", year, month, day, timeStr));
 
         return fixtureDate;
+    }
+
+    String getStadium(WebElement row){
+        return row.findElement(By.className("td_area")).getText();
     }
 
     // 경기 상태를 반환하는 함수 getStatus

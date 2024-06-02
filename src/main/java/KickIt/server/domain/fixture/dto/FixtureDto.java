@@ -5,7 +5,9 @@ import KickIt.server.domain.teams.EplTeams;
 import lombok.*;
 
 import java.sql.Timestamp;
+import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.TimeZone;
 import java.util.UUID;
 
 public class FixtureDto {
@@ -24,6 +26,7 @@ public class FixtureDto {
         private Integer awayteamScore;
         private int round;
         private int status;
+        private String stadium;
         private String lineupUrl;
 
         // dto to entity
@@ -49,27 +52,32 @@ public class FixtureDto {
     public static class FixtureResponse{
         private Long id;
         private String season;
-        private Date dateTime;
+        private String dateStr;
+        private String timeStr;
         private String homeTeam;
         private String awayTeam;
         private Integer homeTeamScore;
         private Integer awayteamScore;
         private int round;
         private int status;
-        private String lineupUrl;
+        private String stadium;
 
         // entity to dto
         public FixtureResponse(Fixture fixture){
             this.id = fixture.getId();
             this.season = fixture.getSeason();
-            this.dateTime = fixture.getDate();
+            
+            // 가져온 Date를 yyyy-MM-dd와 HH:mm 두 개로 나누어 문자열로 반환
+            this.dateStr = new SimpleDateFormat("yyyy-MM-dd").format(fixture.getDate());
+            this.timeStr = new SimpleDateFormat("HH:mm").format(fixture.getDate());
+
             this.homeTeam = EplTeams.getKrName(fixture.getHomeTeam());
             this.awayTeam = EplTeams.getKrName(fixture.getAwayTeam());
             this.homeTeamScore = fixture.getHomeTeamScore();
             this.awayteamScore = fixture.getAwayteamScore();
             this.round = fixture.getRound();
             this.status = fixture.getStatus();
-            this.lineupUrl = fixture.getLineupUrl();
+            this.stadium = fixture.getStadium();
         }
     }
 }

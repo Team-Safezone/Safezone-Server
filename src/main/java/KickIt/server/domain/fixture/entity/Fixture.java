@@ -19,7 +19,7 @@ public class Fixture {
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "fixtureIdSeq")
     @SequenceGenerator(name="fixtureIdSeq", sequenceName = "fixtureIdSeq", allocationSize = 50, initialValue = 1)
-    @Column(columnDefinition = "long")
+    @Column(columnDefinition = "BIGINT")
     private Long id; // 경기 고유 id
 
     @Column(nullable=false)
@@ -29,9 +29,11 @@ public class Fixture {
     private Timestamp date; // 경기 날짜 및 시간
 
     @Enumerated(EnumType.STRING)
+    @Column(columnDefinition = "ENUM('MCI','ARS','LIV','AVL','TOT','NEW','CHE','MUN','WHU','BHA','BOU','CRY','WOL','FUL','EVE','BRE','NFO','LUT','BUR','SHU') CHARACTER SET utf8mb4 COLLATE utf8mb4_bin")
     private EplTeams homeTeam; // 홈팀 이름
 
     @Enumerated(EnumType.STRING)
+    @Column(columnDefinition = "ENUM('MCI','ARS','LIV','AVL','TOT','NEW','CHE','MUN','WHU','BHA','BOU','CRY','WOL','FUL','EVE','BRE','NFO','LUT','BUR','SHU') CHARACTER SET utf8mb4 COLLATE utf8mb4_bin")
     private EplTeams awayTeam; // 원정팀 이름
 
     @Column
@@ -49,6 +51,9 @@ public class Fixture {
     // 연기, 취소, 우천 등 예외는 5로 처리하되 경기 데이터 저장하기로 변경!
     @Column(name = "status", nullable=false)
     private int status;
+
+    @Column(name="stadium", columnDefinition = "VARCHAR(32)", nullable = false)
+    private String stadium;
 
     @Column(name = "lineupUrl")
     private String lineupUrl; // 선발 라인업 크롤링해 올 경기 상세 페이지 Url 정보
