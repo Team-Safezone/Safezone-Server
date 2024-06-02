@@ -1,5 +1,6 @@
 package KickIt.server;
 
+import KickIt.server.domain.fixture.controller.FixtureController;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 

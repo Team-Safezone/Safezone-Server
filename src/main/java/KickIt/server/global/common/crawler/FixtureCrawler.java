@@ -9,8 +9,10 @@ import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.springframework.util.ObjectUtils;
 
+import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
 import java.time.Duration;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -21,7 +23,7 @@ import java.util.logging.Logger;
 // 경기 일정 정보 크롤링하는 FixtureCrawler
 public class FixtureCrawler {
     // YYYY년 MM 월의 경기 일정 정보를 가져와 Fixture 객체 리스트로 반환하는 getFixture 함수
-    List<Fixture> getFixture(String year, String month) {
+    public List<Fixture> getFixture(String year, String month) {
         WebDriver driver = WebDriverUtil.getChromeDriver();
         // 입력받은 연도와 월을 합쳐 page 주소 가져옴
         // daum 스포츠 프리미어리그 경기 일정 페이지
@@ -59,7 +61,6 @@ public class FixtureCrawler {
                         // 한 경기의 경기 고유 id(생성), 시즌 정보, 날짜 및 시간, 홈팀 이름, 원정팀 이름,
                         // 홈팀 점수, 원정팀 점수, 라운드 정보, 경기 상태를 Fixture 객체에 build
                         Fixture fixture = Fixture.builder()
-                                .id(UUID.randomUUID())
                                 .season(season)
                                 .date(getFixtureDate(tr))
                                 .homeTeam(teamNames[0])
@@ -87,43 +88,38 @@ public class FixtureCrawler {
     }
 
     // 경기 날짜와 시간 정보를 tr에서 가져와 Date format으로 변경한 후 return 하는 함수 getFixtureDate()
-    Date getFixtureDate(WebElement row) {
+    Timestamp getFixtureDate(WebElement row) {
         // table row에서 가져온 날짜 문자열
         String dateStr = row.getAttribute("data-date");
+        String year = dateStr.substring(0, 4);
+        String month = dateStr.substring(4, 6);
+        String day = dateStr.substring(6,8);
         // table row에서 가져온 시간 문자열
-        String timeStr = row.findElement(By.className("td_time")).getText().replaceAll("[^0-9:]", "");
-        String fixtureDateStr = dateStr + timeStr + ":00";
-        // 가져온 날짜, 시간 문자열을 Date로 변환할 SimpleDataFormat 객체
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMddHH:mm:ss");
-        // 반환할 Date 객체
-        Date fixtureDate = null;
-        // 가져온 날짜, 시간 문자열을 Date format으로 변환
-        try {
-            fixtureDate = sdf.parse(fixtureDateStr);
+        String timeStr = row.findElement(By.className("td_time")).getText().replaceAll("[^0-9:]", "") + ":00";
+        // 반환할 Timestamp 객체
+        Timestamp fixtureDate = Timestamp.valueOf(String.format("%s-%s-%s %s", year, month, day, timeStr));
 
-        } catch (Exception e) {
-            // TODO: handle exception
-        }
         return fixtureDate;
     }
 
     // 경기 상태를 반환하는 함수 getStatus
-    // 경기 종료: 0 전반전: 1 하프 타임: 2 후반전: 3 경기 전: 4 연기(예외): 5
+    // (전) 경기 종료: 0 전반전: 1 하프 타임: 2 후반전: 3 경기 전: 4 연기(예외): 5
+    // ! 변경됨 ! (현재) 경기 예정: 0 경기 중: 1 휴식 시간: 2 경기 종료: 3 경기 연기: 4
     int getStatus(WebElement row) {
         switch (row.findElement(By.className("state_game")).getText()) {
             case "종료":
-                return 0;
+                return 3;
             case "경기전":
-                return 4;
+                return 0;
             case "전반전":
                 return 1;
             case "하프타임":
                 return 2;
             case "후반전", "추가시간":
-                return 3;
+                return 1;
         }
         // 이외의 경우 예외 처리
-        return 5;
+        return 4;
     }
 
     // 경기 참여하는 두 팀 정보를 담은 webElement를 반환하는 함수 getTeams
