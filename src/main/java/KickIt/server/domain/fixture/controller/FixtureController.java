@@ -39,7 +39,7 @@ public class FixtureController {
 
     // 입력 받은 yyyy-MM-dd로 일치하는 날짜의 경기 일정 반환
     @GetMapping()
-    public ResponseEntity<Map<String, Object>> getFixturesByDate (@RequestParam("date") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) Date date, @RequestParam(value="teamName", required = false) String teamName){
+    public ResponseEntity<Map<String, Object>> getFixturesByDate (@RequestParam("date") @DateTimeFormat(pattern = "yyyy/MM/dd") Date date, @RequestParam(value="teamName", required = false) String teamName){
         Map<String, Object> responseBody = new HashMap<>();
         List<FixtureDto.FixtureResponse> responseList;
         // teamName이 입력되지 않은 경우 날짜만으로 경기 조회
