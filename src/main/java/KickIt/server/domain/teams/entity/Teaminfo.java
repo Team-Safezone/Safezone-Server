@@ -23,6 +23,8 @@ public class Teaminfo {
     private EplTeams team;
     // 팀 로고 url
     private String logoUrl;
+    // 시즌 정보
+    private String season;
 
     //승점 등 정보 필요시 추가로 작성 예정
 

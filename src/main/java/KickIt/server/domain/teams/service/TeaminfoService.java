@@ -31,7 +31,7 @@ public class TeaminfoService {
         List<Teaminfo> saveTeaminfoList = new ArrayList<>();
 
         for(Teaminfo teaminfo: teaminfoList){
-            boolean exists = teaminfoRepository.existsByRankingAndTeam(teaminfo.getRanking(), teaminfo.getTeam());
+            boolean exists = teaminfoRepository.existsByRankingAndTeamAndSeason(teaminfo.getRanking(), teaminfo.getTeam(), teaminfo.getSeason());
             if(!exists){
                 saveTeaminfoList.add(teaminfo);
             }

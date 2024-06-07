@@ -13,6 +13,6 @@ import java.util.List;
 @Repository
 // DB와 CRUD 수행
 public interface TeaminfoRepository extends JpaRepository<Teaminfo, Integer> {
-    boolean existsByRankingAndTeam(int ranking, EplTeams team);
+    boolean existsByRankingAndTeamAndSeason(int ranking, EplTeams team, String season);
 
 }

@@ -49,6 +49,7 @@ public class TeaminfoCrawler {
                             .ranking(getRanking(row))
                             .team(teamName[0])
                             .logoUrl(getLogoUrl(row))
+                            .season(getSeason(driver))
                             .build();
                     teaminfoList.add(teaminfo);
                 }
@@ -84,6 +85,12 @@ public class TeaminfoCrawler {
             Logger.getGlobal().log(Level.WARNING, "등록된 로고가 없습니다.: " + e.toString());
             return null;
         }
+    }
+
+    String getSeason(WebDriver driver){
+        WebElement element = driver.findElement(By.cssSelector(".emph_day.txt_num"));
+        String seasonInfo = element.getText();
+        return seasonInfo;
     }
 
 }
