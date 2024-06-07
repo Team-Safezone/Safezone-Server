@@ -1,13 +1,13 @@
 package KickIt.server.global.common.crawler;
 
-import KickIt.server.domain.fixture.entity.Fixture;
-import KickIt.server.domain.teamInfo.Teaminfo;
+import KickIt.server.domain.teams.entity.Teaminfo;
 import KickIt.server.domain.teams.EplTeams;
 import KickIt.server.global.util.WebDriverUtil;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
-import org.openqa.selenium.chrome.ChromeDriver;
+import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 import org.springframework.util.ObjectUtils;
 
 import java.time.Duration;
@@ -16,6 +16,10 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import static java.lang.Integer.parseInt;
+
+
+@Component
 public class TeaminfoCrawler {
 
     public List<Teaminfo> getTeaminfo(int season) {
@@ -35,12 +39,16 @@ public class TeaminfoCrawler {
 
                 List<WebElement> teaminfoRows = driver.findElements(By.cssSelector("tbody > tr"));
                 for (WebElement row : teaminfoRows) {
-                    EplTeams[] teamName = getTeamName(row);
+                    if (teaminfoRows.indexOf(row) >= teaminfoRows.size()) {
+                        Logger.getGlobal().log(Level.WARNING, "인덱스가 리스트 범위를 벗어났습니다: " + teaminfoRows.indexOf(row));
+                        continue; // 혹은 다른 적절한 처리
+                    }
 
+                    EplTeams[] teamName = getTeamName(row);
                     Teaminfo teaminfo = Teaminfo.builder()
                             .ranking(getRanking(row))
                             .team(teamName[0])
-                            .logoImg(getLogoImg(row))
+                            .logoUrl(getLogoUrl(row))
                             .build();
                     teaminfoList.add(teaminfo);
                 }
@@ -56,9 +64,9 @@ public class TeaminfoCrawler {
 
 
 
-    String getRanking(WebElement row){
+    int getRanking(WebElement row){
         String rankingAll = row.findElement(By.className("td_rank")).getText();
-        String rankingInt = rankingAll.replaceAll("[^0-9].*","");
+        int rankingInt = parseInt(rankingAll.replaceAll("[^0-9].*",""));
         return rankingInt;
     }
 
@@ -67,7 +75,7 @@ public class TeaminfoCrawler {
         return new EplTeams[]{EplTeams.valueOfKrName(team)};
     }
 
-    String getLogoImg(WebElement row) {
+    String getLogoUrl(WebElement row) {
         try {
             WebElement logoImg = row.findElement(By.cssSelector(".td_name .wrap_thumb img"));
             String logoUrl = logoImg.getAttribute("src");
