@@ -31,7 +31,7 @@ public class RTCrawler {
 
         // 구현 수정 예정
         // 페이지 이동
-        driver.get("https:/ /sports.daum.net/" + fixture.getLineupUrl());
+        driver.get("https://sports.daum.net/" + fixture.getLineupUrl());
 
         지금은 실시간 랜덤 경기 정보 받아옴
         나중에 선호하는 팀에 대한 경기 정보 받아보는 코드 추가 필요

@@ -2,6 +2,7 @@ package KickIt.server.domain.teams.service;
 
 import KickIt.server.domain.fixture.entity.Fixture;
 import KickIt.server.domain.teams.controller.TeaminfoController;
+import KickIt.server.domain.teams.dto.TeaminfoDto;
 import KickIt.server.domain.teams.entity.Teaminfo;
 import KickIt.server.domain.teams.entity.TeaminfoRepository;
 import KickIt.server.global.common.crawler.TeaminfoCrawler;
@@ -25,6 +26,8 @@ public class TeaminfoService {
         this.teaminfoCrawler = teaminfoCrawler;
     }
 
+
+    // 시즌,팀 랭킹,팀 이름이 동일하지 않을 경우에만 DB 저장
     @Transactional
     public List<Teaminfo> saveTeaminfo(int soccerSeason){
         List<Teaminfo> teaminfoList = teaminfoCrawler.getTeaminfo(soccerSeason);
@@ -40,5 +43,14 @@ public class TeaminfoService {
         return teaminfoRepository.saveAll(saveTeaminfoList);
     }
 
+    @Transactional
+    public List<TeaminfoDto.TeaminfoResponse> findTeaminfoBySeason(String season){
+        List<Teaminfo> teaminfoList = teaminfoRepository.findTeaminfoBySeasonOrderByRankingAsc(season);
+        List<TeaminfoDto.TeaminfoResponse> responseList = new ArrayList<>();
+        for(Teaminfo teaminfo : teaminfoList){
+            responseList.add(new TeaminfoDto.TeaminfoResponse(teaminfo));
+        }
+        return responseList;
+    }
 
 }

@@ -15,4 +15,5 @@ import java.util.List;
 public interface TeaminfoRepository extends JpaRepository<Teaminfo, Integer> {
     boolean existsByRankingAndTeamAndSeason(int ranking, EplTeams team, String season);
 
+    List<Teaminfo> findTeaminfoBySeasonOrderByRankingAsc(String season);
 }
