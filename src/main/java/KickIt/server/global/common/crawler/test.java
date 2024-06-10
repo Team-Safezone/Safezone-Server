@@ -1,15 +1,7 @@
 package KickIt.server.global.common.crawler;
 
-import KickIt.server.domain.fixture.entity.Fixture;
-import KickIt.server.domain.lineup.entity.MatchLineup;
-import KickIt.server.domain.teams.entity.Player;
-import KickIt.server.global.util.WebDriverUtil;
-import org.openqa.selenium.By;
-import org.openqa.selenium.WebDriver;
+import KickIt.server.domain.teams.entity.Teaminfo;
 
-import java.time.Duration;
-import java.time.LocalDate;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -17,6 +9,7 @@ import java.util.logging.Logger;
 public class test {
 
     public static void main(String[] args) {
+        /*
         // fixtureCrawler 테스트 및 출력
         FixtureCrawler mayFixtureCrawler = new FixtureCrawler();
         String year = String.valueOf(LocalDate.now().getYear());
@@ -72,5 +65,13 @@ public class test {
         SquadCrawler squadCrawler = new SquadCrawler();
         squadCrawler.getTeamSquads();
         */
+
+        TeaminfoCrawler teaminfoCrawler = new TeaminfoCrawler();
+        List<Teaminfo> teamInfoList = teaminfoCrawler.getTeaminfo(20232024);
+        for(int i = 0; i < teamInfoList.size(); i++){
+            Teaminfo teaminfo = teamInfoList.get(i);
+            Logger.getGlobal().log(Level.INFO, String.format("팀 순위 %s\n 팀 이름 %s\n 로고 URL %s\n", teaminfo.getRanking(), teaminfo.getTeam(), teaminfo.getLogoUrl()));
+        }
+
     }
 }
