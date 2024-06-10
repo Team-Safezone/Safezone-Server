@@ -88,7 +88,7 @@ public class FixtureDto {
 
         // entity to dto
         public FixtureDateResponse(Fixture fixture){
-            SimpleDateFormat sdf = new SimpleDateFormat("yyyy/MM/dd");
+            SimpleDateFormat sdf = new SimpleDateFormat("yyyy.MM.dd");
             sdf.setTimeZone(TimeZone.getTimeZone("Asia/Seoul"));
             this.date = sdf.format(new Date(fixture.getDate().getTime()));
         }
