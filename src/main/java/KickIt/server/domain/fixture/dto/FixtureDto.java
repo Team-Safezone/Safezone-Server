@@ -5,6 +5,7 @@ import KickIt.server.domain.teams.EplTeams;
 import lombok.*;
 
 import java.sql.Timestamp;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.TimeZone;
@@ -78,6 +79,18 @@ public class FixtureDto {
             this.round = fixture.getRound();
             this.status = fixture.getStatus();
             this.stadium = fixture.getStadium();
+        }
+    }
+
+    @Getter
+    public static class FixtureDateResponse{
+        private String date;
+
+        // entity to dto
+        public FixtureDateResponse(Fixture fixture){
+            SimpleDateFormat sdf = new SimpleDateFormat("yyyy.MM.dd");
+            sdf.setTimeZone(TimeZone.getTimeZone("Asia/Seoul"));
+            this.date = sdf.format(new Date(fixture.getDate().getTime()));
         }
     }
 }
