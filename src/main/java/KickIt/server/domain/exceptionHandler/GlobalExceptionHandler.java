@@ -7,7 +7,9 @@ import org.springframework.web.bind.MissingServletRequestParameterException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
+import org.springframework.web.servlet.NoHandlerFoundException;
 
+import java.net.URISyntaxException;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -46,6 +48,24 @@ public class GlobalExceptionHandler {
         Map<String, Object> responseBody = new HashMap<>();
         responseBody.put("status", HttpStatus.BAD_REQUEST.value());
         responseBody.put("message", "입력 파라미터 누락: " + ex.getParameterName());
+        return new ResponseEntity<>(responseBody, HttpStatus.BAD_REQUEST);
+    }
+
+    //  invalid url 요청 처리
+    @ExceptionHandler(URISyntaxException.class)
+    public ResponseEntity<Map<String, Object>> handleURISyntaxException(URISyntaxException ex) {
+        Map<String, Object> responseBody = new HashMap<>();
+        responseBody.put("status", HttpStatus.BAD_REQUEST);
+        responseBody.put("message", "invalid한 url 접근: " + ex.getMessage());
+        return new ResponseEntity<>(responseBody, HttpStatus.BAD_REQUEST);
+    }
+
+    //  invalid url or parameter 요청 처리
+    @ExceptionHandler(NoHandlerFoundException.class)
+    public ResponseEntity<Map<String, Object>> handleNoHandlerFoundException(NoHandlerFoundException ex) {
+        Map<String, Object> responseBody = new HashMap<>();
+        responseBody.put("status", HttpStatus.BAD_REQUEST);
+        responseBody.put("message", "Invalid URL 접근 혹은 invalid parameters 사용: " + ex.getMessage());
         return new ResponseEntity<>(responseBody, HttpStatus.BAD_REQUEST);
     }
 
