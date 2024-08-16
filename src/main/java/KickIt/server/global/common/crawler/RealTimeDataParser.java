@@ -11,6 +11,9 @@ import java.util.regex.Pattern;
 @Component
 public class RealTimeDataParser {
 
+    private static boolean isMatch2 = false;
+    private static boolean isExtra = false;
+
     // 로컬 시간 가져오기
     public static String getDateTime(){
         LocalDateTime now = LocalDateTime.now();
@@ -50,5 +53,27 @@ public class RealTimeDataParser {
         return "";
     }
 
+    // 후반전
+    public static void isHalf() {
+        isMatch2 = true;
+        isExtra = false;
+    }
+
+    // 추가 시간
+    public static void isExtra() {
+        isMatch2 = false;
+        isExtra = true;
+    }
+
+    // 전반? 후반? 추가시간?
+    public static int whenHappen() {
+        if(isMatch2){
+            return 3;
+        } else if (isExtra) {
+            return 5;
+        } else {
+            return 1;
+        }
+    }
 
 }

@@ -73,8 +73,7 @@ public class RealTimeCrawler {
 
                     String[] elements = eventText.split("\n");
                     RealTime.RealTimeBuilder realTimeBuilder = RealTime.builder()
-                            .matchId(1234L)
-                            .eventTime(elements[0]);
+                            .matchId(1234L);
 
                     if (eventText.contains("골")) {
                         List<WebElement> spans = li.findElements(By.tagName("span"));
@@ -83,11 +82,17 @@ public class RealTimeCrawler {
                             if (ownGoal.contains("골")) {
                                 String ownGoalClass = span.getAttribute("class");
                                 if (ownGoalClass.contains("ico_goal_own")) {
-                                    realTimeBuilder.eventName("자책골")
+                                    realTimeBuilder
+                                            .eventCode(whenHappen())
+                                            .eventName("자책골")
+                                            .eventTime(elements[0])
                                             .player1(elements[2])
                                             .player2(elements.length > 3 ? rmBracket(elements[3]) : "");
                                 } else {
-                                    realTimeBuilder.eventName(elements[1] + "!")
+                                    realTimeBuilder
+                                            .eventCode(whenHappen())
+                                            .eventName(elements[1] + "!")
+                                            .eventTime(elements[0])
                                             .player1(elements[2])
                                             .player2(elements.length > 3 ? rmBracket(elements[3]) : "");
                                 }
@@ -95,24 +100,35 @@ public class RealTimeCrawler {
                             }
                         }
                     } else if (eventText.contains("교체")) {
-                        realTimeBuilder.eventName(elements[1])
+                        realTimeBuilder
+                                .eventCode(whenHappen())
+                                .eventName(elements[1])
+                                .eventTime(elements[0])
                                 .player1(elements[2])
                                 .player2(elements[4]);
                     } else if (eventText.contains("경고") || eventText.contains("퇴장")) {
-                        realTimeBuilder.eventName(elements[1])
+                        realTimeBuilder
+                                .eventCode(whenHappen())
+                                .eventName(elements[1])
+                                .eventTime(elements[0])
                                 .player1(elements[2]);
                     } else if (eventText.contains("VAR")) {
-                        realTimeBuilder.eventName(elements[1])
+                        realTimeBuilder
+                                .eventCode(whenHappen())
+                                .eventName(elements[1])
+                                .eventTime(elements[0])
                                 .player1(elements[2])
                                 .player2(rmBracket(elements[3]));
                     } else if (eventText.contains("추가시간")) {
+                        isExtra();
                         realTimeBuilder
                                 .eventCode(4)
                                 .eventName(getAddEvent(elements[0]))
                                 .player1(getAddTime(elements[0]));
                     } else if (eventText.contains("후반전")) {
+                        isHalf();
                         realTimeBuilder
-                                .eventCode(0)
+                                .eventCode(whenHappen())
                                 .eventName(elements[0]);
                     } else if (eventText.equals("종료")) {
                         realTimeBuilder
