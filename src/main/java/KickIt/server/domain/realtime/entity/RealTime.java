@@ -1,5 +1,6 @@
 package KickIt.server.domain.realtime.entity;
 
+import jakarta.persistence.EmbeddedId;
 import jakarta.persistence.Entity;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -14,7 +15,7 @@ import org.springframework.data.annotation.Id;
 @Entity
 public class RealTime {
     // 경기 고유 id
-    @Id
+    @EmbeddedId
     private Long matchId;
     private String eventTime;
     private int eventCode;

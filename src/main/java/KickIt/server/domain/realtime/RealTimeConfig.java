@@ -4,7 +4,10 @@ import KickIt.server.domain.fixture.entity.Fixture;
 import KickIt.server.domain.realtime.entity.RealTime;
 import KickIt.server.domain.realtime.service.RealTimeService;
 import KickIt.server.global.common.crawler.RealTimeCrawler;
+import KickIt.server.global.common.crawler.RealTimeDataParser;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -12,22 +15,22 @@ import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 
-@Service
+@Configuration
 public class RealTimeConfig {
 
-    private RealTimeService realTimeService;
     private RealTimeCrawler realTimeCrawler;
+    private RealTimeDataParser realTimeDataParser;
 
     /*
-    @Autowired
-    public RealTimeConfig(RealTimeService realTimeService, RealTimeCrawler realTimeCrawler) {
-        this.realTimeService = realTimeService;
+    public RealTimeConfig(RealTimeCrawler realTimeCrawler, RealTimeDataParser realTimeDataParser) {
         this.realTimeCrawler = realTimeCrawler;
+        this.realTimeDataParser = realTimeDataParser;
     }
 
      */
 
     // 크롤링 시작, 중지, 종료
+    // @Bean
     public void startStopCrawling(String getLinupUrl){
 
         boolean eventEnd = false;
