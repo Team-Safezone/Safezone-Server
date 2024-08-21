@@ -1,12 +1,12 @@
 package KickIt.server.domain.realtime.entity;
 
-import jakarta.persistence.EmbeddedId;
 import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.Id;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import org.springframework.data.annotation.Id;
 
 @Getter
 @Builder
@@ -15,8 +15,10 @@ import org.springframework.data.annotation.Id;
 @Entity
 public class RealTime {
     // 경기 고유 id
-    @EmbeddedId
+    @Id
+    @GeneratedValue
     private Long matchId;
+    private String compareTime;
     private String eventTime;
     private int eventCode;
     private String eventName;
@@ -31,8 +33,9 @@ public class RealTime {
     public String toString() {
         return "RealTime{" +
                 "matchId=" + matchId +
-                ", eventCode=" + eventCode +
+                ", compareTime='" + compareTime + '\'' +
                 ", eventTime='" + eventTime + '\'' +
+                ", eventCode=" + eventCode +
                 ", eventName='" + eventName + '\'' +
                 ", player1='" + player1 + '\'' +
                 ", player2='" + player2 + '\'' +

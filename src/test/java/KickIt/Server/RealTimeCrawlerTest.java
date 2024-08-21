@@ -1,16 +1,19 @@
 package KickIt.Server;
 
-import KickIt.server.domain.realtime.RealTimeConfig;
-import KickIt.server.global.common.crawler.RealTimeCrawler;
-import KickIt.server.global.common.crawler.RealTimeDataParser;
+import KickIt.server.domain.realtime.service.RealTimeStart;
 import org.junit.jupiter.api.Test;
 
 public class RealTimeCrawlerTest {
 
     @Test
     public void start() {
-        RealTimeConfig realTimeConfig = new RealTimeConfig();
-        realTimeConfig.startStopCrawling("80073916");
+        RealTimeStart realTimeStart = new RealTimeStart();
+        realTimeStart.startStopCrawling("80085794");
     }
 
+    @Test
+    public void star2() {
+        RealTimeStart realTimeStart = new RealTimeStart();
+        realTimeStart.startStopCrawling("80085392");
+    }
 }

@@ -5,7 +5,6 @@ import KickIt.server.domain.realtime.entity.RealTime;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-@Service
 public class RealTimeService {
 
     private final RealTimeRepository realTimeRepository;
