@@ -14,6 +14,12 @@ import java.util.List;
 // DB와 CRUD 수행
 public interface TeaminfoRepository extends JpaRepository<Teaminfo, Integer> {
     boolean existsByRankingAndTeamAndSeason(int ranking, EplTeams team, String season);
-
     List<Teaminfo> findTeaminfoBySeasonOrderByRankingAsc(String season);
+
+
+    // 팀이름 + 시즌 정보로 팀 로고 url 반환
+    @Query("SELECT t.logoUrl FROM Teaminfo t WHERE t.team = :teamName AND t.season = :season")
+    String findByTeamNameAndSeason(@Param("teamName") EplTeams teamName, @Param("season") String season);
+
 }
+

@@ -1,6 +1,7 @@
 package KickIt.server.domain.teams.service;
 
 import KickIt.server.domain.fixture.entity.Fixture;
+import KickIt.server.domain.teams.EplTeams;
 import KickIt.server.domain.teams.controller.TeaminfoController;
 import KickIt.server.domain.teams.dto.TeaminfoDto;
 import KickIt.server.domain.teams.entity.Teaminfo;

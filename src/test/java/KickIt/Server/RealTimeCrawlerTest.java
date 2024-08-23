@@ -1,19 +1,21 @@
 package KickIt.Server;
 
+import KickIt.server.domain.fixture.entity.Fixture;
+import KickIt.server.domain.fixture.entity.FixtureRepository;
 import KickIt.server.domain.realtime.service.RealTimeStart;
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
 
+@SpringBootTest
 public class RealTimeCrawlerTest {
 
-    @Test
-    public void start() {
-        RealTimeStart realTimeStart = new RealTimeStart();
-        realTimeStart.startStopCrawling("80085794");
-    }
+    @Autowired
+    private RealTimeStart realTimeStart;
 
     @Test
-    public void star2() {
-        RealTimeStart realTimeStart = new RealTimeStart();
-        realTimeStart.startStopCrawling("80085392");
+    public void testGetTodayFixture() {
+        realTimeStart.getTodayFixture();
     }
+
 }

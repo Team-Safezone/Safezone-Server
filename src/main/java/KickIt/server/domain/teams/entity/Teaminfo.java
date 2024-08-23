@@ -12,6 +12,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
+@Table(name = "teamInfo")
 // 시즌 별 팀 정보
 public class Teaminfo {
     @Id
