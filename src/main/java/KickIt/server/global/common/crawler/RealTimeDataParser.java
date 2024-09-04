@@ -1,5 +1,6 @@
 package KickIt.server.global.common.crawler;
 
+import KickIt.server.domain.teams.EplTeams;
 import org.springframework.stereotype.Component;
 
 import java.time.LocalDateTime;
@@ -86,7 +87,7 @@ public class RealTimeDataParser {
 
 
     // 심박수 비교 시간
-    public static String compareTime(LocalDateTime localDateTime, String eventTime) {
+    public static String compareTime(LocalDateTime startTime, String eventTime) {
         int minutesToAdd = 0;
         if(!isMatch2 || !isMatch2 && isExtra){
             // 전반전
@@ -96,7 +97,7 @@ public class RealTimeDataParser {
             minutesToAdd = parseInt(eventTime) - gameTime;
         }
 
-        LocalDateTime updatedDateTime = localDateTime.plusMinutes(minutesToAdd);
+        LocalDateTime updatedDateTime = startTime.plusMinutes(minutesToAdd);
         return dateToString(updatedDateTime);
     }
 
@@ -108,9 +109,15 @@ public class RealTimeDataParser {
 
     // 하프타임 시간 선언
     public static String halfTime(LocalDateTime startTime, String extraTime) {
-        gameTime = gameTime + parseInt(extraTime);
+        gameTime = gameTime + parseInt(extraTime) ;
         LocalDateTime halfTime = startTime.plusMinutes(gameTime);
         return dateToString(halfTime);
     }
+
+    // EplTeam to String
+    public static String teamNameToString(EplTeams teams) {
+        return teams.toString();
+    }
+
 
 }

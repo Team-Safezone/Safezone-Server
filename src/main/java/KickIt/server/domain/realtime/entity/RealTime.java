@@ -3,6 +3,7 @@ package KickIt.server.domain.realtime.entity;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
+import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -17,14 +18,12 @@ public class RealTime {
     // 경기 고유 id
     @Id
     @GeneratedValue
+    private int sequence;
     private Long matchId;
-    private String compareTime;
-    private String eventTime;
     private int eventCode;
+    private String eventTime;
     private String eventName;
-    // 첫 번째 정보
     private String player1;
-    // 두 번째 정보
     private String player2;
     private String teamName;
     private String teamUrl;
@@ -32,10 +31,10 @@ public class RealTime {
     @Override
     public String toString() {
         return "RealTime{" +
-                "matchId=" + matchId +
-                ", compareTime='" + compareTime + '\'' +
-                ", eventTime='" + eventTime + '\'' +
+                "sequence=" + sequence +
+                ", matchId=" + matchId +
                 ", eventCode=" + eventCode +
+                ", eventTime='" + eventTime + '\'' +
                 ", eventName='" + eventName + '\'' +
                 ", player1='" + player1 + '\'' +
                 ", player2='" + player2 + '\'' +
