@@ -76,7 +76,7 @@ public class RealTimeCrawler {
             System.out.println("season = " + season);
     }
 
-    public RealTime crawling() {
+    public void crawling() {
         // 기본 설정
         RealTime realTime = RealTime.builder()
                 .build();
@@ -93,7 +93,6 @@ public class RealTimeCrawler {
                     // 추가 시간이 없을 경우를 생각하여 0 으로 초기화
                     extraTime = "0";
                     System.out.println("경기 시작 시간" + dateToString(startTime));
-                    return realTime;
                 } else {
 
                 }
@@ -146,7 +145,6 @@ public class RealTimeCrawler {
                                     realTime = realTimeBuilder.build();
                                     System.out.println("realTime = " + realTime);
                                     realTimeService.saveEvent(realTime);
-                                    return realTime;
                                 } else {
                                     realTimeBuilder
                                             .eventCode(whenHappen())
@@ -157,7 +155,6 @@ public class RealTimeCrawler {
                                     realTime = realTimeBuilder.build();
                                     System.out.println("realTime = " + realTime);
                                     realTimeService.saveEvent(realTime);
-                                    return realTime;
                                 }
                             }
                         }
@@ -171,7 +168,6 @@ public class RealTimeCrawler {
                         realTime = realTimeBuilder.build();
                         System.out.println("realTime = " + realTime);
                         realTimeService.saveEvent(realTime);
-                        return realTime;
                     } else if (eventText.contains("경고") || eventText.contains("퇴장")) {
                         realTimeBuilder
                                 .eventCode(whenHappen())
@@ -181,7 +177,6 @@ public class RealTimeCrawler {
                         realTime = realTimeBuilder.build();
                         System.out.println("realTime = " + realTime);
                         realTimeService.saveEvent(realTime);
-                        return realTime;
                     } else if (eventText.contains("VAR")) {
                         realTimeBuilder
                                 .eventCode(whenHappen())
@@ -191,7 +186,6 @@ public class RealTimeCrawler {
                         realTime = realTimeBuilder.build();
                         System.out.println("realTime = " + realTime);
                         realTimeService.saveEvent(realTime);
-                        return realTime;
                     } else if (eventText.contains("추가시간")) {
                         isExtra();
                         realTimeBuilder
@@ -203,7 +197,6 @@ public class RealTimeCrawler {
                         realTime = realTimeBuilder.build();
                         System.out.println("realTime = " + realTime);
                         realTimeService.saveEvent(realTime);
-                        return realTime;
                     } else if (eventText.equals("종료")) {
                         getHalfScore();
                         realTimeBuilder
@@ -216,7 +209,6 @@ public class RealTimeCrawler {
                         realTime = realTimeBuilder.build();
                         System.out.println("realTime = " + realTime);
                         realTimeService.saveEvent(realTime);
-                        return realTime;
                     } else if (eventText.contains("경기종료")) {
                         getHalfScore();
                         realTimeBuilder
@@ -228,7 +220,6 @@ public class RealTimeCrawler {
                         realTime = realTimeBuilder.build();
                         System.out.println("realTime = " + realTime);
                         realTimeService.saveEvent(realTime);
-                        return realTime;
                     }
 
                 }
@@ -247,7 +238,6 @@ public class RealTimeCrawler {
         isHomeEventPresent = false;
         isAwayEventPresent = false;
 
-        return realTime;
     }
 
     // 홈팀, 어웨이팀 구분
