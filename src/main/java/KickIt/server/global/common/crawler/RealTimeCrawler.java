@@ -69,6 +69,7 @@ public class RealTimeCrawler {
             homeTeamlogoUrl = teaminfoRepository.findByTeamNameAndSeason(homeTeamName, season);
             awayTeamlogoUrl = teaminfoRepository.findByTeamNameAndSeason(homeTeamName, season);
 
+        System.out.println("matchId = " + matchId);
             System.out.println("homeTeamName = " + homeTeamName);
             System.out.println("awayTeamName = " + awayTeamName);
             System.out.println("homeTeamlogoUrl = " + homeTeamlogoUrl);

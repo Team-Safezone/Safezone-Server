@@ -15,7 +15,7 @@ public class StatusTest {
         try {
         RestTemplate restTemplate = new RestTemplate();
         RequestEntity<Void> req = RequestEntity
-                .get("https://api.football-data.org/v4/matches")
+                .get("https://api.football-data.org/v4/competitions/PL/matches")
                 .header("X-Auth-Token", "62f9313599664f808aacc19ae5250420")
                 .build();
 
@@ -26,11 +26,17 @@ public class StatusTest {
             ObjectMapper objectMapper = new ObjectMapper();
             JsonNode root = objectMapper.readTree(jsonResponse);
 
-            // 팀 목록 추출
-            JsonNode teams = root.path("ids"); // 배열 노드
-            for (JsonNode team : teams) {
-                String teamId = team.path("ids").asText(); // teamId 필드 추출
-                System.out.println("팀 ID: " + teamId);
+            JsonNode matches = root.path("matches");
+            for (JsonNode match : matches) {
+                String homeTla = match.path("homeTeam").path("tla").asText();
+                String awayTla = match.path("awayTeam").path("tla").asText();
+                String matchDate = match.path("utcDate").asText(); // 경기 날짜와 시간
+
+                // tla 값을 출력
+                System.out.print("matchDate = " + matchDate + " ");
+                System.out.print("Home Team TLA: " + homeTla + " ");
+                System.out.println("Away Team TLA: " + awayTla);
+
             }
 
         } catch (Exception e) {

@@ -45,7 +45,7 @@ public class RealTimeStart {
 
 
     // 매 자정 마다 오늘 경기 여부 파악
-    @Scheduled(cron = "30 34 18 * * ?")
+    @Scheduled(cron = "0 49 21 * * ?")
     public void getTodayFixture() {
         LocalDate today = LocalDate.of(2024, 8, 20);
         //LocalDate today = LocalDate.now();
@@ -166,12 +166,16 @@ public class RealTimeStart {
             String fixtureAwayTeam = fixture.getAwayTeam().toString();
             System.out.println("fixtureAwayTeam = " + fixtureAwayTeam);
             LocalDateTime fixtureDateTime = fixture.getDate().toLocalDateTime();
+            System.out.println("fixtureDateTime = " + fixtureDateTime);
 
             // 경기 목록에서 ID를 찾기
             for (JsonNode match : matches) {
                 String matchDate = match.path("utcDate").asText(); // 경기 날짜와 시간
-                String matchHomeTeam = match.path("homeTeam").path("name").asText(); // 홈 팀
-                String matchAwayTeam = match.path("awayTeam").path("name").asText(); // 어웨이 팀
+                System.out.println("matchDate = " + matchDate);
+                String matchHomeTeam = match.path("homeTeam").path("tla").asText(); // 홈 팀
+                System.out.println("matchHomeTeam = " + matchHomeTeam);
+                String matchAwayTeam = match.path("awayTeam").path("tla").asText(); // 어웨이 팀
+                System.out.println("matchAwayTeam = " + matchAwayTeam);
 
                 // JSON 응답에서 경기가 같은 날짜와 팀 정보를 가진 경우 찾기
                 if (matchDate.startsWith(fixtureDateTime.toLocalDate().toString()) &&
