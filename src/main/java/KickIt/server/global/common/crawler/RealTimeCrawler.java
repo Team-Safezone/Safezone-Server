@@ -1,7 +1,6 @@
 package KickIt.server.global.common.crawler;
 
 import KickIt.server.domain.fixture.entity.Fixture;
-import KickIt.server.domain.realtime.dto.RealTimeRepository;
 import KickIt.server.domain.realtime.entity.RealTime;
 import KickIt.server.domain.realtime.service.RealTimeService;
 import KickIt.server.domain.teams.EplTeams;
@@ -14,7 +13,6 @@ import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import org.springframework.stereotype.Service;
 
 import java.time.Duration;
 import java.time.LocalDateTime;
@@ -67,14 +65,7 @@ public class RealTimeCrawler {
             homeTeamName = fixture.getHomeTeam();
             awayTeamName = fixture.getAwayTeam();
             homeTeamlogoUrl = teaminfoRepository.findByTeamNameAndSeason(homeTeamName, season);
-            awayTeamlogoUrl = teaminfoRepository.findByTeamNameAndSeason(homeTeamName, season);
-
-        System.out.println("matchId = " + matchId);
-            System.out.println("homeTeamName = " + homeTeamName);
-            System.out.println("awayTeamName = " + awayTeamName);
-            System.out.println("homeTeamlogoUrl = " + homeTeamlogoUrl);
-            System.out.println("awayTeamlogoUrl = " + awayTeamlogoUrl);
-            System.out.println("season = " + season);
+            awayTeamlogoUrl = teaminfoRepository.findByTeamNameAndSeason(awayTeamName, season);
     }
 
     public void crawling() {
@@ -102,8 +93,6 @@ public class RealTimeCrawler {
                 // 하프 타임 or 경기 종료
                 System.out.println("실행 시작 화면 오류");
             }
-
-            Thread.sleep(10000);
 
             WebElement timeLine = wait.until(ExpectedConditions.visibilityOfElementLocated(By.className("group_timeline")));
             List<WebElement> timeElements = timeLine.findElements(By.tagName("li"));
@@ -144,7 +133,6 @@ public class RealTimeCrawler {
                                             .player1(elements[2])
                                             .player2(elements.length > 3 ? rmBracket(elements[3]) : "");
                                     realTime = realTimeBuilder.build();
-                                    System.out.println("realTime = " + realTime);
                                     realTimeService.saveEvent(realTime);
                                 } else {
                                     realTimeBuilder
@@ -154,7 +142,6 @@ public class RealTimeCrawler {
                                             .player1(elements[2])
                                             .player2(elements.length > 3 ? rmBracket(elements[3]) : "");
                                     realTime = realTimeBuilder.build();
-                                    System.out.println("realTime = " + realTime);
                                     realTimeService.saveEvent(realTime);
                                 }
                             }
@@ -167,7 +154,6 @@ public class RealTimeCrawler {
                                 .player1(elements[2])
                                 .player2(elements[4]);
                         realTime = realTimeBuilder.build();
-                        System.out.println("realTime = " + realTime);
                         realTimeService.saveEvent(realTime);
                     } else if (eventText.contains("경고") || eventText.contains("퇴장")) {
                         realTimeBuilder
@@ -176,7 +162,6 @@ public class RealTimeCrawler {
                                 .eventName(elements[1])
                                 .player1(elements[2]);
                         realTime = realTimeBuilder.build();
-                        System.out.println("realTime = " + realTime);
                         realTimeService.saveEvent(realTime);
                     } else if (eventText.contains("VAR")) {
                         realTimeBuilder
@@ -185,7 +170,6 @@ public class RealTimeCrawler {
                                 .eventName(elements[2])
                                 .player1(rmBracket(elements[3]));
                         realTime = realTimeBuilder.build();
-                        System.out.println("realTime = " + realTime);
                         realTimeService.saveEvent(realTime);
                     } else if (eventText.contains("추가시간")) {
                         isExtra();
@@ -196,7 +180,6 @@ public class RealTimeCrawler {
                                 .player1(getAddTime(elements[0]));
                         extraTime = getAddTime(elements[0]);
                         realTime = realTimeBuilder.build();
-                        System.out.println("realTime = " + realTime);
                         realTimeService.saveEvent(realTime);
                     } else if (eventText.equals("종료")) {
                         getHalfScore();
@@ -208,7 +191,6 @@ public class RealTimeCrawler {
                                 .player2(awayTeamScore);
                         start = false;
                         realTime = realTimeBuilder.build();
-                        System.out.println("realTime = " + realTime);
                         realTimeService.saveEvent(realTime);
                     } else if (eventText.contains("경기종료")) {
                         getHalfScore();
@@ -219,7 +201,6 @@ public class RealTimeCrawler {
                                 .player1(homeTeamScore)
                                 .player2(awayTeamScore);
                         realTime = realTimeBuilder.build();
-                        System.out.println("realTime = " + realTime);
                         realTimeService.saveEvent(realTime);
                     }
 
@@ -227,7 +208,7 @@ public class RealTimeCrawler {
 
             }
 
-        } catch (InterruptedException e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
 
@@ -250,7 +231,7 @@ public class RealTimeCrawler {
     public void getHalfScore() {
         List<WebElement> scoreList = driver.findElements(By.cssSelector(".num_team"));
         WebElement score1 = scoreList.get(0);
-        WebElement score2 = scoreList.get(0);
+        WebElement score2 = scoreList.get(1);
 
         homeTeamScore = score1.getText();
         awayTeamScore = score2.getText();
@@ -259,6 +240,7 @@ public class RealTimeCrawler {
     public void quit() {
         WebDriverUtil.quit(driver);
     }
+
 
     /*
     디자인 변경으로 처리 안하게 됨
