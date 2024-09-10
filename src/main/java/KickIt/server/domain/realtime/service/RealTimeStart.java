@@ -21,19 +21,25 @@ import java.sql.Timestamp;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
+import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.Date;
 import java.util.List;
 
 @Service
 @EnableAsync
 public class RealTimeStart {
-    int n = 1;
+
+    private static final String API_URL = "https://api.football-data.org/v4/competitions/PL/matches";
+    private static final String AUTH_TOKEN = "62f9313599664f808aacc19ae5250420";
+
     private final FixtureRepository fixtureRepository;
     private final ThreadPoolTaskScheduler taskScheduler;
     private final RealTimeService realTimeService;
     private final TeaminfoRepository teaminfoRepository;
     private final RestTemplate restTemplate = new RestTemplate();
 
+    private String apiMatchId;
 
     @Autowired
     public RealTimeStart(FixtureRepository fixtureRepository, RealTimeService realTimeService, TeaminfoRepository teaminfoRepository, ThreadPoolTaskScheduler taskScheduler) {
@@ -45,10 +51,10 @@ public class RealTimeStart {
 
 
     // 매 자정 마다 오늘 경기 여부 파악
-    @Scheduled(cron = "0 49 21 * * ?")
+    @Scheduled(cron = "0 40 2 * * ?")
     public void getTodayFixture() {
-        LocalDate today = LocalDate.of(2024, 8, 20);
-        //LocalDate today = LocalDate.now();
+        LocalDate today = LocalDate.of(2024, 9, 1);
+        //LocalDate today = LocalDate.now(); -> default
 
         // LocalDate를 LocalDateTime으로 변환하고, Timestamp로 변환
         LocalDateTime startOfDay = today.atStartOfDay();
@@ -71,19 +77,23 @@ public class RealTimeStart {
     public void getTimeMatch(List<Fixture> fixtureList) {
         LocalDateTime now = LocalDateTime.now();
         for (Fixture fixture : fixtureList) {
-            LocalDateTime fixtureMatchTime = fixture.getDate().toLocalDateTime();
+            apiMatchId = getMatchIdFromApi(fixture);
+            String status = getMatchStatus(apiMatchId);
 
-            System.out.println("fixtureMatchTime = " + fixtureMatchTime);
+            // 경기 연기, 취소 처리
+            if(!status.equals("POSTPONED") || !status.equals("CANCELLED")){
+                LocalDateTime fixtureMatchTime = fixture.getDate().toLocalDateTime();
 
-            if (fixtureMatchTime.isAfter(now)) {
-                Date startDate = Date.from(fixtureMatchTime.atZone(ZoneId.systemDefault()).toInstant());
-                taskScheduler.schedule(() -> startStopCrawling(fixture), startDate);
-                System.out.println("오늘 경기 시작 시간: " + fixtureMatchTime);
-            } else {
-                // 이미 시작된 경기는 바로 크롤링 시작
-                System.out.println("이미 시작: " + fixtureMatchTime);
-                Date startDate = new Date();
-                taskScheduler.schedule(() -> startStopCrawling(fixture), startDate);
+                if (fixtureMatchTime.isAfter(now)) {
+                    Date startDate = Date.from(fixtureMatchTime.atZone(ZoneId.systemDefault()).toInstant());
+                    taskScheduler.schedule(() -> startStopCrawling(fixture,apiMatchId), startDate);
+                    System.out.println("오늘 경기 시작 시간: " + fixtureMatchTime);
+                } else {
+                    // 이미 시작된 경기는 바로 크롤링 시작
+                    System.out.println("이미 시작: " + fixtureMatchTime);
+                    Date startDate = new Date();
+                    taskScheduler.schedule(() -> startStopCrawling(fixture, apiMatchId), startDate);
+                }
             }
         }
 
@@ -92,12 +102,10 @@ public class RealTimeStart {
 
     // 크롤링 시작, 중지, 종료
     @Async
-    public void startStopCrawling(Fixture fixture){
+    public void startStopCrawling(Fixture fixture, String apiMatchId){
         boolean eventEnd = false;
 
-        String matchId = getMatchIdFromApi(fixture);
-
-        System.out.println("matchId = " + matchId);
+        System.out.println("apiMatchId = " + apiMatchId);
 
         RealTimeCrawler realTimeCrawler = new RealTimeCrawler(realTimeService, teaminfoRepository);
 
@@ -112,9 +120,9 @@ public class RealTimeStart {
 
                 while (!eventEnd) {
                     // 현재 상태 확인
-                    String status = getMatchStatus(matchId);
+                    String apiStatus = getMatchStatus(apiMatchId);
 
-                    switch (status) {
+                    switch (apiStatus) {
                         case "PAUSED":
                             System.out.println("경기 전반전 종료 감지: PAUSED 상태");
                             // 15분 대기 후 전반전 종료 후 다시 크롤링 시작
@@ -128,7 +136,7 @@ public class RealTimeStart {
                             return;
 
                         default:
-                            // 상태가 PAUSED도 아니고 FINISHED도 아닌 경우 1분 대기 후 상태 확인
+                            // 아직 안 끝난 상태
                             Thread.sleep(1 * 60 * 1000);
                     }
                 }
@@ -148,10 +156,10 @@ public class RealTimeStart {
     // 경기 id 매칭하기
     private String getMatchIdFromApi(Fixture fixture) {
         try {
-            String apiUrl = "https://api.football-data.org/v4/matches";
+            String apiUrl = API_URL;
             RequestEntity<Void> req = RequestEntity
                     .get(apiUrl)
-                    .header("X-Auth-Token", "62f9313599664f808aacc19ae5250420")
+                    .header("X-Auth-Token", AUTH_TOKEN)
                     .build();
             ResponseEntity<String> result = restTemplate.exchange(req, String.class);
             String jsonResponse = result.getBody(); // 응답 body 가져오기
@@ -160,28 +168,26 @@ public class RealTimeStart {
             JsonNode root = objectMapper.readTree(jsonResponse);
             JsonNode matches = root.path("matches");
 
-            // 팀 이름으로 경기 파악
+            // 팀 이름 + 경기 시간으로 경기 파악
             String fixtureHomeTeam = fixture.getHomeTeam().toString();
-            System.out.println("fixtureHomeTeam = " + fixtureHomeTeam);
             String fixtureAwayTeam = fixture.getAwayTeam().toString();
-            System.out.println("fixtureAwayTeam = " + fixtureAwayTeam);
             LocalDateTime fixtureDateTime = fixture.getDate().toLocalDateTime();
-            System.out.println("fixtureDateTime = " + fixtureDateTime);
+            String fixtureDate = fixtureDateTime.toString();
 
             // 경기 목록에서 ID를 찾기
             for (JsonNode match : matches) {
                 String matchDate = match.path("utcDate").asText(); // 경기 날짜와 시간
-                System.out.println("matchDate = " + matchDate);
                 String matchHomeTeam = match.path("homeTeam").path("tla").asText(); // 홈 팀
-                System.out.println("matchHomeTeam = " + matchHomeTeam);
                 String matchAwayTeam = match.path("awayTeam").path("tla").asText(); // 어웨이 팀
-                System.out.println("matchAwayTeam = " + matchAwayTeam);
 
-                // JSON 응답에서 경기가 같은 날짜와 팀 정보를 가진 경우 찾기
-                if (matchDate.startsWith(fixtureDateTime.toLocalDate().toString()) &&
+                matchDate = addNineHoursAndConvert(matchDate);
+
+                //경기가 같은 날짜와 팀 정보를 가진 경우 찾기
+                if (matchDate.equals(fixtureDate) &&
                         matchHomeTeam.equals(fixtureHomeTeam) &&
                         matchAwayTeam.equals(fixtureAwayTeam)) {
-                    return match.path("id").asText(); // 일치하는 경기 ID 반환
+                    // 일치하는 경기 ID 반환
+                    return match.path("id").asText();
                 }
             }
         } catch (Exception e) {
@@ -191,13 +197,14 @@ public class RealTimeStart {
         return null; // 일치하는 경기 ID가 없으면 null 반환
     }
 
+
     // 경기 상태 가져오기
     private String getMatchStatus(String matchId) {
         try {
-            String apiUrl = "https://api.football-data.org/v4/matches/" + matchId; // 경기 ID를 기반으로 API URL 구성
+            String apiUrl = "https://api.football-data.org/v4/matches/" + matchId;
             RequestEntity<Void> req = RequestEntity
                     .get(apiUrl)
-                    .header("X-Auth-Token", "62f9313599664f808aacc19ae5250420")
+                    .header("X-Auth-Token", AUTH_TOKEN)
                     .build();
             ResponseEntity<String> result = restTemplate.exchange(req, String.class);
             String jsonResponse = result.getBody(); // 응답 body 가져오기
@@ -206,13 +213,10 @@ public class RealTimeStart {
             ObjectMapper objectMapper = new ObjectMapper();
             JsonNode root = objectMapper.readTree(jsonResponse);
 
-            // 경기 상태 추출
+            // 경기 상태 반환
             JsonNode statusNode = root.path("status");
-            String matchStatus = statusNode.asText();
+            return statusNode.asText();
 
-            // 출력
-            System.out.println("경기 상태: " + matchStatus);
-            return matchStatus;
 
         } catch (Exception e) {
             e.printStackTrace();
@@ -220,6 +224,15 @@ public class RealTimeStart {
         }
 
         return null;
+    }
+
+    // 경기 시간 맞추기(api 경기 시간이 현지 시간 으로 되어 있어서 시차 9시간 처리)
+    public static String addNineHoursAndConvert(String utcDateTime) {
+        ZonedDateTime zonedDateTime = ZonedDateTime.parse(utcDateTime);
+        ZonedDateTime updatedDateTime = zonedDateTime.plusHours(9);
+        String apiMatchDate = updatedDateTime.format(DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm"));
+
+        return apiMatchDate;
     }
 }
 
