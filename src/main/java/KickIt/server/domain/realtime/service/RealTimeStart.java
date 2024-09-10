@@ -51,7 +51,7 @@ public class RealTimeStart {
 
 
     // 매 자정 마다 오늘 경기 여부 파악
-    @Scheduled(cron = "0 40 2 * * ?")
+    @Scheduled(cron = "0 0 0 * * ?")
     public void getTodayFixture() {
         LocalDate today = LocalDate.of(2024, 9, 1);
         //LocalDate today = LocalDate.now(); -> default
