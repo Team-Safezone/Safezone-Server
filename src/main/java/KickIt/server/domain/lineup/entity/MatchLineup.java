@@ -17,9 +17,9 @@ public class MatchLineup {
     // 경기 고유 id
     private Long id;
     // 홈팀
-    private EplTeams homeTeam;
+    private String homeTeam;
     // 원정팀
-    private EplTeams awayTeam;
+    private String awayTeam;
     // 홈팀 포메이션
     private String homeTeamForm;
     // 원정팀 포메이션

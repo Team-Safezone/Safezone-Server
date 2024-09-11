@@ -1,15 +1,16 @@
 package KickIt.server.global.common.crawler;
 
-import KickIt.server.domain.teams.EplTeams;
 import KickIt.server.domain.teams.PlayerPosition;
 import KickIt.server.domain.teams.entity.Player;
 import KickIt.server.domain.teams.entity.Squad;
+import KickIt.server.domain.teams.service.TeamNameConvertService;
 import KickIt.server.global.util.WebDriverUtil;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.ObjectUtils;
 
 import java.time.Duration;
@@ -19,15 +20,18 @@ import java.util.logging.Logger;
 
 // 현재 시즌의 팀별 선수 명단을 크롤링하기 위한 SquadCrawler
 public class SquadCrawler {
-    Map<EplTeams, Squad> getTeamSquads(){
+    @Autowired
+    private TeamNameConvertService teamNameConvertService;
+
+    Map<String, Squad> getTeamSquads(){
         // 다음 스포츠의 프리미어리그 팀 페이지
         String pageUrl = "https://sports.daum.net/team/epl";
         // 현 시즌의 각 팀 선수 명단을 저장하고 있는 Map 객체 seasonSquads
-        Map<EplTeams, Squad> seasonSquads = new HashMap<>();
+        Map<String, Squad> seasonSquads = new HashMap<>();
         // 다음 스포츠 팀 페이지 주소를 저장할 리스트
         List<String> teamPageUrls = new ArrayList<>();
         //  팀별 선수 공식 이미지 주소를 저장할 hashmap
-        Map<EplTeams, Map<Integer, String>> imageUrls = new HashMap<>();
+        Map<String, Map<Integer, String>> imageUrls = new HashMap<>();
 
         getImageUrls(imageUrls);
 
@@ -72,7 +76,7 @@ public class SquadCrawler {
 
     // EPL 공식 페이지에서 각 팀 상세 페이지 주소를 크롤링해 오기 위한 method
     // 이후 가져온 상세 페이지 주소는 official
-    void getImageUrls(Map<EplTeams, Map<Integer, String>> imageUrls){
+    void getImageUrls(Map<String, Map<Integer, String>> imageUrls){
         List<String> officialPageUrls = new ArrayList<>();
         WebDriver imageDriver = WebDriverUtil.getChromeDriver();
         if (!ObjectUtils.isEmpty(imageDriver)) {
@@ -100,10 +104,10 @@ public class SquadCrawler {
     }
 
     // 각 팀 페이지에 방문해 해당 팀 EplTeams를 key 값으로, 선수 이미지 목록을 담은 Map<선수 번호, 이미지 주소>를 value 값으로 map에 넣어 줌
-    void getPlayerImgs(Map<EplTeams, Map<Integer, String>> map, WebDriver driver, String pageUrl){
+    void getPlayerImgs(Map<String, Map<Integer, String>> map, WebDriver driver, String pageUrl){
         driver.get(pageUrl);
         // 크롤링해 온 영어 풀네임으로 EplTeams 반환 받음
-        EplTeams team = EplTeams.valueOfEngName(driver.findElement(By.cssSelector("h2.club-header__team-name")).getText());
+        String team = teamNameConvertService.convertFromEngName(driver.findElement(By.cssSelector("h2.club-header__team-name")).getText());
 
         // 팀의 선수들의 프로필 이미지 주소를 이후 다음 스포츠 페이지 크롤링 기반으로 Player 객체 build 할때 쉽게 찾아올 수 있도록
         // 선수 번호를 key 값으로 선수 프로필 이미지 주소 value를 찾아오는 map 만듦
@@ -126,12 +130,12 @@ public class SquadCrawler {
     }
 
     // 각 팀의 선수 상세 페이지를 크롤링해 팀 선수 명단인 Squad 객체를 반환하는 getSquad()
-    Squad getSquad(WebDriver driver, String url, Map<EplTeams, Map<Integer, String>> imageUrl){
+    Squad getSquad(WebDriver driver, String url, Map<String, Map<Integer, String>> imageUrl){
         driver.get(url);
         // 포지션별로 나누어진 선수 명단 정보가 있는 WebElements 찾아옴 (총 4 개- 0: 공격수 1: 미드필더 2: 수비수 3: 골키퍼)
         List<WebElement> squadElements = driver.findElements(By.className("list_member"));
         // 팀 이름 문자열 가져온 후 팀의 한국어 풀네임으로 EplTeams를 찾아 반환 받는다.
-        EplTeams team = EplTeams.valueOfKrFullName(driver.findElement(By.cssSelector("div.basic_feature > div.cont_thumb > h3.tit_thumb ")).getText());
+        String team = teamNameConvertService.convertFromKrFullName(driver.findElement(By.cssSelector("div.basic_feature > div.cont_thumb > h3.tit_thumb ")).getText());
         // 팀 로고 이미지 url
         String logoUrl = getLogoImg(driver);
         /* team data 제대로 크롤링했는지 확인하기 위한 코드. 추후 삭제 예정. */
@@ -152,7 +156,7 @@ public class SquadCrawler {
     }
 
     // 팀 선수 명단 내의 포지션 별 선수 리스트를 크롤링해 반환하는 함수 getPosPlayers()
-    ArrayList<Player> getPosPlayers(List<WebElement> playerInfos, EplTeams team, PlayerPosition pos, Map<Integer, String> images){
+    ArrayList<Player> getPosPlayers(List<WebElement> playerInfos, String team, PlayerPosition pos, Map<Integer, String> images){
         ArrayList<Player> posPlayers = new ArrayList<>();
         for(int i = 0; i < playerInfos.size(); i++){
             // 선수 이름 크롤링

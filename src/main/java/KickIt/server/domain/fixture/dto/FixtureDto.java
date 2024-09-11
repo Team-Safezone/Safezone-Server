@@ -21,8 +21,8 @@ public class FixtureDto {
         private Long id;
         private String season;
         private Date dateTime;
-        private EplTeams homeTeam;
-        private EplTeams awayTeam;
+        private String homeTeam;
+        private String awayTeam;
         private Integer homeTeamScore;
         private Integer awayteamScore;
         private int round;
@@ -72,8 +72,8 @@ public class FixtureDto {
             this.dateStr = new SimpleDateFormat("yyyy-MM-dd").format(fixture.getDate());
             this.timeStr = new SimpleDateFormat("HH:mm").format(fixture.getDate());
 
-            this.homeTeam = EplTeams.getKrName(fixture.getHomeTeam());
-            this.awayTeam = EplTeams.getKrName(fixture.getAwayTeam());
+            this.homeTeam = fixture.getHomeTeam();
+            this.awayTeam = fixture.getAwayTeam();
             this.homeTeamScore = fixture.getHomeTeamScore();
             this.awayteamScore = fixture.getAwayteamScore();
             this.round = fixture.getRound();
