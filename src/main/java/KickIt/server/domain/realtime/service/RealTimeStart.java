@@ -4,6 +4,7 @@ import KickIt.server.domain.fixture.entity.Fixture;
 import KickIt.server.domain.fixture.entity.FixtureRepository;
 import KickIt.server.domain.realtime.entity.RealTime;
 import KickIt.server.domain.teams.entity.TeaminfoRepository;
+import KickIt.server.domain.teams.service.TeamNameConvertService;
 import KickIt.server.global.common.crawler.RealTimeCrawler;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -38,22 +39,24 @@ public class RealTimeStart {
     private final RealTimeService realTimeService;
     private final TeaminfoRepository teaminfoRepository;
     private final RestTemplate restTemplate = new RestTemplate();
+    private final TeamNameConvertService teamNameConvertService;
 
     private String apiMatchId;
 
     @Autowired
-    public RealTimeStart(FixtureRepository fixtureRepository, RealTimeService realTimeService, TeaminfoRepository teaminfoRepository, ThreadPoolTaskScheduler taskScheduler) {
+    public RealTimeStart(FixtureRepository fixtureRepository, RealTimeService realTimeService, TeaminfoRepository teaminfoRepository, ThreadPoolTaskScheduler taskScheduler, TeamNameConvertService teamNameConvertService) {
         this.taskScheduler = taskScheduler;
         this.fixtureRepository = fixtureRepository;
         this.realTimeService = realTimeService;
         this.teaminfoRepository = teaminfoRepository;
+        this.teamNameConvertService = teamNameConvertService;
     }
 
 
     // 매 자정 마다 오늘 경기 여부 파악
-    @Scheduled(cron = "0 55 2 * * ?")
+    @Scheduled(cron = "0 58 16 * * ?")
     public void getTodayFixture() {
-        LocalDate today = LocalDate.of(2024, 9, 1);
+        LocalDate today = LocalDate.of(2024, 9, 2);
         //LocalDate today = LocalDate.now(); -> default
 
         // LocalDate를 LocalDateTime으로 변환하고, Timestamp로 변환
@@ -79,6 +82,9 @@ public class RealTimeStart {
         for (Fixture fixture : fixtureList) {
             apiMatchId = getMatchIdFromApi(fixture);
             String status = getMatchStatus(apiMatchId);
+
+            System.out.println(fixture.getHomeTeam());
+            System.out.println(fixture.getAwayTeam());
 
             // 경기 연기, 취소 처리
             if(!status.equals("POSTPONED") || !status.equals("CANCELLED")){
@@ -107,7 +113,7 @@ public class RealTimeStart {
 
         System.out.println("apiMatchId = " + apiMatchId);
 
-        RealTimeCrawler realTimeCrawler = new RealTimeCrawler(realTimeService, teaminfoRepository);
+        RealTimeCrawler realTimeCrawler = new RealTimeCrawler(realTimeService, teaminfoRepository, teamNameConvertService);
 
         realTimeCrawler.initializeCrawler(fixture);
 

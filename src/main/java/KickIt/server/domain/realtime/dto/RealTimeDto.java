@@ -1,7 +1,6 @@
 package KickIt.server.domain.realtime.dto;
 
 import KickIt.server.domain.realtime.entity.RealTime;
-import KickIt.server.domain.teams.EplTeams;
 import KickIt.server.domain.teams.entity.Teaminfo;
 import lombok.Getter;
 

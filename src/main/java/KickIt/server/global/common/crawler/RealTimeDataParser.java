@@ -1,6 +1,5 @@
 package KickIt.server.global.common.crawler;
 
-import KickIt.server.domain.teams.EplTeams;
 import org.springframework.stereotype.Component;
 
 import java.time.LocalDateTime;
@@ -112,11 +111,6 @@ public class RealTimeDataParser {
         gameTime = gameTime + parseInt(extraTime) ;
         LocalDateTime halfTime = startTime.plusMinutes(gameTime);
         return dateToString(halfTime);
-    }
-
-    // EplTeam to String
-    public static String teamNameToString(EplTeams teams) {
-        return teams.toString();
     }
 
 

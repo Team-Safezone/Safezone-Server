@@ -5,6 +5,7 @@ import KickIt.server.domain.realtime.entity.RealTime;
 import KickIt.server.domain.realtime.service.RealTimeService;
 import KickIt.server.domain.teams.EplTeams;
 import KickIt.server.domain.teams.entity.TeaminfoRepository;
+import KickIt.server.domain.teams.service.TeamNameConvertService;
 import KickIt.server.global.util.WebDriverUtil;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
@@ -35,8 +36,8 @@ public class RealTimeCrawler {
     private String extraTime;
     private Long matchId;
     private String season;
-    private EplTeams homeTeamName;
-    private EplTeams awayTeamName;
+    private String homeTeamName;
+    private String awayTeamName;
     private String homeTeamlogoUrl;
     private String awayTeamlogoUrl;
     private String homeTeamScore;
@@ -47,14 +48,16 @@ public class RealTimeCrawler {
 
     private final RealTimeService realTimeService;
     private final TeaminfoRepository teaminfoRepository;
+    private final TeamNameConvertService teamNameConvertService;
 
     List<RealTime> realTimeList = new ArrayList<>();
 
 
     @Autowired
-    public RealTimeCrawler(RealTimeService realTimeService, TeaminfoRepository teaminfoRepository) {
+    public RealTimeCrawler(RealTimeService realTimeService, TeaminfoRepository teaminfoRepository, TeamNameConvertService teamNameConvertService) {
         this.teaminfoRepository = teaminfoRepository;
         this.realTimeService = realTimeService;
+        this.teamNameConvertService = teamNameConvertService;
     }
 
     public void initializeCrawler(Fixture fixture) {
@@ -62,8 +65,8 @@ public class RealTimeCrawler {
             driver.get("https://sports.daum.net/" + fixture.getLineupUrl());
             matchId = fixture.getId();
             season = fixture.getSeason();
-            homeTeamName = fixture.getHomeTeam();
-            awayTeamName = fixture.getAwayTeam();
+            homeTeamName = teamNameConvertService.convertToKrName(fixture.getHomeTeam());
+            awayTeamName = teamNameConvertService.convertToKrName(fixture.getAwayTeam());
             homeTeamlogoUrl = teaminfoRepository.findByTeamNameAndSeason(homeTeamName, season);
             awayTeamlogoUrl = teaminfoRepository.findByTeamNameAndSeason(awayTeamName, season);
     }
@@ -111,11 +114,11 @@ public class RealTimeCrawler {
 
                     if (isHomeEventPresent) {
                         realTimeBuilder
-                                .teamName(teamNameToString(homeTeamName))
+                                .teamName(homeTeamName)
                                 .teamUrl(homeTeamlogoUrl);
                     } else if (isAwayEventPresent) {
                         realTimeBuilder
-                                .teamName(teamNameToString(awayTeamName))
+                                .teamName(awayTeamName)
                                 .teamUrl(awayTeamlogoUrl);
                     }
 

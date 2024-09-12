@@ -1,13 +1,8 @@
 package KickIt.server.domain.teams.controller;
 
-import KickIt.server.domain.fixture.dto.FixtureDto;
-import KickIt.server.domain.teams.EplTeams;
 import KickIt.server.domain.teams.dto.TeaminfoDto;
 import KickIt.server.domain.teams.entity.Teaminfo;
 import KickIt.server.domain.teams.service.TeaminfoService;
-import KickIt.server.global.common.crawler.TeaminfoCrawler;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;

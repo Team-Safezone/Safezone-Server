@@ -1,6 +1,5 @@
 package KickIt.server.domain.teams.entity;
 
-import KickIt.server.domain.teams.EplTeams;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -19,9 +18,7 @@ public class Teaminfo {
     // 팀 랭킹
     private int ranking;
     // 팀 이름
-    @Enumerated(EnumType.STRING)
-    @Column(columnDefinition = "ENUM('MCI','ARS','LIV','AVL','TOT','NEW','CHE','MUN','WHU','BHA','BOU','CRY','WOL','FUL','EVE','BRE','NFO','LUT','BUR','SHU') CHARACTER SET utf8mb4 COLLATE utf8mb4_bin")
-    private EplTeams team;
+    private String team;
     // 팀 로고 url
     private String logoUrl;
     // 시즌 정보
