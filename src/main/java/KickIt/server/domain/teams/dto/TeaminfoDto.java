@@ -1,6 +1,5 @@
 package KickIt.server.domain.teams.dto;
 
-import KickIt.server.domain.teams.EplTeams;
 import KickIt.server.domain.teams.entity.Teaminfo;
 import lombok.*;
 
@@ -30,7 +29,7 @@ public class TeaminfoDto {
 
         public TeaminfoResponse(Teaminfo teaminfo){
             this.ranking = teaminfo.getRanking();
-            this.team = EplTeams.getKrName(teaminfo.getTeam());
+            this.team = teaminfo.getTeam();
             this.logoUrl = teaminfo.getLogoUrl();
             this.season = teaminfo.getSeason();
         }

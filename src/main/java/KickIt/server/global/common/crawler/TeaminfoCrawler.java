@@ -1,7 +1,6 @@
 package KickIt.server.global.common.crawler;
 
 import KickIt.server.domain.teams.entity.Teaminfo;
-import KickIt.server.domain.teams.EplTeams;
 import KickIt.server.global.util.WebDriverUtil;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
@@ -43,10 +42,10 @@ public class TeaminfoCrawler {
                         continue; // 혹은 다른 적절한 처리
                     }
 
-                    EplTeams[] teamName = getTeamName(row);
+                    String teamName = getTeamName(row);
                     Teaminfo teaminfo = Teaminfo.builder()
                             .ranking(getRanking(row))
-                            .team(teamName[0])
+                            .team(teamName)
                             .logoUrl(getLogoUrl(row))
                             .season(getSeason(driver))
                             .build();
@@ -70,9 +69,9 @@ public class TeaminfoCrawler {
         return rankingInt;
     }
 
-    EplTeams[] getTeamName(WebElement row) {
+    String getTeamName(WebElement row) {
         String team = row.findElement(By.className("txt_name")).getText();
-        return new EplTeams[]{EplTeams.valueOfKrName(team)};
+        return team;
     }
 
     String getLogoUrl(WebElement row) {

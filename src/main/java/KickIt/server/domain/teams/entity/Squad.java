@@ -1,6 +1,5 @@
 package KickIt.server.domain.teams.entity;
 
-import KickIt.server.domain.teams.EplTeams;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;

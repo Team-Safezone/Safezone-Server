@@ -1,6 +1,5 @@
 package KickIt.server.domain.fixture.entity;
 
-import KickIt.server.domain.teams.EplTeams;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;

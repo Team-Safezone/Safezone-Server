@@ -1,7 +1,6 @@
 package KickIt.server.domain.fixture.dto;
 
 import KickIt.server.domain.fixture.entity.Fixture;
-import KickIt.server.domain.teams.EplTeams;
 import KickIt.server.domain.teams.service.TeamNameConvertService;
 import lombok.*;
 import org.springframework.beans.factory.annotation.Autowired;
