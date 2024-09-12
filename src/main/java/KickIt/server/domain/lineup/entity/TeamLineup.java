@@ -1,6 +1,5 @@
 package KickIt.server.domain.lineup.entity;
 
-import KickIt.server.domain.teams.EplTeams;
 import KickIt.server.domain.teams.entity.Player;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -17,7 +16,7 @@ import java.util.List;
 //각 팀별 선발 라인업을 담을 class TeamLineup
 public class TeamLineup {
     // 팀
-    private EplTeams team;
+    private String team;
     // 포메이션
     private String form;
     // 선수 리스트

@@ -3,7 +3,6 @@ package KickIt.server.global.common.crawler;
 import KickIt.server.domain.fixture.entity.Fixture;
 import KickIt.server.domain.lineup.entity.MatchLineup;
 import KickIt.server.domain.lineup.entity.TeamLineup;
-import KickIt.server.domain.teams.EplTeams;
 import KickIt.server.domain.teams.entity.Player;
 import KickIt.server.global.util.WebDriverUtil;
 import org.openqa.selenium.By;
@@ -140,7 +139,7 @@ public class LineupCrawler {
     }
 
     // 매개변수로 주어진 WebElement에서 선수 리스트를 가져오는 함수
-    ArrayList<Player> getPlayers(WebElement element, EplTeams teamName){
+    ArrayList<Player> getPlayers(WebElement element, String teamName){
         // 반환할 Player 객체 리스트 생성
         ArrayList<Player> players = new ArrayList<>();
         // 주어진 매개변수 Element에서 선수 명단이 있는 Element 찾아 가져옴
@@ -159,7 +158,7 @@ public class LineupCrawler {
     }
 
     // 매개변수로 주어진 WebElement에서 후보 선수 리스트를 가져오는 함수
-    ArrayList<Player> getBenchPlayers(List<WebElement> elements, EplTeams teamName){
+    ArrayList<Player> getBenchPlayers(List<WebElement> elements, String teamName){
         // 반환할 Player 객체 리스트 생성
         ArrayList<Player> benchPlayers = new ArrayList<>();
         for(int i = 0; i < elements.size(); i++) {

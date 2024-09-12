@@ -4,7 +4,7 @@ import KickIt.server.domain.fixture.dto.FixtureDto;
 import KickIt.server.domain.fixture.entity.Fixture;
 import KickIt.server.domain.fixture.entity.FixtureRepository;
 import KickIt.server.domain.fixture.service.FixtureService;
-import KickIt.server.domain.teams.EplTeams;
+import KickIt.server.domain.teams.service.TeamNameConvertService;
 import KickIt.server.global.common.crawler.FixtureCrawler;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,12 +20,15 @@ import java.util.*;
 public class FixtureController {
     @Autowired
     private FixtureService fixtureService;
+    @Autowired
+    private TeamNameConvertService teamNameConvertService;
+    @Autowired
+    private FixtureCrawler fixtureCrawler;
 
     // 입력 받은 year과 month의 경기 일정을 크롤링해 중복하지 않은 fixture만 db에 save
     @PostMapping("/crawl")
     @ResponseStatus(HttpStatus.CREATED)
     public ResponseEntity<Map<String, Object>> crawlFixtures (@RequestParam("year") String year, @RequestParam("month") String month){
-        FixtureCrawler fixtureCrawler = new FixtureCrawler();
         List<Fixture> fixtureList = new ArrayList<>();
         fixtureList = fixtureCrawler.getFixture(year, month);
 
@@ -48,7 +51,7 @@ public class FixtureController {
         }
         // teamName이 입력된 경우 날짜와 팀으로 경기 조회
         else {
-            EplTeams team = EplTeams.valueOfKrName(teamName);
+            String team = teamNameConvertService.convertFromKrName(teamName);
             // 입력된 teamName으로 EplTeam이 찾아지지 않는 경우 Bad Request 처리
             if(team == null){
                 responseBody.put("status", HttpStatus.BAD_REQUEST.value());
@@ -89,7 +92,7 @@ public class FixtureController {
         }
         // teamName이 입력된 경우 날짜와 팀으로 경기 조회
         else{
-            EplTeams team = EplTeams.valueOfKrName(teamName);
+            String team = teamNameConvertService.convertFromKrName(teamName);
             if(team == null){
                 responseBody.put("status", HttpStatus.BAD_REQUEST.value());
                 responseBody.put("message", "팀 이름 입력 오류");

@@ -1,17 +1,25 @@
 package KickIt.server.global.common.crawler;
 
+import KickIt.server.domain.fixture.entity.Fixture;
 import KickIt.server.domain.teams.entity.Teaminfo;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.annotation.AnnotationConfigApplicationContext;
+import org.springframework.stereotype.Component;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+@Component
 public class test {
+    @Autowired
+    public static FixtureCrawler mayFixtureCrawler;
 
     public static void main(String[] args) {
         /*
         // fixtureCrawler 테스트 및 출력
-        FixtureCrawler mayFixtureCrawler = new FixtureCrawler();
         String year = String.valueOf(LocalDate.now().getYear());
         //String month = String.format("%02d", LocalDate.now().getMonthValue());
         String month = "05";
