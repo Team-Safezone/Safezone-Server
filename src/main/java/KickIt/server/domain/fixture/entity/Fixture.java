@@ -28,13 +28,11 @@ public class Fixture {
     @Column(nullable=false)
     private Timestamp date; // 경기 날짜 및 시간
 
-    @Enumerated(EnumType.STRING)
-    @Column(columnDefinition = "ENUM('MCI','ARS','LIV','AVL','TOT','NEW','CHE','MUN','WHU','BHA','BOU','CRY','WOL','FUL','EVE','BRE','NFO','LUT','BUR','SHU') CHARACTER SET utf8mb4 COLLATE utf8mb4_bin")
-    private EplTeams homeTeam; // 홈팀 이름
+    @Column(nullable = false)
+    private String homeTeam; // 홈팀 이름
 
-    @Enumerated(EnumType.STRING)
-    @Column(columnDefinition = "ENUM('MCI','ARS','LIV','AVL','TOT','NEW','CHE','MUN','WHU','BHA','BOU','CRY','WOL','FUL','EVE','BRE','NFO','LUT','BUR','SHU') CHARACTER SET utf8mb4 COLLATE utf8mb4_bin")
-    private EplTeams awayTeam; // 원정팀 이름
+    @Column(nullable = false)
+    private String awayTeam; // 원정팀 이름
 
     @Column
     private Integer homeTeamScore; // 홈팀 점수

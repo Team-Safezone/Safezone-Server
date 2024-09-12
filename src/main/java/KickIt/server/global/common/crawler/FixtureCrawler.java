@@ -2,11 +2,14 @@
 package KickIt.server.global.common.crawler;
 
 import KickIt.server.domain.fixture.entity.Fixture;
-import KickIt.server.domain.teams.EplTeams;
+import KickIt.server.domain.teams.service.TeamNameConvertService;
 import KickIt.server.global.util.WebDriverUtil;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 import org.springframework.util.ObjectUtils;
 
 import java.sql.Timestamp;
@@ -20,8 +23,13 @@ import java.util.UUID;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+
 // 경기 일정 정보 크롤링하는 FixtureCrawler
+@Component
 public class FixtureCrawler {
+    @Autowired
+    private TeamNameConvertService teamNameConvertService;
+
     // YYYY년 MM 월의 경기 일정 정보를 가져와 Fixture 객체 리스트로 반환하는 getFixture 함수
     public List<Fixture> getFixture(String year, String month) {
         WebDriver driver = WebDriverUtil.getChromeDriver();
@@ -55,7 +63,7 @@ public class FixtureCrawler {
                         // 각 팀의 정보를 포함하는 tr을 담은 list
                         List<WebElement> teams = getTeams(tr);
                         // 각 팀의 이름 EplTeams 배열로 저장
-                        EplTeams[] teamNames = getTeamNames(teams);
+                        String[] teamNames = getTeamNames(teams);
                         // 각 팀의 점수 배열로 저장
                         Integer[] teamScores = getTeamScores(teams);
                         // 한 경기의 경기 고유 id(생성), 시즌 정보, 날짜 및 시간, 홈팀 이름, 원정팀 이름,
@@ -134,10 +142,10 @@ public class FixtureCrawler {
 
     // 경기에 참여하는 두 팀의 이름을 담은 배열을 반환하는 함수 getTeamNames
     // 0 번 요소가 홈팀, 1 번 요소가 원정팀
-    EplTeams[] getTeamNames(List<WebElement> row) {
+    String[] getTeamNames(List<WebElement> row) {
         String homeTeamName = row.get(0).findElement(By.className("txt_team")).getText();
         String awayTeamName = row.get(1).findElement(By.className("txt_team")).getText();
-        return new EplTeams[]{EplTeams.valueOfKrName(homeTeamName), EplTeams.valueOfKrName(awayTeamName)};
+        return new String[]{teamNameConvertService.convertFromKrName(homeTeamName), teamNameConvertService.convertFromKrName(awayTeamName)};
     }
 
     // 경기에 참여하는 두 팀의 점수를 담은 배열을 반환하는 함수 getTeamScores
