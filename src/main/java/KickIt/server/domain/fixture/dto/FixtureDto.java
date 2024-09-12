@@ -2,7 +2,10 @@ package KickIt.server.domain.fixture.dto;
 
 import KickIt.server.domain.fixture.entity.Fixture;
 import KickIt.server.domain.teams.EplTeams;
+import KickIt.server.domain.teams.service.TeamNameConvertService;
 import lombok.*;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
 import java.sql.Timestamp;
 import java.text.ParseException;
@@ -11,7 +14,15 @@ import java.util.Date;
 import java.util.TimeZone;
 import java.util.UUID;
 
+@Component
 public class FixtureDto {
+    private final TeamNameConvertService teamNameConvertService;
+
+    @Autowired
+    public FixtureDto(TeamNameConvertService teamNameConvertService) {
+        this.teamNameConvertService = teamNameConvertService;
+    }
+
     @Data
     @AllArgsConstructor
     @NoArgsConstructor
@@ -50,7 +61,7 @@ public class FixtureDto {
 
     // fixture response
     @Getter
-    public static class FixtureResponse{
+    public class FixtureResponse{
         private Long id;
         private String season;
         private String dateStr;
@@ -72,8 +83,8 @@ public class FixtureDto {
             this.dateStr = new SimpleDateFormat("yyyy-MM-dd").format(fixture.getDate());
             this.timeStr = new SimpleDateFormat("HH:mm").format(fixture.getDate());
 
-            this.homeTeam = fixture.getHomeTeam();
-            this.awayTeam = fixture.getAwayTeam();
+            this.homeTeam = teamNameConvertService.convertToKrName(fixture.getHomeTeam());
+            this.awayTeam = teamNameConvertService.convertToKrName(fixture.getAwayTeam());
             this.homeTeamScore = fixture.getHomeTeamScore();
             this.awayteamScore = fixture.getAwayteamScore();
             this.round = fixture.getRound();

@@ -16,6 +16,8 @@ import java.util.List;
 public class FixtureService {
     @Autowired
     private FixtureRepository fixtureRepository;
+    @Autowired
+    private FixtureDto fixtureDto;
 
     // fixture List 중 중복되지 않은 fixture만을 저장
     @Transactional
@@ -49,7 +51,7 @@ public class FixtureService {
         List<Fixture> fixtureList = fixtureRepository.findByDate(new Timestamp(date.getTime()));
         List<FixtureDto.FixtureResponse> responseList = new ArrayList<>();
         for (Fixture fixture : fixtureList){
-            responseList.add(new FixtureDto.FixtureResponse(fixture));
+            responseList.add(fixtureDto.new FixtureResponse(fixture));
         }
         return responseList;
     }
@@ -60,7 +62,7 @@ public class FixtureService {
         List<Fixture> fixtureList = fixtureRepository.findByDateAndTeam(new Timestamp(date.getTime()), team);
         List<FixtureDto.FixtureResponse> responseList = new ArrayList<>();
         for (Fixture fixture: fixtureList){
-            responseList.add(new FixtureDto.FixtureResponse(fixture));
+            responseList.add(fixtureDto.new FixtureResponse(fixture));
         }
         return responseList;
     }

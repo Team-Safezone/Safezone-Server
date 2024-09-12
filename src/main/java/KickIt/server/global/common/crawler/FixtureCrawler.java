@@ -9,6 +9,7 @@ import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 import org.springframework.util.ObjectUtils;
 
 import java.sql.Timestamp;
@@ -22,8 +23,9 @@ import java.util.UUID;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-@Component
+
 // 경기 일정 정보 크롤링하는 FixtureCrawler
+@Component
 public class FixtureCrawler {
     @Autowired
     private TeamNameConvertService teamNameConvertService;

@@ -11,6 +11,7 @@ import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 import org.springframework.util.ObjectUtils;
 
 import java.time.Duration;
@@ -19,6 +20,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 // 현재 시즌의 팀별 선수 명단을 크롤링하기 위한 SquadCrawler
+@Component
 public class SquadCrawler {
     @Autowired
     private TeamNameConvertService teamNameConvertService;
