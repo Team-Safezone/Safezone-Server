@@ -230,3 +230,5 @@ gradle-app.setting
 # End of https://www.toptal.com/developers/gitignore/api/windows,macos,intellij,java,gradle
 .idea/compiler.xml
 /.idea
+
+application-API-KEY.properties

@@ -9,6 +9,7 @@ import KickIt.server.global.common.crawler.RealTimeCrawler;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.RequestEntity;
 import org.springframework.http.ResponseEntity;
 import org.springframework.scheduling.annotation.Async;
@@ -32,7 +33,9 @@ import java.util.List;
 public class RealTimeStart {
 
     private static final String API_URL = "https://api.football-data.org/v4/competitions/PL/matches";
-    private static final String AUTH_TOKEN = "62f9313599664f808aacc19ae5250420";
+
+    @Value("${fixture-status-admin-key}")
+    private String AUTH_TOKEN;
 
     private final FixtureRepository fixtureRepository;
     private final ThreadPoolTaskScheduler taskScheduler;
@@ -54,7 +57,7 @@ public class RealTimeStart {
 
 
     // 매 자정 마다 오늘 경기 여부 파악
-    @Scheduled(cron = "0 58 16 * * ?")
+    @Scheduled(cron = "0 32 22 * * ?")
     public void getTodayFixture() {
         LocalDate today = LocalDate.of(2024, 9, 2);
         //LocalDate today = LocalDate.now(); -> default
@@ -87,7 +90,7 @@ public class RealTimeStart {
             System.out.println(fixture.getAwayTeam());
 
             // 경기 연기, 취소 처리
-            if(!status.equals("POSTPONED") || !status.equals("CANCELLED")){
+            if(!status.equals("POSTPONED") && !status.equals("CANCELLED")){
                 LocalDateTime fixtureMatchTime = fixture.getDate().toLocalDateTime();
 
                 if (fixtureMatchTime.isAfter(now)) {
