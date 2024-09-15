@@ -88,7 +88,7 @@ public class RealTimeStart {
 
             //&& !status.equals("FINISHED")
             // 경기 연기, 취소 처리
-            if(!status.equals("POSTPONED") && !status.equals("CANCELLED") && !status.equals("FINISHED")){
+            if(!status.equals("POSTPONED") && !status.equals("CANCELLED")){
                 LocalDateTime fixtureMatchTime = fixture.getDate().toLocalDateTime();
 
                 if (fixtureMatchTime.isAfter(now)) {
