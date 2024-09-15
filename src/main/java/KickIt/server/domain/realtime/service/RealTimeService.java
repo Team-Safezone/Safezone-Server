@@ -29,14 +29,14 @@ public class RealTimeService {
 
     // 완전히 동일한 이벤트인지 확인
     private boolean isRealTimeExist(RealTime realTime){
-        return realTimeRepository.findByMatchIdAndEventTimeAndEventNameAndPlayer1AndPlayer2(
-                realTime.getMatchId(), realTime.getEventTime(), realTime.getEventName(), realTime.getPlayer1(), realTime.getPlayer2()).isPresent();
+        return realTimeRepository.findByMatchIdAndTimeAndEventNameAndPlayer1AndPlayer2(
+                realTime.getMatchId(), realTime.getTime(), realTime.getEventName(), realTime.getPlayer1(), realTime.getPlayer2()).isPresent();
     }
 
     // 업데이트 된 이벤트인지 확인
     private boolean updateEvent(RealTime realTime) {
-        return realTimeRepository.findByMatchIdAndEventTimeAndEventNameAndPlayer1(
-                realTime.getMatchId(), realTime.getEventTime(), realTime.getEventName(), realTime.getPlayer1()).isPresent();
+        return realTimeRepository.findByMatchIdAndTimeAndEventNameAndPlayer1(
+                realTime.getMatchId(), realTime.getTime(), realTime.getEventName(), realTime.getPlayer1()).isPresent();
     }
 
 
@@ -66,7 +66,7 @@ public class RealTimeService {
 
     // player2 업데이트
     public void updatePlayer2(RealTime realTime) {
-        realTimeRepository.updateEvent(realTime.getPlayer2(), realTime.getMatchId(), realTime.getEventTime(), realTime.getEventName(), realTime.getPlayer1());
+        realTimeRepository.updateEvent(realTime.getPlayer2(), realTime.getMatchId(), realTime.getTime(), realTime.getEventName(), realTime.getPlayer1());
 
     }
 

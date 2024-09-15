@@ -17,6 +17,7 @@ import org.springframework.stereotype.Component;
 
 import java.time.Duration;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -71,7 +72,7 @@ public class RealTimeCrawler {
             awayTeamlogoUrl = teaminfoRepository.findByTeamNameAndSeason(awayTeamName, season);
     }
 
-    public void crawling() {
+    public String crawling() {
         // 기본 설정
         RealTime realTime = RealTime.builder()
                 .build();
@@ -80,14 +81,15 @@ public class RealTimeCrawler {
             WebDriverWait wait = new WebDriverWait(driver, Duration.ofMinutes(15));
 
             try{
-                // 타임 화면 나타날 때까지 대기
-                //wait.until(ExpectedConditions.presenceOfElementLocated(By.className("sr-lmt-clock__time")));
                 if(!start){
+                    // 타임 화면 나타날 때까지 대기
+                    wait.until(ExpectedConditions.presenceOfElementLocated(By.className("sr-lmt-clock__time")));
                     startTime = LocalDateTime.now();
                     start = true;
                     // 추가 시간이 없을 경우를 생각하여 0 으로 초기화
                     extraTime = "0";
                     System.out.println("경기 시작 시간" + dateToString(startTime));
+                    return "isFirst";
                 } else {
 
                 }
@@ -131,6 +133,7 @@ public class RealTimeCrawler {
                                 if (ownGoalClass.contains("ico_goal_own")) {
                                     realTimeBuilder
                                             .eventCode(whenHappen())
+                                            .time(elements[0])
                                             .eventTime(compareTime(startTime, elements[0]))
                                             .eventName("자책골")
                                             .player1(elements[2])
@@ -140,6 +143,7 @@ public class RealTimeCrawler {
                                 } else {
                                     realTimeBuilder
                                             .eventCode(whenHappen())
+                                            .time(elements[0])
                                             .eventTime(compareTime(startTime, elements[0]))
                                             .eventName(elements[1] + "!")
                                             .player1(elements[2])
@@ -152,6 +156,7 @@ public class RealTimeCrawler {
                     } else if (eventText.contains("교체")) {
                         realTimeBuilder
                                 .eventCode(whenHappen())
+                                .time(elements[0])
                                 .eventTime(compareTime(startTime, elements[0]))
                                 .eventName(elements[1])
                                 .player1(elements[2])
@@ -161,6 +166,7 @@ public class RealTimeCrawler {
                     } else if (eventText.contains("경고") || eventText.contains("퇴장")) {
                         realTimeBuilder
                                 .eventCode(whenHappen())
+                                .time(elements[0])
                                 .eventTime(compareTime(startTime, elements[0]))
                                 .eventName(elements[1])
                                 .player1(elements[2]);
@@ -169,6 +175,7 @@ public class RealTimeCrawler {
                     } else if (eventText.contains("VAR")) {
                         realTimeBuilder
                                 .eventCode(whenHappen())
+                                .time(elements[0])
                                 .eventTime(compareTime(startTime, elements[0]))
                                 .eventName(elements[2])
                                 .player1(rmBracket(elements[3]));
@@ -178,6 +185,7 @@ public class RealTimeCrawler {
                         isExtra();
                         realTimeBuilder
                                 .eventCode(4)
+                                .time(isBeforeAfter())
                                 .eventTime(extraTime(startTime))
                                 .eventName(getAddEvent(elements[0]))
                                 .player1(getAddTime(elements[0]));
@@ -188,6 +196,7 @@ public class RealTimeCrawler {
                         getHalfScore();
                         realTimeBuilder
                                 .eventCode(2)
+                                .time(elements[0])
                                 .eventName("하프타임")
                                 .eventTime(halfTime(startTime, extraTime))
                                 .player1(homeTeamScore)
@@ -195,22 +204,24 @@ public class RealTimeCrawler {
                         start = false;
                         realTime = realTimeBuilder.build();
                         realTimeService.saveEvent(realTime);
+                        return "종료";
                     } else if (eventText.contains("경기종료")) {
                         getHalfScore();
                         realTimeBuilder
                                 .eventCode(6)
+                                .time(elements[0])
                                 .eventTime(halfTime(startTime, extraTime))
                                 .eventName(elements[0])
                                 .player1(homeTeamScore)
                                 .player2(awayTeamScore);
                         realTime = realTimeBuilder.build();
                         realTimeService.saveEvent(realTime);
+                        return "경기종료";
+                    } else if (eventText.contains("후반전")) {
+                        isHalf();
                     }
-
                 }
-
             }
-
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -223,6 +234,7 @@ public class RealTimeCrawler {
         isHomeEventPresent = false;
         isAwayEventPresent = false;
 
+        return " ";
     }
 
     // 홈팀, 어웨이팀 구분
@@ -244,20 +256,7 @@ public class RealTimeCrawler {
         WebDriverUtil.quit(driver);
     }
 
-
     /*
-    디자인 변경으로 처리 안하게 됨
-    else if (eventText.contains("후반전")) {
-                        isHalf();
-                        realTimeBuilder
-                                .compareTime(dateToString(startTime))
-                                .eventCode(whenHappen())
-                                .eventName(elements[0]);
-                        realTime = realTimeBuilder.build();
-                        System.out.println("realTime = " + realTime);
-                        return realTime;
-                        //realTimeService.saveEvent(realTime);
-
      else if (eventText.contains("0′")) {
                         realTimeBuilder
                                 .eventCode(0)

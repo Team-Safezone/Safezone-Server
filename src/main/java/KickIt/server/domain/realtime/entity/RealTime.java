@@ -21,6 +21,7 @@ public class RealTime {
     private int sequence;
     private Long matchId;
     private int eventCode;
+    private String time;
     private String eventTime;
     private String eventName;
     private String player1;

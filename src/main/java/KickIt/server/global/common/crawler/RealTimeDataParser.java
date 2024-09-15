@@ -70,11 +70,11 @@ public class RealTimeDataParser {
     // 전반? 후반? 추가시간?
     public static int whenHappen() {
         if(isMatch2 && !isExtra){
-            return 3;
+            return 3; //후반
         } else if (isExtra) {
-            return 5;
+            return 5; //추가시간
         } else {
-            return 1;
+            return 1; //전반
         }
     }
 
@@ -88,10 +88,10 @@ public class RealTimeDataParser {
     // 심박수 비교 시간
     public static String compareTime(LocalDateTime startTime, String eventTime) {
         int minutesToAdd = 0;
-        if(!isMatch2 || !isMatch2 && isExtra){
-            // 전반전
+        if(!isMatch2 && !isExtra || !isMatch2 && isExtra){
+            // 전반전 or 전반전 추가시간
             minutesToAdd = parseInt(eventTime);
-        } else if(isMatch2 || isMatch2 && isExtra){
+        } else if(isMatch2 && !isExtra || isMatch2 && isExtra){
             // 후반전
             minutesToAdd = parseInt(eventTime) - gameTime;
         }
@@ -113,5 +113,13 @@ public class RealTimeDataParser {
         return dateToString(halfTime);
     }
 
-
+    // 전반, 후반 추가시간 확인
+    public static String isBeforeAfter() {
+        if (!isMatch2 && isExtra){
+            return "전반";
+        } else if (isMatch2 && isExtra) {
+             return "후반";
+        }
+        return " ";
+    }
 }
