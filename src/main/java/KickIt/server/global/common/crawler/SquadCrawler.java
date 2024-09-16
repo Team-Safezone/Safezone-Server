@@ -25,11 +25,11 @@ public class SquadCrawler {
     @Autowired
     private TeamNameConvertService teamNameConvertService;
 
-    Map<String, Squad> getTeamSquads(){
+    public List<Squad> getTeamSquads(String season){
         // 다음 스포츠의 프리미어리그 팀 페이지
         String pageUrl = "https://sports.daum.net/team/epl";
         // 현 시즌의 각 팀 선수 명단을 저장하고 있는 Map 객체 seasonSquads
-        Map<String, Squad> seasonSquads = new HashMap<>();
+        List<Squad> seasonSquads = new ArrayList<>();
         // 다음 스포츠 팀 페이지 주소를 저장할 리스트
         List<String> teamPageUrls = new ArrayList<>();
         //  팀별 선수 공식 이미지 주소를 저장할 hashmap
@@ -57,8 +57,8 @@ public class SquadCrawler {
                 for (int i = 0; i < 20; i++){
                     // page url 제대로 크롤링했는지 확인하기 위한 코드. 추후 삭제 예정.
                     System.out.println(teamPageUrls.get(i));
-                    Squad squad = getSquad(driver, teamPageUrls.get(i), imageUrls);
-                    seasonSquads.put(squad.getTeam(), squad);
+                    Squad squad = getSquad(driver, teamPageUrls.get(i), imageUrls, season);
+                    seasonSquads.add(squad);
                 }
 
                 Thread.sleep(50);
@@ -119,7 +119,6 @@ public class SquadCrawler {
         driver.findElements(By.cssSelector("div.stats-card__squad-number.u-hide-mob-l")).forEach(e -> numList.add(e.getText()));
         driver.findElements(By.cssSelector("img.statCardImg.statCardPlayer")).forEach(e -> urlList.add(e.getAttribute("src")));
 
-
         for(int i = 0; i < numList.size(); i++){
             // numList가 공백인 경우(선수 번호 없는 경우) Integer로 parsing 할 경우 오류 발생하므로 continue
             // (번호 없어 map으로 찾을 수 없으므로 이미지 주소 저장할 필요 없음)
@@ -127,12 +126,13 @@ public class SquadCrawler {
             // map 'playerImgs'에 (선수 이름, 크롤링한 프로필 이미지 주소) put
             playerImgs.put(Integer.parseInt(numList.get(i)), urlList.get(i));
         }
+        Logger.getGlobal().log(Level.INFO, "선수 이미지 크롤링: " + team + " : " + playerImgs.size());
         // map 'map'에 (팀, 선수 이미지 주소들 담은 map'playerImgs') put
         map.put(team, playerImgs);
     }
 
     // 각 팀의 선수 상세 페이지를 크롤링해 팀 선수 명단인 Squad 객체를 반환하는 getSquad()
-    Squad getSquad(WebDriver driver, String url, Map<String, Map<Integer, String>> imageUrl){
+    Squad getSquad(WebDriver driver, String url, Map<String, Map<Integer, String>> imageUrl, String season){
         driver.get(url);
         // 포지션별로 나누어진 선수 명단 정보가 있는 WebElements 찾아옴 (총 4 개- 0: 공격수 1: 미드필더 2: 수비수 3: 골키퍼)
         List<WebElement> squadElements = driver.findElements(By.className("list_member"));
@@ -147,13 +147,18 @@ public class SquadCrawler {
         // 이후 team과 포지션별 선수 명단 데이터로 Squad 객체 teamSquad를 build 후 반환한다.
         Map<Integer, String> images = imageUrl.get(team);
         Squad teamSquad = Squad.builder()
+                            .season(season)
                             .team(team)
                             .logoImg(logoUrl)
-                            .FWplayers(getPosPlayers(squadElements.get(0).findElements(By.tagName("li")), team, PlayerPosition.FW, images))
-                            .MFplayers(getPosPlayers(squadElements.get(1).findElements(By.tagName("li")), team, PlayerPosition.MF, images))
-                            .DFplayers(getPosPlayers(squadElements.get(2).findElements(By.tagName("li")), team, PlayerPosition.DF, images))
-                            .GKplayers(getPosPlayers(squadElements.get(3).findElements(By.tagName("li")), team, PlayerPosition.GK, images))
+                            //.FWplayers(getPosPlayers(squadElements.get(0).findElements(By.tagName("li")), team, PlayerPosition.FW, images))
+                            //.MFplayers(getPosPlayers(squadElements.get(1).findElements(By.tagName("li")), team, PlayerPosition.MF, images))
+                            //.DFplayers(getPosPlayers(squadElements.get(2).findElements(By.tagName("li")), team, PlayerPosition.DF, images))
+                            //.GKplayers(getPosPlayers(squadElements.get(3).findElements(By.tagName("li")), team, PlayerPosition.GK, images))
                             .build();
+        teamSquad.addFWPlayers(getPosPlayers(squadElements.get(0).findElements(By.tagName("li")), team, PlayerPosition.FW, images));
+        teamSquad.addMFPlayers(getPosPlayers(squadElements.get(1).findElements(By.tagName("li")), team, PlayerPosition.MF, images));
+        teamSquad.addDFPlayers(getPosPlayers(squadElements.get(2).findElements(By.tagName("li")), team, PlayerPosition.DF, images));
+        teamSquad.addGKPlayers(getPosPlayers(squadElements.get(3).findElements(By.tagName("li")), team, PlayerPosition.GK, images));
         return teamSquad;
     }
 
