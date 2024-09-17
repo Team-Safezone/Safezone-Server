@@ -1,5 +1,6 @@
 package KickIt.server.domain.teams.entity;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -27,15 +28,19 @@ public class Squad {
     private String logoImg;
     // 공격수(Forward) 선수 리스트
     @OneToMany(mappedBy = "squad", cascade = CascadeType.ALL)
+    @JsonManagedReference
     private List<Player> FWplayers;
     // 미드필더(Midfielder) 선수 리스트
     @OneToMany(mappedBy = "squad", cascade = CascadeType.ALL)
+    @JsonManagedReference
     private List<Player> MFplayers;
     // 수비수(Defender) 선수 리스트
     @OneToMany(mappedBy = "squad", cascade = CascadeType.ALL)
+    @JsonManagedReference
     private List<Player> DFplayers;
     // 골키퍼(Goalkeeper) 선수 리스트
     @OneToMany(mappedBy = "squad", cascade = CascadeType.ALL)
+    @JsonManagedReference
     private List<Player> GKplayers;
 
     // FW Player 추가 및 양방향 관계 설정

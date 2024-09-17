@@ -1,6 +1,7 @@
 package KickIt.server.domain.teams.entity;
 
 import KickIt.server.domain.teams.PlayerPosition;
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -37,6 +38,7 @@ public class Player {
 
     @ManyToOne
     @JoinColumn(name = "squad_id")
+    @JsonBackReference
     private Squad squad;
 
     // Squad를 설정하는 메소드
