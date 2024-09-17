@@ -35,6 +35,9 @@ public class NaverApiClient implements OAuthApiClient {
     @Value("${oauth.naver.url.api}")
     private String apiUrl;
 
+    @Value("${oauth.naver.url.redirect_uri}")
+    private String redirect_url;
+
     private final RestTemplate restTemplate;
 
     @Override
@@ -53,6 +56,7 @@ public class NaverApiClient implements OAuthApiClient {
         body.add("grant_type", GRANT_TYPE);
         body.add("client_id", clientId);
         body.add("client_secret", clientSecret);
+        body.add("redirect_uri", redirect_url);
 
         HttpEntity<?> request = new HttpEntity<>(body, httpHeaders);
 
