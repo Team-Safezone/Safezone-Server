@@ -7,7 +7,7 @@ import jakarta.persistence.GenerationType;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import org.springframework.data.annotation.Id;
+import jakarta.persistence.Id;
 
 import java.util.List;
 
@@ -18,7 +18,7 @@ public class Member {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    private Long memberId;
 
     private String email;
 
@@ -26,7 +26,11 @@ public class Member {
 
     private String nickname;
 
-    private List<String> favoriteTeams;
+    private String firstTeam;
+    private String secondTeam;
+    private String thirdTeam;
+
+    private String grade;
 
     private Boolean consent;
 

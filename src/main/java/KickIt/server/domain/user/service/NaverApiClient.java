@@ -23,17 +23,17 @@ public class NaverApiClient implements OAuthApiClient {
 
     private static final String GRANT_TYPE = "authorization_code";
 
-    @Value("${oauth.naver.url.auth}")
-    private String authUrl;
-
-    @Value("${oauth.naver.url.api}")
-    private String apiUrl;
-
     @Value("${oauth.naver.clientId}")
     private String clientId;
 
     @Value("${oauth.naver.clientSecret}")
     private String clientSecret;
+
+    @Value("${oauth.naver.url.auth}")
+    private String authUrl;
+
+    @Value("${oauth.naver.url.api}")
+    private String apiUrl;
 
     private final RestTemplate restTemplate;
 
