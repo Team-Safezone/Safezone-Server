@@ -6,5 +6,7 @@ import KickIt.server.domain.user.OAuthProvider;
 public interface OAuthInfoResponse {
     String getEmail();
 
+    String getName();
+
     OAuthProvider getOAuthProvider();
 }

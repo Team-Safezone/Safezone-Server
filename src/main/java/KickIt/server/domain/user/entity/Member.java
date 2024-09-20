@@ -20,6 +20,8 @@ public class Member {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long memberId;
 
+    private String name;
+
     private String email;
 
     private OAuthProvider oAuthProvider;
@@ -32,10 +34,11 @@ public class Member {
 
     private String grade;
 
-    private Boolean consent;
+    private Boolean consent = false;
 
     @Builder
-    public Member(String email, OAuthProvider oAuthProvider) {
+    public Member(String name, String email, OAuthProvider oAuthProvider) {
+        this.name = name;
         this.email = email;
         this.oAuthProvider = oAuthProvider;
     }

@@ -38,6 +38,7 @@ public class OAuthLoginService {
 
     private Long newMember(OAuthInfoResponse oAuthInfoResponse) {
         Member member = Member.builder()
+                .name(oAuthInfoResponse.getName())
                 .email(oAuthInfoResponse.getEmail())
                 .oAuthProvider(oAuthInfoResponse.getOAuthProvider())
                 .build();

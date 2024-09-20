@@ -8,6 +8,8 @@ import lombok.Getter;
 public class MemberDto {
     private Long memberId;
 
+    private String name;
+
     private String email;
 
     private OAuthProvider oAuthProvider;
@@ -24,6 +26,7 @@ public class MemberDto {
 
     public MemberDto(Member member) {
         this.memberId = member.getMemberId();
+        this.name = member.getName();
         this.email = member.getEmail();
         this.oAuthProvider = member.getOAuthProvider();
         this.nickname = member.getNickname();
