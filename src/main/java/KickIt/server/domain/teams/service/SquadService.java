@@ -26,12 +26,12 @@ public class SquadService {
                         .season(squad.getSeason())
                         .team(squad.getTeam())
                         .logoImg(squad.getLogoImg())
-                        .FWplayers(squad.getFWplayers())
-                        .MFplayers(squad.getMFplayers())
-                        .DFplayers(squad.getDFplayers())
-                        .GKplayers(squad.getGKplayers())
                         .build();
-                squadRepository.save(squad);
+                updatedSquad.addFWPlayers(squad.getFWplayers());
+                updatedSquad.addMFPlayers(squad.getMFplayers());
+                updatedSquad.addDFPlayers(squad.getDFplayers());
+                updatedSquad.addGKPlayers(squad.getGKplayers());
+                squadRepository.save(updatedSquad);
             }
             // 아닌 경우 새로 저장
             else{
