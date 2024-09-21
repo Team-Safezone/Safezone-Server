@@ -6,6 +6,7 @@ import KickIt.server.domain.realtime.entity.RealTime;
 import KickIt.server.domain.teams.entity.TeaminfoRepository;
 import KickIt.server.domain.teams.service.TeamNameConvertService;
 import KickIt.server.global.common.crawler.RealTimeCrawler;
+import KickIt.server.global.util.DataSend;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -43,24 +44,27 @@ public class RealTimeStart {
     private final TeaminfoRepository teaminfoRepository;
     private final RestTemplate restTemplate = new RestTemplate();
     private final TeamNameConvertService teamNameConvertService;
+    private final DataSend dataSend;
+
 
     private String apiMatchId;
 
     @Autowired
-    public RealTimeStart(FixtureRepository fixtureRepository, RealTimeService realTimeService, TeaminfoRepository teaminfoRepository, ThreadPoolTaskScheduler taskScheduler, TeamNameConvertService teamNameConvertService) {
+    public RealTimeStart(FixtureRepository fixtureRepository, RealTimeService realTimeService, TeaminfoRepository teaminfoRepository, ThreadPoolTaskScheduler taskScheduler, TeamNameConvertService teamNameConvertService, DataSend dataSend) {
         this.taskScheduler = taskScheduler;
         this.fixtureRepository = fixtureRepository;
         this.realTimeService = realTimeService;
         this.teaminfoRepository = teaminfoRepository;
         this.teamNameConvertService = teamNameConvertService;
+        this.dataSend = dataSend;
     }
 
 
     // 매 자정 마다 오늘 경기 여부 파악
-    @Scheduled(cron = "0 32 22 * * ?")
+    @Scheduled(cron = "0 0 0 * * ?")
     public void getTodayFixture() {
-        LocalDate today = LocalDate.of(2024, 9, 2);
-        //LocalDate today = LocalDate.now(); -> default
+        //LocalDate today = LocalDate.of(2024, 9, 2);
+        LocalDate today = LocalDate.now(); //-> default
 
         // LocalDate를 LocalDateTime으로 변환하고, Timestamp로 변환
         LocalDateTime startOfDay = today.atStartOfDay();
@@ -86,9 +90,7 @@ public class RealTimeStart {
             apiMatchId = getMatchIdFromApi(fixture);
             String status = getMatchStatus(apiMatchId);
 
-            System.out.println(fixture.getHomeTeam());
-            System.out.println(fixture.getAwayTeam());
-
+            //&& !status.equals("FINISHED")
             // 경기 연기, 취소 처리
             if(!status.equals("POSTPONED") && !status.equals("CANCELLED")){
                 LocalDateTime fixtureMatchTime = fixture.getDate().toLocalDateTime();
@@ -97,12 +99,14 @@ public class RealTimeStart {
                     Date startDate = Date.from(fixtureMatchTime.atZone(ZoneId.systemDefault()).toInstant());
                     taskScheduler.schedule(() -> startStopCrawling(fixture,apiMatchId), startDate);
                     System.out.println("오늘 경기 시작 시간: " + fixtureMatchTime);
-                } else {
+                }
+                else {
                     // 이미 시작된 경기는 바로 크롤링 시작
                     System.out.println("이미 시작: " + fixtureMatchTime);
                     Date startDate = new Date();
                     taskScheduler.schedule(() -> startStopCrawling(fixture, apiMatchId), startDate);
                 }
+
             }
         }
 
@@ -116,38 +120,40 @@ public class RealTimeStart {
 
         System.out.println("apiMatchId = " + apiMatchId);
 
+        String isDone;
+
         RealTimeCrawler realTimeCrawler = new RealTimeCrawler(realTimeService, teaminfoRepository, teamNameConvertService);
 
         realTimeCrawler.initializeCrawler(fixture);
 
         try {
             while (!eventEnd) {
-                // 전반/후반 시작 후 45분 대기
-                realTimeCrawler.crawling();
-                System.out.println("45분 대기");
-                Thread.sleep(1 * 60 * 1000);
+                isDone = realTimeCrawler.crawling();
 
-                while (!eventEnd) {
-                    // 현재 상태 확인
-                    String apiStatus = getMatchStatus(apiMatchId);
-
-                    switch (apiStatus) {
-                        case "PAUSED":
-                            System.out.println("경기 전반전 종료 감지: PAUSED 상태");
-                            // 15분 대기 후 전반전 종료 후 다시 크롤링 시작
-                            Thread.sleep(15 * 60 * 1000);
-                            break;
-
-                        case "FINISHED":
-                            System.out.println("경기 종료 감지: FINISHED 상태");
-                            eventEnd = true;
-                            realTimeCrawler.quit();
-                            return;
-
-                        default:
-                            // 아직 안 끝난 상태
-                            Thread.sleep(1 * 60 * 1000);
-                    }
+                switch (isDone) {
+                    case "isFirst":
+                        System.out.println("경기 시작");
+                        Thread.sleep(45 * 60 * 1000);
+                        break;
+                    case " ":
+                        System.out.println("1분 대기");
+                        Thread.sleep(60 * 1000);
+                        break;
+                    case "종료":
+                        System.out.println("전반전 종료");
+                        dataSend.sendRealTimeData(fixture.getId());
+                        Thread.sleep(13 * 60 * 1000);
+                        break;
+                    case "경기종료":
+                        System.out.println("경기 종료");
+                        eventEnd = true;
+                        realTimeCrawler.quit();
+                        dataSend.sendRealTimeData(fixture.getId());
+                        return;
+                    default:
+                        System.out.println("예상치 못한 상태: " + isDone);
+                        Thread.sleep(60 * 1000);
+                        break;
                 }
             }
         } catch (InterruptedException e) {
