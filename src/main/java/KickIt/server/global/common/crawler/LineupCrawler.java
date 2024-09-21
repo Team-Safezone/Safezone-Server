@@ -56,6 +56,7 @@ public class LineupCrawler {
 
                 // 홈팀 선수 리스트와 원정팀 선수 리스트 정보를 크롤링해 Player 객체 List로 저장
                 // 이때 포메이션대로 getPlayers 함수에서 반환한 전체 선수 리스트를 분할해 저장
+                /*
                 String[] homeFormNum = homeForm.split("-");
                 ArrayList<List<Player>> homePlayers = new ArrayList<>();
                 ArrayList<Player> homeTotalPlayer = getPlayers(homeElement, fixture.getHomeTeam());
@@ -67,7 +68,10 @@ public class LineupCrawler {
                     endIndex = startIndex + Integer.parseInt(homeFormNum[i]);
                     homePlayers.add(homeTotalPlayer.subList(startIndex, endIndex));
                 }
+                 */
+                List<Player> homePlayers = getPlayers(homeElement, fixture.getHomeTeam());
 
+                /*
                 String[] awayFormNum = awayForm.split("-");
                 ArrayList<List<Player>> awayPlayers = new ArrayList<>();
                 ArrayList<Player> awayTotalPlayer = getPlayers(awayElement, fixture.getAwayTeam());
@@ -79,6 +83,8 @@ public class LineupCrawler {
                     endIndex = startIndex + Integer.parseInt(awayFormNum[i]);
                     awayPlayers.add(awayTotalPlayer.subList(startIndex, endIndex));
                 }
+                 */
+                List<Player> awayPlayers = getPlayers(awayElement, fixture.getAwayTeam());
 
                 // 각 팀의 후보 선수 리스트를 가져오기 위한 후보 선수 정보가 담긴 Webelement > 그 중 li 요소 찾음
                 List<WebElement> homeBenchElement = driver.findElements(By.className("list_substitute")).get(2).findElements(By.cssSelector("li"));

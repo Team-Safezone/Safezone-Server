@@ -1,5 +1,6 @@
 package KickIt.server.domain.teams.entity;
 
+import KickIt.server.domain.lineup.entity.TeamLineup;
 import KickIt.server.domain.teams.PlayerPosition;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
@@ -36,10 +37,16 @@ public class Player {
     // 이미지 주소
     private String profileImg;
 
+    // squad와의 관계 설정(여러 player가 포함되는 일대다)
     @ManyToOne
     @JoinColumn(name = "squad_id")
     @JsonBackReference
     private Squad squad;
+
+    // team lineup과의 관계 설정(여러 player가 포함되는 일대다)
+    @ManyToOne
+    @JoinColumn(name = "team_lineup_id")
+    private TeamLineup teamLineup;
 
     // Squad를 설정하는 메소드
     public void assignSquad(Squad squad) {
