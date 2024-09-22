@@ -27,19 +27,19 @@ public class Squad {
     // 팀 로고 url
     private String logoImg;
     // 공격수(Forward) 선수 리스트
-    @OneToMany(mappedBy = "squad", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "squad", cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonManagedReference
     private List<Player> FWplayers;
     // 미드필더(Midfielder) 선수 리스트
-    @OneToMany(mappedBy = "squad", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "squad", cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonManagedReference
     private List<Player> MFplayers;
     // 수비수(Defender) 선수 리스트
-    @OneToMany(mappedBy = "squad", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "squad", cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonManagedReference
     private List<Player> DFplayers;
     // 골키퍼(Goalkeeper) 선수 리스트
-    @OneToMany(mappedBy = "squad", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "squad", cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonManagedReference
     private List<Player> GKplayers;
 
