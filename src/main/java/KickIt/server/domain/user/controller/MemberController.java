@@ -1,11 +1,13 @@
 package KickIt.server.domain.user.controller;
 
 import KickIt.server.domain.realtime.service.RealTimeService;
+import KickIt.server.domain.user.JwtService;
 import KickIt.server.domain.user.dto.MemberRepository;
 import KickIt.server.domain.user.entity.Member;
 import KickIt.server.domain.user.entity.MemberRequest;
 import KickIt.server.domain.user.entity.OAuthProvider;
 import KickIt.server.domain.user.service.MemberService;
+import io.jsonwebtoken.Jwt;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -23,9 +25,11 @@ import static KickIt.server.domain.user.entity.OAuthProvider.NAVER;
 public class MemberController {
 
     private final MemberService memberService;
+    private final JwtService jwtService;
     @Autowired
-    public MemberController(MemberService memberService) {
+    public MemberController(MemberService memberService, JwtService jwtService) {
         this.memberService = memberService;
+        this.jwtService = jwtService;
     }
 
     @PostMapping("/signup")
@@ -47,8 +51,10 @@ public class MemberController {
 
 
         if(memberService.saveMember(member)) {
+            String accessToken = jwtService.createAccessToken(member.getEmail());
             responseBody.put("status", HttpStatus.OK.value());
             responseBody.put("message", "success");
+            responseBody.put("xAuthToken", accessToken);
             return new ResponseEntity<>(responseBody, HttpStatus.OK);
         } else {
             responseBody.put("status", HttpStatus.CONFLICT.value());
