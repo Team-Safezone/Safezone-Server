@@ -48,11 +48,14 @@ public class LineupCrawler {
                 String homeForm = getForm(homeElement);
                 String awayForm = getForm(awayElement);
 
+                // 감독 정보 필요 없어져 일단 주석 처리
+                /*
                 // 홈팀과 원정팀의 감독 정보를 담은 element
                 WebElement DirectorsElement = driver.findElement(By.className("substitute_coach"));
                 // 홈팀과 원정팀의 감독 정보를 문자열로 크롤링
                 String homeDirector = getDirector(DirectorsElement)[0];
                 String awayDirector = getDirector(DirectorsElement)[1];
+                 */
 
                 // 홈팀 선수 리스트와 원정팀 선수 리스트 정보를 크롤링해 Player 객체 List로 저장
                 // 이때 포메이션대로 getPlayers 함수에서 반환한 전체 선수 리스트를 분할해 저장
@@ -100,7 +103,6 @@ public class LineupCrawler {
                                 .team(fixture.getHomeTeam())
                                 .form(homeForm)
                                 .players(homePlayers)
-                                .director(homeDirector)
                                 .benchPlayers(homeBenchPlayers)
                                 .build();
                 // 위에서 크롤링해 온 정보 바탕으로 원정팀 TeamLineup 클래스 객체 build
@@ -109,7 +111,6 @@ public class LineupCrawler {
                                 .team(fixture.getAwayTeam())
                                 .form(awayForm)
                                 .players(awayPlayers)
-                                .director(awayDirector)
                                 .benchPlayers(awayBenchPlayers)
                                 .build();
 
@@ -119,8 +120,6 @@ public class LineupCrawler {
                                 .id(fixture.getId())
                                 .homeTeam(fixture.getHomeTeam())
                                 .awayTeam(fixture.getAwayTeam())
-                                .homeTeamForm(homeForm)
-                                .awayTeamForm(awayForm)
                                 .homeTeamLineup(homeTeamLineup)
                                 .awayTeamLineup(awayTeamLineup)
                                 .build();

@@ -30,9 +30,9 @@ public class MatchLineup {
     // 원정팀
     private String awayTeam;
     // 홈팀 포메이션
-    private String homeTeamForm;
+    //private String homeTeamForm;
     // 원정팀 포메이션
-    private String awayTeamForm;
+    //private String awayTeamForm;
     // 홈팀 선발 라인업
     @OneToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "hometeam_lineup_id")
