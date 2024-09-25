@@ -1,13 +1,9 @@
 package KickIt.server.domain.user.entity;
 
-import KickIt.server.domain.user.OAuthProvider;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import lombok.Builder;
+import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import jakarta.persistence.Id;
+import lombok.Setter;
 
 import java.util.List;
 
@@ -20,27 +16,33 @@ public class Member {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long memberId;
 
-    private String name;
-
     private String email;
-
-    private OAuthProvider oAuthProvider;
 
     private String nickname;
 
-    private String firstTeam;
-    private String secondTeam;
-    private String thirdTeam;
+    private String team1;
+    private String team2;
+    private String team3;
 
     private String grade;
 
-    private Boolean consent = false;
+    private Boolean marketingConsent;
 
-    @Builder
-    public Member(String name, String email, OAuthProvider oAuthProvider) {
-        this.name = name;
+    @Enumerated(EnumType.STRING)
+    private OAuthProvider oAuthProvider;
+
+    public Member(String email, String nickname, List<String> favoriteTeams, String grade, Boolean marketingConsent, OAuthProvider oAuthProvider) {
         this.email = email;
+        this.nickname = nickname;
+        this.team1 = favoriteTeams.get(0);
+        this.team2 = favoriteTeams.get(1);
+        this.team3 = favoriteTeams.get(2);
+        this.grade = grade;
+        this.marketingConsent = marketingConsent;
         this.oAuthProvider = oAuthProvider;
+    }
+    public void setGrade(String grade) {
+        this.grade = grade;
     }
 
 }
