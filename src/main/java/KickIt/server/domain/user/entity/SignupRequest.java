@@ -5,7 +5,7 @@ import lombok.Getter;
 import java.util.List;
 
 @Getter
-public class MemberRequest {
+public class SignupRequest {
     private String email;
     private String nickname;
     private List<String> favoriteTeams;

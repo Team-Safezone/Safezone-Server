@@ -3,7 +3,6 @@ package KickIt.server.domain.user.entity;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
 
 import java.util.List;
 
@@ -35,8 +34,12 @@ public class Member {
         this.email = email;
         this.nickname = nickname;
         this.team1 = favoriteTeams.get(0);
-        this.team2 = favoriteTeams.get(1);
-        this.team3 = favoriteTeams.get(2);
+        if(favoriteTeams.size() >= 2){
+            this.team2 = favoriteTeams.get(1);
+            if(favoriteTeams.size() >= 3) {
+                this.team3 = favoriteTeams.get(2);
+            }
+        }
         this.grade = grade;
         this.marketingConsent = marketingConsent;
         this.oAuthProvider = oAuthProvider;
