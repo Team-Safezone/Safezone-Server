@@ -42,4 +42,8 @@ public class MatchLineup {
     @JoinColumn(name = "awayteam_lineup_id")
     private TeamLineup awayTeamLineup;
 
+    // 감독 이름
+    private String homeDirector;
+    // 감독 이름
+    private String awayDirector;
 }
