@@ -1,4 +1,4 @@
-package KickIt.server.domain.user;
+package KickIt.server.domain.member;
 
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
@@ -16,7 +16,7 @@ public class JwtService {
     // access token
     public String createAccessToken(String email) {
         Date now = new Date();
-        Date expiration = new Date(now.getTime() + Duration.ofHours(2).toMillis());
+        Date expiration = new Date(now.getTime() + Duration.ofDays(10).toMillis());
         return Jwts.builder()
                 .claim("email", email)
                 .setIssuedAt(now)

@@ -1,4 +1,4 @@
-package KickIt.server.domain.user.entity;
+package KickIt.server.domain.member.entity;
 
 import jakarta.persistence.*;
 import lombok.Getter;
@@ -28,9 +28,9 @@ public class Member {
     private Boolean marketingConsent;
 
     @Enumerated(EnumType.STRING)
-    private OAuthProvider oAuthProvider;
+    private AuthProvider authProvider;
 
-    public Member(String email, String nickname, List<String> favoriteTeams, String grade, Boolean marketingConsent, OAuthProvider oAuthProvider) {
+    public Member(String email, String nickname, List<String> favoriteTeams, String grade, Boolean marketingConsent, AuthProvider authProvider) {
         this.email = email;
         this.nickname = nickname;
         this.team1 = favoriteTeams.get(0);
@@ -42,7 +42,7 @@ public class Member {
         }
         this.grade = grade;
         this.marketingConsent = marketingConsent;
-        this.oAuthProvider = oAuthProvider;
+        this.authProvider = authProvider;
     }
     public void setGrade(String grade) {
         this.grade = grade;

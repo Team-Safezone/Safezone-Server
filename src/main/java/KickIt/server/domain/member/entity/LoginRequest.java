@@ -1,4 +1,4 @@
-package KickIt.server.domain.user.entity;
+package KickIt.server.domain.member.entity;
 
 
 import lombok.Getter;
