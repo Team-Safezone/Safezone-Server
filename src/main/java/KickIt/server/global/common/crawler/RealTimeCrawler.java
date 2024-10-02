@@ -83,7 +83,7 @@ public class RealTimeCrawler {
             try{
                 if(!start){
                     // 타임 화면 나타날 때까지 대기
-                    wait.until(ExpectedConditions.presenceOfElementLocated(By.className("sr-lmt-clock__time")));
+                    //wait.until(ExpectedConditions.presenceOfElementLocated(By.className("sr-lmt-clock__time")));
                     startTime = LocalDateTime.now();
                     start = true;
                     // 추가 시간이 없을 경우를 생각하여 0 으로 초기화

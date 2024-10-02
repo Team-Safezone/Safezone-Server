@@ -61,10 +61,10 @@ public class RealTimeStart {
 
 
     // 매 자정 마다 오늘 경기 여부 파악
-    @Scheduled(cron = "0 0 0 * * ?")
+    @Scheduled(cron = "0 24 20 * * ?")
     public void getTodayFixture() {
-        //LocalDate today = LocalDate.of(2024, 9, 2);
-        LocalDate today = LocalDate.now(); //-> default
+        LocalDate today = LocalDate.of(2024, 9, 23);
+        //LocalDate today = LocalDate.now(); //-> default
 
         // LocalDate를 LocalDateTime으로 변환하고, Timestamp로 변환
         LocalDateTime startOfDay = today.atStartOfDay();
@@ -133,7 +133,7 @@ public class RealTimeStart {
                 switch (isDone) {
                     case "isFirst":
                         System.out.println("경기 시작");
-                        Thread.sleep(45 * 60 * 1000);
+                        //Thread.sleep(45 * 60 * 1000);
                         break;
                     case " ":
                         System.out.println("1분 대기");
@@ -141,14 +141,14 @@ public class RealTimeStart {
                         break;
                     case "종료":
                         System.out.println("전반전 종료");
-                        dataSend.sendRealTimeData(fixture.getId());
-                        Thread.sleep(13 * 60 * 1000);
+                        //dataSend.sendRealTimeData(fixture.getId());
+                        Thread.sleep(1 * 60 * 1000);
                         break;
                     case "경기종료":
                         System.out.println("경기 종료");
                         eventEnd = true;
                         realTimeCrawler.quit();
-                        dataSend.sendRealTimeData(fixture.getId());
+                        //dataSend.sendRealTimeData(fixture.getId());
                         return;
                     default:
                         System.out.println("예상치 못한 상태: " + isDone);
