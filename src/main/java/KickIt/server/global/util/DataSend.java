@@ -1,7 +1,6 @@
 package KickIt.server.global.util;
 
 
-import KickIt.server.domain.fixture.entity.Fixture;
 import KickIt.server.domain.realtime.dto.RealTimeDto;
 import KickIt.server.domain.realtime.dto.RealTimeRepository;
 import KickIt.server.domain.realtime.entity.RealTime;
