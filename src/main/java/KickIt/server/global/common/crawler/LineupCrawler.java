@@ -4,12 +4,15 @@ import KickIt.server.domain.fixture.entity.Fixture;
 import KickIt.server.domain.lineup.entity.MatchLineup;
 import KickIt.server.domain.lineup.entity.TeamLineup;
 import KickIt.server.domain.teams.entity.Player;
+import KickIt.server.domain.teams.entity.PlayerRepository;
 import KickIt.server.global.util.WebDriverUtil;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 import org.springframework.util.ObjectUtils;
 
 import java.time.Duration;
@@ -18,8 +21,12 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 // 경기 선발 라인업을 크롤링하는 LineupCrawler
+@Component
 public class LineupCrawler {
-    MatchLineup getLineup(Fixture fixture){
+    @Autowired
+    private PlayerRepository playerRepository;
+
+    public MatchLineup getLineup(Fixture fixture){
         WebDriver driver = WebDriverUtil.getChromeDriver();
         String pageUrl = "https://sports.daum.net/" + fixture.getLineupUrl() + "?tab=lineup";
         // String pageUrl = "https://sports.daum.net/match/80074533?tab=lineup";
@@ -41,7 +48,7 @@ public class LineupCrawler {
                 // => 실패 시 예외 처리
                 // 이후 getLineup 함수 자체를 5 분, 10 분 간격으로 null이 아닐 때까지 반복 실행해 보면 될 듯.
                 // 기다리는 간격 서버 과부하 없게 잘 조정하는 과정 필요!
-                WebDriverWait wait = new WebDriverWait(driver, Duration.ofMinutes(15));
+                WebDriverWait wait = new WebDriverWait(driver, Duration.ofMinutes(5));
                 wait.until(ExpectedConditions.presenceOfElementLocated(By.className("txt_lineup")));
 
                 // 홈팀과 원정팀의 선발 라인업 포메이션 정보를 문자열로 크롤링
@@ -56,6 +63,7 @@ public class LineupCrawler {
 
                 // 홈팀 선수 리스트와 원정팀 선수 리스트 정보를 크롤링해 Player 객체 List로 저장
                 // 이때 포메이션대로 getPlayers 함수에서 반환한 전체 선수 리스트를 분할해 저장
+                /*
                 String[] homeFormNum = homeForm.split("-");
                 ArrayList<List<Player>> homePlayers = new ArrayList<>();
                 ArrayList<Player> homeTotalPlayer = getPlayers(homeElement, fixture.getHomeTeam());
@@ -67,7 +75,10 @@ public class LineupCrawler {
                     endIndex = startIndex + Integer.parseInt(homeFormNum[i]);
                     homePlayers.add(homeTotalPlayer.subList(startIndex, endIndex));
                 }
+                 */
+                List<Player> homePlayers = getPlayers(homeElement, fixture.getHomeTeam());
 
+                /*
                 String[] awayFormNum = awayForm.split("-");
                 ArrayList<List<Player>> awayPlayers = new ArrayList<>();
                 ArrayList<Player> awayTotalPlayer = getPlayers(awayElement, fixture.getAwayTeam());
@@ -79,6 +90,8 @@ public class LineupCrawler {
                     endIndex = startIndex + Integer.parseInt(awayFormNum[i]);
                     awayPlayers.add(awayTotalPlayer.subList(startIndex, endIndex));
                 }
+                 */
+                List<Player> awayPlayers = getPlayers(awayElement, fixture.getAwayTeam());
 
                 // 각 팀의 후보 선수 리스트를 가져오기 위한 후보 선수 정보가 담긴 Webelement > 그 중 li 요소 찾음
                 List<WebElement> homeBenchElement = driver.findElements(By.className("list_substitute")).get(2).findElements(By.cssSelector("li"));
@@ -94,7 +107,6 @@ public class LineupCrawler {
                                 .team(fixture.getHomeTeam())
                                 .form(homeForm)
                                 .players(homePlayers)
-                                .director(homeDirector)
                                 .benchPlayers(homeBenchPlayers)
                                 .build();
                 // 위에서 크롤링해 온 정보 바탕으로 원정팀 TeamLineup 클래스 객체 build
@@ -103,23 +115,22 @@ public class LineupCrawler {
                                 .team(fixture.getAwayTeam())
                                 .form(awayForm)
                                 .players(awayPlayers)
-                                .director(awayDirector)
                                 .benchPlayers(awayBenchPlayers)
                                 .build();
 
                 // 위에서 만든 홈팀 / 원정팀 TeamLineup 객체들 포함해 경기의 matchLineup 객체 build
                 matchLineup =
                         MatchLineup.builder()
-                                .id(fixture.getId())
+                                .fixture(fixture)
                                 .homeTeam(fixture.getHomeTeam())
                                 .awayTeam(fixture.getAwayTeam())
-                                .homeTeamForm(homeForm)
-                                .awayTeamForm(awayForm)
                                 .homeTeamLineup(homeTeamLineup)
                                 .awayTeamLineup(awayTeamLineup)
+                                .homeDirector(homeDirector)
+                                .awayDirector(awayDirector)
                                 .build();
             } catch (Exception e) {
-                Logger.getGlobal().log(Level.INFO, "lineup driver 로딩 시간 초과");
+                Logger.getGlobal().log(Level.INFO, "lineup driver 로딩 시간 초과" + e);
                 matchLineup = null;
             }
             finally {
@@ -147,12 +158,54 @@ public class LineupCrawler {
         // 각 팀 선수 인원 수만큼 선수 명단 Element에서 필요한 선수 정보 가져와 Player 객체로 build -> players list에 추가
         for (int i = 0; i < 11; i++){
             String playerInfo = playersElement.get(i).getText();
-            players.add(Player.builder()
+            System.out.println("playerInfo:" + playerInfo);
+            String name = playerInfo.replaceAll("^[0-9]+\\.[\\s]*", "");
+            name.trim();
+            System.out.println(teamName + " " + name);
+            if (!playerInfo.replaceAll("[^0-9]", "").equals("")){
+                Integer number = Integer.parseInt(playerInfo.replaceAll("[^0-9]", ""));
+                Optional<Player> foundPlayer = playerRepository.findByTeamAndNumber(teamName, number);
+                if(foundPlayer.isPresent()){
+                    System.out.println("번호 조회 성공");
+                    players.add(foundPlayer.get());
+                }
+                else{
+                    System.out.println("번호 조회 실패");
+                    players.add(Player.builder()
+                            .id(UUID.randomUUID())
+                            .team(teamName)
+                            .number(number)
+                            .name(name)
+                            .profileImg("https://resources.premierleague.com/premierleague/photos/players/110x140/Photo-Missing.png")
+                            .build());
+                }
+            }
+            else{
+                Optional<Player> foundPlayer = playerRepository.findByTeamAndNameContaining(teamName, name);
+                if(foundPlayer.isPresent()){
+                    System.out.println("이름 조회 성공");
+                    players.add(playerRepository.findByTeamAndNameContaining(teamName, name).get());
+                }
+                else{
+                    System.out.println("이름 조회 실패");
+                    players.add(Player.builder()
+                            .id(UUID.randomUUID())
+                            .team(teamName)
+                            .number(null)
+                            .name(name)
+                            .profileImg("https://resources.premierleague.com/premierleague/photos/players/110x140/Photo-Missing.png")
+                            .build());
+                }
+            }
+            // 이제는 player 정보 생성하지 않고 DB에서 이름으로 정보 찾아 반환
+                    /*
+                    Player.builder()
                     .id(UUID.randomUUID())
                     .team(teamName)
                     .number(Integer.parseInt(playerInfo.replaceAll("[^0-9]", "")))
                     .name(playerInfo.replaceAll("[^가-힣]", ""))
-                    .build());
+                    .build()
+                    */
         }
         return players;
     }
@@ -164,12 +217,51 @@ public class LineupCrawler {
         for(int i = 0; i < elements.size(); i++) {
             String playerNum = elements.get(i).findElement(By.className("number_g")).getText();
             String playerName = elements.get(i).findElement(By.className("txt_name")).getText();
+            String name = playerName.replaceAll("^[0-9]+\\.[\\s]*", "");
+            name.trim();
+            if (!playerNum.replaceAll("[^0-9]", "").equals("")){
+                Integer number = Integer.parseInt(playerNum.replaceAll("[^0-9]", ""));
+                Optional<Player> foundPlayer = playerRepository.findByTeamAndNumber(teamName, number);
+                if(foundPlayer.isPresent()){
+                    System.out.println("번호 조회 성공");
+                    benchPlayers.add(foundPlayer.get());
+                }
+                else{
+                    System.out.println("번호 조회 실패");
+                    benchPlayers.add(Player.builder()
+                            .id(UUID.randomUUID())
+                            .team(teamName)
+                            .number(number)
+                            .name(name)
+                            .profileImg("https://resources.premierleague.com/premierleague/photos/players/110x140/Photo-Missing.png")
+                            .build());
+                }
+            }
+            else{
+                Optional<Player> foundPlayer = playerRepository.findByTeamAndNameContaining(teamName, name);
+                if(foundPlayer.isPresent()){
+                    System.out.println("이름 조회 성공");
+                    benchPlayers.add(playerRepository.findByTeamAndNameContaining(teamName, name).get());
+                }
+                else{
+                    System.out.println("이름 조회 실패");
+                    benchPlayers.add(Player.builder()
+                            .id(UUID.randomUUID())
+                            .team(teamName)
+                            .number(null)
+                            .name(name)
+                            .profileImg("https://resources.premierleague.com/premierleague/photos/players/110x140/Photo-Missing.png")
+                            .build());
+                }
+            }
+            /*
             benchPlayers.add(Player.builder()
                     .id(UUID.randomUUID())
                     .team(teamName)
                     .number(Integer.parseInt(playerNum.replaceAll("[^0-9]", "")))
                     .name(playerName)
                     .build());
+            */
         }
         return benchPlayers;
     }
