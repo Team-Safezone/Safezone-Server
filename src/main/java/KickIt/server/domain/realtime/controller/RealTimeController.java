@@ -36,12 +36,14 @@ public class RealTimeController {
             responseBody.put("status", HttpStatus.OK.value());
             responseBody.put("message", "success");
             responseBody.put("data", responseList);
+            responseBody.put("isSuccess", true);
             return new ResponseEntity<>(responseBody, HttpStatus.OK);
         }
         // 조회한 list가 비어있는 경우 데이터 없음 처리, NOT FOUND로 반환
         else {
             responseBody.put("status", HttpStatus.NOT_FOUND.value());
             responseBody.put("message", "데이터 없음");
+            responseBody.put("isSuccess", false);
             return new ResponseEntity<>(responseBody, HttpStatus.NOT_FOUND);
         }
     }
