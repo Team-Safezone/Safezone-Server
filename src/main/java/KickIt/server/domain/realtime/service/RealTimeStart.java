@@ -2,11 +2,9 @@ package KickIt.server.domain.realtime.service;
 
 import KickIt.server.domain.fixture.entity.Fixture;
 import KickIt.server.domain.fixture.entity.FixtureRepository;
-import KickIt.server.domain.realtime.entity.RealTime;
 import KickIt.server.domain.teams.entity.TeaminfoRepository;
 import KickIt.server.domain.teams.service.TeamNameConvertService;
 import KickIt.server.global.common.crawler.RealTimeCrawler;
-import KickIt.server.global.util.DataSend;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -44,19 +42,16 @@ public class RealTimeStart {
     private final TeaminfoRepository teaminfoRepository;
     private final RestTemplate restTemplate = new RestTemplate();
     private final TeamNameConvertService teamNameConvertService;
-    private final DataSend dataSend;
-
 
     private String apiMatchId;
 
     @Autowired
-    public RealTimeStart(FixtureRepository fixtureRepository, RealTimeService realTimeService, TeaminfoRepository teaminfoRepository, ThreadPoolTaskScheduler taskScheduler, TeamNameConvertService teamNameConvertService, DataSend dataSend) {
+    public RealTimeStart(FixtureRepository fixtureRepository, RealTimeService realTimeService, TeaminfoRepository teaminfoRepository, ThreadPoolTaskScheduler taskScheduler, TeamNameConvertService teamNameConvertService) {
         this.taskScheduler = taskScheduler;
         this.fixtureRepository = fixtureRepository;
         this.realTimeService = realTimeService;
         this.teaminfoRepository = teaminfoRepository;
         this.teamNameConvertService = teamNameConvertService;
-        this.dataSend = dataSend;
     }
 
 
@@ -141,14 +136,12 @@ public class RealTimeStart {
                         break;
                     case "종료":
                         System.out.println("전반전 종료");
-                        dataSend.sendRealTimeData(fixture.getId());
                         Thread.sleep(13 * 60 * 1000);
                         break;
                     case "경기종료":
                         System.out.println("경기 종료");
                         eventEnd = true;
                         realTimeCrawler.quit();
-                        dataSend.sendRealTimeData(fixture.getId());
                         return;
                     default:
                         System.out.println("예상치 못한 상태: " + isDone);

@@ -219,6 +219,14 @@ public class RealTimeCrawler {
                         return "경기종료";
                     } else if (eventText.contains("후반전")) {
                         isHalf();
+                    } else if (eventText.contains("0′")) {
+                        realTimeBuilder
+                                .eventCode(0)
+                                .time("0")
+                                .eventTime(compareTime(startTime, "0"))
+                                .eventName("경기시작");
+                        realTime = realTimeBuilder.build();
+                        realTimeService.saveEvent(realTime);
                     }
                 }
             }
