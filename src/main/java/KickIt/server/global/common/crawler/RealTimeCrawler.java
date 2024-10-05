@@ -83,7 +83,7 @@ public class RealTimeCrawler {
             try{
                 if(!start){
                     // 타임 화면 나타날 때까지 대기
-                    //wait.until(ExpectedConditions.presenceOfElementLocated(By.className("sr-lmt-clock__time")));
+                    wait.until(ExpectedConditions.presenceOfElementLocated(By.className("sr-lmt-clock__time")));
                     startTime = LocalDateTime.now();
                     start = true;
                     // 추가 시간이 없을 경우를 생각하여 0 으로 초기화
@@ -205,6 +205,7 @@ public class RealTimeCrawler {
                         realTime = realTimeBuilder.build();
                         realTimeService.saveEvent(realTime);
                         return "종료";
+
                     } else if (eventText.contains("경기종료")) {
                         getHalfScore();
                         realTimeBuilder
@@ -219,6 +220,14 @@ public class RealTimeCrawler {
                         return "경기종료";
                     } else if (eventText.contains("후반전")) {
                         isHalf();
+                    } else if (eventText.contains("0′")) {
+                        realTimeBuilder
+                                .eventCode(0)
+                                .time(elements[0])
+                                .eventTime(compareTime(startTime, "0"))
+                                .eventName("경기시작");
+                        realTime = realTimeBuilder.build();
+                        realTimeService.saveEvent(realTime);
                     }
                 }
             }
