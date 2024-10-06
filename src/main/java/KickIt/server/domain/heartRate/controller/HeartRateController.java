@@ -25,13 +25,13 @@ public class HeartRateController {
         this.jwtTokenUtil = jwtTokenUtil;
     }
 
-    @PostMapping("")
-    public ResponseEntity<Map<String, Object>> saveHeartRate(@RequestParam(value = "jwtToken") String jwtToken, @RequestBody HeartRateDTO heartRateDTO) {
-        String email = jwtTokenUtil.getEmailFromToken(jwtToken);
+    @PostMapping("/save")
+    public ResponseEntity<Map<String, Object>> saveHeartRate(@RequestParam(value = "xAuthToken") String xAuthToken, @RequestBody HeartRateDTO heartRateDTO) {
+        String email = jwtTokenUtil.getEmailFromToken(xAuthToken);
 
         Map<String, Object> responseBody = new HashMap<>();
 
-        if (jwtTokenUtil.validateToken(jwtToken, email)) {
+        if (jwtTokenUtil.validateToken(xAuthToken, email)) {
             heartRateService.save(email, heartRateDTO);
 
             responseBody.put("status", HttpStatus.OK.value());

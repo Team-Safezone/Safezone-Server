@@ -8,6 +8,12 @@ import java.util.List;
 public class HeartRateDTO {
     private Long matchId;
 
-    private List<Integer> heartRate;
-    private List<String> heartRateDate;
+    private List<MatchHeartRateRecords> matchHeartRateRecords;
+
+    @Getter
+    public static class MatchHeartRateRecords {
+        private int heartRate;
+        private int date;
+
+    }
 }

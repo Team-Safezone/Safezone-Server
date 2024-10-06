@@ -26,13 +26,11 @@ public class HeartRateService {
     public void save(String email, HeartRateDTO heartRateDTO) {
         Long member_id = memberRepository.findByEmail(email).get().getMemberId();
 
-        HeartRate heartRate = new HeartRate();
-        heartRate.setHeartRate(heartRateDTO.getHeartRate());
-        heartRate.setHeartRateDate(heartRateDTO.getHeartRateDate());
-        heartRate.setMember_id(member_id);
-        heartRate.setFixture_id(heartRateDTO.getMatchId());
+        for (HeartRateDTO.MatchHeartRateRecords records : heartRateDTO.getMatchHeartRateRecords()) {
+            HeartRate heartRate = new HeartRate(member_id, heartRateDTO.getMatchId(), records.getHeartRate(), records.getDate());
+            heartRateRepository.save(heartRate);
+        }
 
-        heartRateRepository.save(heartRate);
     }
 
 }

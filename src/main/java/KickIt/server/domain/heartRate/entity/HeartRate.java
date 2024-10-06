@@ -12,17 +12,22 @@ import java.util.List;
 
 @Entity
 @Getter
-@Setter
 public class HeartRate {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
 
-    private List<Integer> heartRate;
-    private List<String> heartRateDate;
+    private int heartRate;
+    private int heartRateDate;
 
     private Long member_id;
     private Long fixture_id;
 
+    public HeartRate(Long member_id, Long fixture_id, int heartRate, int heartRateDate) {
+        this.member_id = member_id;
+        this.fixture_id = fixture_id;
+        this.heartRate = heartRate;
+        this.heartRateDate = heartRateDate;
+    }
 }
