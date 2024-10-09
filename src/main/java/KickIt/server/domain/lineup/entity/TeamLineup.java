@@ -1,6 +1,7 @@
 package KickIt.server.domain.lineup.entity;
 
 import KickIt.server.domain.teams.entity.Player;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -28,6 +29,7 @@ public class TeamLineup {
     // 선수 리스트
     // 0 번째 배열은 골키퍼 포함
     @ManyToMany(cascade = CascadeType.ALL)
+    @JsonManagedReference
     @JoinTable(
             name = "lineup_players",  // 조인 테이블 이름
             joinColumns = @JoinColumn(name = "team_lineup_id"),  // TeamLineup의 조인 컬럼
@@ -37,6 +39,7 @@ public class TeamLineup {
 
     // 후보 선수 리스트
     @ManyToMany(cascade = CascadeType.ALL)
+    @JsonManagedReference
     @JoinTable(
             name = "lineup_bench",  // 조인 테이블 이름
             joinColumns = @JoinColumn(name = "team_lineup_id"),  // TeamLineup의 조인 컬럼

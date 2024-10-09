@@ -48,6 +48,7 @@ public class Player {
 
     // 각 player들이 속할 teamlineup list
     @ManyToMany(mappedBy = "players")
+    @JsonBackReference
     private List<TeamLineup> teamLineups;
 
     /*
