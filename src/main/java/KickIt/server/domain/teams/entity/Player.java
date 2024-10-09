@@ -11,6 +11,7 @@ import lombok.NoArgsConstructor;
 import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.type.SqlTypes;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
@@ -38,18 +39,24 @@ public class Player {
     // 이미지 주소
     private String profileImg;
 
-    // squad와의 관계 설정(여러 player가 포함되는 일대다)
-    @ManyToOne
-    @JoinColumn(name = "squad_id")
+    /*
+    // 각 player들이 속할 squad list(시즌별로 squad 바뀌므로)
+    @ManyToMany(mappedBy = "players")
     @JsonBackReference
-    private Squad squad;
+    private List<Squad> squads;
+     */
 
     // 각 player들이 속할 teamlineup list
     @ManyToMany(mappedBy = "players")
     private List<TeamLineup> teamLineups;
 
+    /*
     // Squad를 설정하는 메소드
     public void assignSquad(Squad squad) {
-        this.squad = squad;
+        this.squads.add(squad);
+    }
+     */
+    public void assignTeam(String team){
+        this.team = team;
     }
 }

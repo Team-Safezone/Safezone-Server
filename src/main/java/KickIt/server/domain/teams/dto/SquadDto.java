@@ -16,20 +16,14 @@ public class SquadDto {
         private String season;
         private String team;
         private String logoImg;
-        private List<Player> FWplayers;
-        private List<Player> MFplayers;
-        private List<Player> DFplayers;
-        private List<Player> GKplayers;
+        private List<Player> players;
 
         public Squad toEntity(){
             Squad squad = Squad.builder()
                     .season(this.season)
                     .team(this.team)
                     .logoImg(this.logoImg)
-                    .FWplayers(this.FWplayers)
-                    .MFplayers(this.MFplayers)
-                    .DFplayers(this.DFplayers)
-                    .GKplayers(this.GKplayers)
+                    .players(this.players)
                     .build();
             return squad;
         }
@@ -41,20 +35,14 @@ public class SquadDto {
         private String season;
         private String team;
         private String logoImg;
-        private List<Player> FWplayers;
-        private List<Player> MFplayers;
-        private List<Player> DFplayers;
-        private List<Player> GKplayers;
+        private List<Player> players;
 
         public SquadResponse(Squad squad){
             this.id = squad.getId();
             this.season = squad.getSeason();
             this.team = squad.getTeam();
             this.logoImg = squad.getLogoImg();
-            this.FWplayers = squad.getFWplayers();
-            this.MFplayers = squad.getMFplayers();
-            this.DFplayers = squad.getDFplayers();
-            this.GKplayers = squad.getGKplayers();
+            this.players = squad.getPlayers();
         }
     }
 }
