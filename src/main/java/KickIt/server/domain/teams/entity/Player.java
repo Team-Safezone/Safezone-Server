@@ -56,7 +56,4 @@ public class Player {
         this.squads.add(squad);
     }
      */
-    public void assignTeam(String team){
-        this.team = team;
-    }
 }

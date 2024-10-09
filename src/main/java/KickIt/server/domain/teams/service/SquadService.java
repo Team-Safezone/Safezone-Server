@@ -46,12 +46,22 @@ public class SquadService {
                         // squad 내에 이미 Player 추가되지 않은 경우 Player 추가 작업
                         if(! squadExistingPlayer.contains(DBExistingPlayer.get())){
                             // 기존 Player 존재하므로 다시 저장하지 못 하게 그대로 정보 가져와
-                            // team만 변경
-                            Player updatedPlayer = DBExistingPlayer.get();
-                            updatedPlayer.assignTeam(squad.getTeam());
+                            // team 변경 및 정보 업데이트
+                            Player updatedPlayer = Player.builder()
+                                    .id(DBExistingPlayer.get().getId())
+                                    .team(newPlayer.getTeam())
+                                    .number(newPlayer.getNumber())
+                                    .name(newPlayer.getName())
+                                    .position(newPlayer.getPosition())
+                                    .profileImg(newPlayer.getProfileImg())
+                                    .teamLineups(DBExistingPlayer.get().getTeamLineups())
+                                    .build();
                             // squad에 team만 변경한 Player 추가
                             updatedSquad.addPlayers(Collections.singletonList(updatedPlayer));
                         }
+                    }
+                    else{
+                        updatedSquad.addPlayers(Collections.singletonList(newPlayer));
                     }
                 }
                 squadRepository.save(updatedSquad);
