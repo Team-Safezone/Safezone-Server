@@ -4,6 +4,7 @@ import KickIt.server.JwtService;
 import KickIt.server.JwtTokenUtil;
 import KickIt.server.domain.heartRate.dto.HeartRateDTO;
 import KickIt.server.domain.heartRate.service.HeartRateService;
+import KickIt.server.domain.heartRate.service.HeartRateStatisticsService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -25,7 +26,8 @@ public class HeartRateController {
         this.jwtTokenUtil = jwtTokenUtil;
     }
 
-    @PostMapping("/save")
+
+    @PostMapping("")
     public ResponseEntity<Map<String, Object>> saveHeartRate(@RequestParam(value = "xAuthToken") String xAuthToken, @RequestBody HeartRateDTO heartRateDTO) {
         String email = jwtTokenUtil.getEmailFromToken(xAuthToken);
 
@@ -33,6 +35,9 @@ public class HeartRateController {
 
         if (jwtTokenUtil.validateToken(xAuthToken, email)) {
             heartRateService.save(email, heartRateDTO);
+
+            // 데이터 저장과 동시에 통계 객체 생성
+            heartRateService.saveStatistics(email, heartRateDTO);
 
             responseBody.put("status", HttpStatus.OK.value());
             responseBody.put("message", "success");
