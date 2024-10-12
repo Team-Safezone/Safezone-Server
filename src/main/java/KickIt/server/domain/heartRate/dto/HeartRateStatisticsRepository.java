@@ -14,10 +14,6 @@ import java.util.List;
 public interface HeartRateStatisticsRepository extends JpaRepository<HeartRateStatistics, Long> {
 
     // 경기 시작시간 없데이트
-    @Modifying
-    @Transactional
-    @Query("UPDATE HeartRateStatistics SET startDate = :startDate, endDate = :endDate WHERE memberId = :memberId AND fixtureId = :fixtureId")
-    void updateTime(@Param("memberId") Long memberId, @Param("fixtureId") Long fixtureId, @Param("startDate") String startDate, @Param("endDate") String endDate);
 
     // 사용자 min,max 심박수 업데이트
     @Modifying

@@ -16,6 +16,10 @@ public interface HeartRateRepository extends JpaRepository<HeartRate, Long> {
     List<HeartRate> findByMemberIdAndFixtureId(Long memberId, Long fixtureId);
 
     @Query("SELECT heartRate FROM HeartRate h WHERE memberId = :memberId AND fixtureId = :fixtureId")
-    List<Integer> getHeartRate(@Param("memberId") Long memberId, @Param("fixtureId") Long fixtureId);
+    List<Integer> getUserHeartRate(@Param("memberId") Long memberId, @Param("fixtureId") Long fixtureId);
+
+    @Query("SELECT heartRate FROM HeartRate h WHERE fixtureId = :fixtureId")
+    List<Integer> getAllHeartRate(@Param("fixtureId") Long fixtureId);
+
 
 }

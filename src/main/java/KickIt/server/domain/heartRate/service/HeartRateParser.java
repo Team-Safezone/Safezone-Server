@@ -5,6 +5,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
@@ -21,7 +22,7 @@ public class HeartRateParser {
 
     public List<Integer> minMax(Long memberId, Long fixtureId) {
 
-        List<Integer> heartRate = heartRateRepository.getHeartRate(memberId, fixtureId);
+        List<Integer> heartRate = heartRateRepository.getUserHeartRate(memberId, fixtureId);
 
         // 데이터 없을 경우
         if (heartRate == null || heartRate.isEmpty()) {
@@ -46,4 +47,36 @@ public class HeartRateParser {
 
         return minmaxList;
     }
+
+    public List<Integer> minAvgMax(Long fixtureId) {
+        List<Integer> bpm = heartRateRepository.getAllHeartRate(fixtureId);
+
+        if (bpm == null || bpm.isEmpty()) {
+            return Arrays.asList(0, 0, 0);
+        }
+
+        int min = bpm.get(0);
+        int max = bpm.get(0);
+        int sum = 0;
+
+        for (Integer i : bpm) {
+            if (min > i) {
+                min = i;
+            }
+            if (max < i) {
+                max = i;
+            }
+            sum += i;
+        }
+
+        int avg = sum / bpm.size();
+
+        List<Integer> minavgmaxList = new ArrayList<>();
+        minavgmaxList.add(min);
+        minavgmaxList.add(avg);
+        minavgmaxList.add(max);
+
+        return minavgmaxList;
+    }
+
 }

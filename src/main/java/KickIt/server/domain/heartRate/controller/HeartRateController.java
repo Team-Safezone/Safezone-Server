@@ -3,6 +3,7 @@ package KickIt.server.domain.heartRate.controller;
 import KickIt.server.JwtService;
 import KickIt.server.JwtTokenUtil;
 import KickIt.server.domain.heartRate.dto.HeartRateDTO;
+import KickIt.server.domain.heartRate.service.FixtureHeartRateStatisticsService;
 import KickIt.server.domain.heartRate.service.HeartRateService;
 import KickIt.server.domain.heartRate.service.HeartRateStatisticsService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,15 +20,16 @@ public class HeartRateController {
 
     private final HeartRateService heartRateService;
     private final HeartRateStatisticsService heartRateStatisticsService;
+    private final FixtureHeartRateStatisticsService fixtureHeartRateStatisticsService;
     private final JwtTokenUtil jwtTokenUtil;
 
     @Autowired
-    public HeartRateController(HeartRateService heartRateService, HeartRateStatisticsService heartRateStatisticsService, JwtTokenUtil jwtTokenUtil) {
+    public HeartRateController(HeartRateService heartRateService, HeartRateStatisticsService heartRateStatisticsService, FixtureHeartRateStatisticsService fixtureHeartRateStatisticsService, JwtTokenUtil jwtTokenUtil) {
         this.heartRateService = heartRateService;
         this.heartRateStatisticsService = heartRateStatisticsService;
+        this.fixtureHeartRateStatisticsService = fixtureHeartRateStatisticsService;
         this.jwtTokenUtil = jwtTokenUtil;
     }
-
 
     @PostMapping("")
     public ResponseEntity<Map<String, Object>> saveHeartRate(@RequestParam(value = "xAuthToken") String xAuthToken, @RequestBody HeartRateDTO heartRateDTO) {
@@ -40,6 +42,9 @@ public class HeartRateController {
 
             // 데이터 저장과 동시에 통계 객체 생성
             heartRateStatisticsService.saveStatistics(email, heartRateDTO);
+
+            // 통계 계산
+            fixtureHeartRateStatisticsService.calculateHeartRate(heartRateDTO);
 
             responseBody.put("status", HttpStatus.OK.value());
             responseBody.put("message", "success");
