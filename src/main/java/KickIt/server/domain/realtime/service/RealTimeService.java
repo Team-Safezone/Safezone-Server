@@ -90,11 +90,5 @@ public class RealTimeService {
         return responseList;
     }
 
-    @Transactional
-    public List<String> getEventTime(Long matchId) {
-        List<String> eventTimeList = realTimeRepository.getEventTime(matchId);
-
-        return eventTimeList;
-    }
 
 }

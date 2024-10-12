@@ -14,13 +14,11 @@ public class HeartRateService {
 
     private final HeartRateRepository heartRateRepository;
     private final MemberRepository memberRepository;
-    private final HeartRateStatisticsRepository heartRateStatisticsRepository;
 
     @Autowired
-    public HeartRateService(HeartRateRepository heartRateRepository, MemberRepository memberRepository, HeartRateStatisticsRepository heartRateStatisticsRepository) {
+    public HeartRateService(HeartRateRepository heartRateRepository, MemberRepository memberRepository) {
         this.heartRateRepository = heartRateRepository;
         this.memberRepository = memberRepository;
-        this.heartRateStatisticsRepository = heartRateStatisticsRepository;
     }
 
 
@@ -31,21 +29,19 @@ public class HeartRateService {
                 .getMemberId();
     }
 
+    // 심박수 저장
     public void save(String email, HeartRateDTO heartRateDTO) {
         Long member_id = getMemberId(email);
+        Long fixture_id = heartRateDTO.getMatchId();
 
-        for (HeartRateDTO.MatchHeartRateRecords records : heartRateDTO.getMatchHeartRateRecords()) {
-            HeartRate heartRate = new HeartRate(member_id, heartRateDTO.getMatchId(), records.getHeartRate(), records.getDate());
-            heartRateRepository.save(heartRate);
+        // 중복 아닐 때만 저장
+        if(heartRateRepository.findByMemberIdAndFixtureId(member_id,fixture_id).isEmpty()){
+            for (HeartRateDTO.MatchHeartRateRecords records : heartRateDTO.getMatchHeartRateRecords()) {
+                HeartRate heartRate = new HeartRate(member_id, heartRateDTO.getMatchId(), records.getHeartRate(), records.getDate());
+                heartRateRepository.save(heartRate);
+            }
         }
 
-    }
-
-    public void saveStatistics(String email, HeartRateDTO heartRateDTO) {
-        Long member_id = getMemberId(email);
-
-        HeartRateStatistics heartRateStatistics = new HeartRateStatistics(member_id, heartRateDTO.getMatchId());
-        heartRateStatisticsRepository.save(heartRateStatistics);
     }
 
 }

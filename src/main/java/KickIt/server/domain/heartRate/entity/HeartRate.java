@@ -6,12 +6,14 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.util.List;
 
 @Entity
 @Getter
+@NoArgsConstructor
 public class HeartRate {
 
     @Id
@@ -21,13 +23,14 @@ public class HeartRate {
     private int heartRate;
     private int heartRateDate;
 
-    private Long member_id;
-    private Long fixture_id;
+    private Long memberId;
+    private Long fixtureId;
 
-    public HeartRate(Long member_id, Long fixture_id, int heartRate, int heartRateDate) {
-        this.member_id = member_id;
-        this.fixture_id = fixture_id;
+    public HeartRate(Long memberId, Long fixtureId, int heartRate, int heartRateDate) {
+        this.memberId = memberId;
+        this.fixtureId = fixtureId;
         this.heartRate = heartRate;
         this.heartRateDate = heartRateDate;
     }
+
 }

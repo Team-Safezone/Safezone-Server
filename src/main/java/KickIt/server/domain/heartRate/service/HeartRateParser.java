@@ -21,7 +21,7 @@ public class HeartRateParser {
 
     public List<Integer> minMax(Long memberId, Long fixtureId) {
 
-        List<Integer> heartRate = heartRateRepository.getheartRate(memberId, fixtureId);
+        List<Integer> heartRate = heartRateRepository.getHeartRate(memberId, fixtureId);
 
         // 데이터 없을 경우
         if (heartRate == null || heartRate.isEmpty()) {

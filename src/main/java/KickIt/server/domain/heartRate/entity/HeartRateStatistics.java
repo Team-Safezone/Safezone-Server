@@ -4,9 +4,11 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 @Getter
 @Entity
+@NoArgsConstructor
 public class HeartRateStatistics {
 
     @Id
@@ -21,10 +23,6 @@ public class HeartRateStatistics {
 
     private int lowHeartRate;
     private int highHeartRate;
-
-    private int minBPM;
-    private int avgBPM;
-    private int maxBPM;
 
     // 추가 작성 예정
 

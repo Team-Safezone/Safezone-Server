@@ -18,11 +18,13 @@ import java.util.Map;
 public class HeartRateController {
 
     private final HeartRateService heartRateService;
+    private final HeartRateStatisticsService heartRateStatisticsService;
     private final JwtTokenUtil jwtTokenUtil;
 
     @Autowired
-    public HeartRateController(HeartRateService heartRateService, JwtTokenUtil jwtTokenUtil) {
+    public HeartRateController(HeartRateService heartRateService, HeartRateStatisticsService heartRateStatisticsService, JwtTokenUtil jwtTokenUtil) {
         this.heartRateService = heartRateService;
+        this.heartRateStatisticsService = heartRateStatisticsService;
         this.jwtTokenUtil = jwtTokenUtil;
     }
 
@@ -37,7 +39,7 @@ public class HeartRateController {
             heartRateService.save(email, heartRateDTO);
 
             // 데이터 저장과 동시에 통계 객체 생성
-            heartRateService.saveStatistics(email, heartRateDTO);
+            heartRateStatisticsService.saveStatistics(email, heartRateDTO);
 
             responseBody.put("status", HttpStatus.OK.value());
             responseBody.put("message", "success");
