@@ -69,23 +69,23 @@ public class FixtureService {
 
     // findByMonth로 가져온 List<Fixture>의 Fixture들 DTO의 Response 형태로 변환 후 반환
     @Transactional
-    public List<FixtureDto.FixtureDateResponse> findFixturesByMonth(int year, int month){
+    public FixtureDto.FixtureDateResponse findFixturesByMonth(int year, int month){
         List<Fixture> fixtureList = fixtureRepository.findByMonth(year, month);
-        List<FixtureDto.FixtureDateResponse> responseList = new ArrayList<>();
-        for (Fixture fixture: fixtureList){
-            responseList.add(new FixtureDto.FixtureDateResponse(fixture));
+        if(fixtureList.isEmpty()){
+            return null;
         }
-        return responseList;
+        FixtureDto.FixtureDateResponse response = fixtureDto.new FixtureDateResponse(fixtureList, false);
+        return response;
     }
 
     // findByMonthAndTeam으로 가져온 List<Fixture>의 Fixture들 DTO의 Response 형태로 변환 후 반환
     @Transactional
-    public List<FixtureDto.FixtureDateResponse> findFixtureByMonthAndTeam(int year, int month, String team){
+    public FixtureDto.FixtureDateResponse findFixtureByMonthAndTeam(int year, int month, String team){
         List<Fixture> fixtureList = fixtureRepository.findByMonthAndTeam(year, month, team);
-        List<FixtureDto.FixtureDateResponse> responseList = new ArrayList<>();
-        for (Fixture fixture: fixtureList){
-            responseList.add(new FixtureDto.FixtureDateResponse(fixture));
+        if(fixtureList.isEmpty()){
+            return null;
         }
-        return responseList;
+        FixtureDto.FixtureDateResponse response = fixtureDto.new FixtureDateResponse(fixtureList, true);
+        return response;
     }
 }
