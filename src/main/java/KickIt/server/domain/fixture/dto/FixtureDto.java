@@ -67,6 +67,8 @@ public class FixtureDto {
         private String season;
         private String dateStr;
         private String timeStr;
+        private String homeTeamEmblemUrl;
+        private String awayTeamEmblemUrl;
         private String homeTeam;
         private String awayTeam;
         private Integer homeTeamScore;
@@ -83,7 +85,8 @@ public class FixtureDto {
             // 가져온 Date를 yyyy-MM-dd와 HH:mm 두 개로 나누어 문자열로 반환
             this.dateStr = new SimpleDateFormat("yyyy-MM-dd").format(fixture.getDate());
             this.timeStr = new SimpleDateFormat("HH:mm").format(fixture.getDate());
-
+            this.homeTeamEmblemUrl = squadService.getTeamLogoImg(fixture.getSeason(), fixture.getHomeTeam());
+            this.awayTeamEmblemUrl = squadService.getTeamLogoImg(fixture.getSeason(), fixture.getAwayTeam());
             this.homeTeam = teamNameConvertService.convertToKrName(fixture.getHomeTeam());
             this.awayTeam = teamNameConvertService.convertToKrName(fixture.getAwayTeam());
             this.homeTeamScore = fixture.getHomeTeamScore();

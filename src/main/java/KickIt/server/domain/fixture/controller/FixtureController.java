@@ -114,4 +114,20 @@ public class FixtureController {
             return new ResponseEntity<>(responseBody, HttpStatus.NOT_FOUND);
         }
     }
+
+    @PatchMapping("/editScore")
+    public ResponseEntity<Map<String, Object>> editFixtureScore(@RequestParam("fixtureId") Long fixtureId, @RequestParam("homeTeamScore") Integer homeTeamScore, @RequestParam("awayTeamScore") Integer awayTeamScore){
+        Boolean isSuccess = fixtureService.updateFixtureScore(fixtureId, homeTeamScore, awayTeamScore);
+        Map<String, Object> responseBody = new HashMap<>();
+        if(isSuccess){
+            responseBody.put("status", HttpStatus.OK.value());
+            responseBody.put("message", "success");
+            return new ResponseEntity<>(responseBody, HttpStatus.OK);
+        }
+        else{
+            responseBody.put("status", HttpStatus.NOT_FOUND.value());
+            responseBody.put("message", "찾는 경기 없음");
+            return new ResponseEntity<>(responseBody, HttpStatus.NOT_FOUND);
+        }
+    }
 }

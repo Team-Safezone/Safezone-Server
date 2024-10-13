@@ -53,4 +53,13 @@ public class SquadService {
         }
         return squadNames;
     }
+
+    @Transactional
+    public String getTeamLogoImg(String season, String team){
+        Optional<Squad> squad = squadRepository.findBySeasonAndTeam(season, team);
+        if(squad.isPresent()){
+            return squad.get().getLogoImg();
+        }
+        return null;
+    }
 }
