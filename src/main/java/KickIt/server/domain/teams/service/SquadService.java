@@ -7,6 +7,7 @@ import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -14,6 +15,8 @@ import java.util.Optional;
 public class SquadService {
     @Autowired
     private SquadRepository squadRepository;
+    @Autowired
+    private TeamNameConvertService teamNameConvertService;
 
     @Transactional
     public void saveSquads(List<Squad> squadList){
@@ -38,5 +41,16 @@ public class SquadService {
                 squadRepository.save(squad);
             }
         }
+    }
+
+    // 해당 시즌 팀 이름만을 반환
+    @Transactional
+    public List<String> getSeasonSquads(String season){
+        List<Squad> seasonSquads = squadRepository.findBySeason(season);
+        List<String> squadNames = new ArrayList<>();
+        for(Squad squad : seasonSquads){
+            squadNames.add(teamNameConvertService.convertToKrName(squad.getTeam()));
+        }
+        return squadNames;
     }
 }
