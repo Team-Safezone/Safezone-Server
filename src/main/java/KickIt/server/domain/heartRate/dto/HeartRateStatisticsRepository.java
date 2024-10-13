@@ -22,4 +22,5 @@ public interface HeartRateStatisticsRepository extends JpaRepository<HeartRateSt
     void updateHeartRate(@Param("memberId") Long memberId, @Param("fixtureId") Long fixtureId, @Param("lowHeartRate") int lowHeartRate, @Param("highHeartRate") int highHeartRate);
 
     List<HeartRateStatistics> findByMemberIdAndFixtureId(Long memberId, Long fixtureId);
+
 }

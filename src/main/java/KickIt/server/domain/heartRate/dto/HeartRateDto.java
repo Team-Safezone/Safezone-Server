@@ -5,7 +5,7 @@ import lombok.Getter;
 import java.util.List;
 
 @Getter
-public class HeartRateDTO {
+public class HeartRateDto {
     private Long matchId;
 
     private List<MatchHeartRateRecords> matchHeartRateRecords;

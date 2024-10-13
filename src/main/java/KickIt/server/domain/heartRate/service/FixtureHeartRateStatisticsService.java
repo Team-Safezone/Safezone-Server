@@ -1,12 +1,10 @@
 package KickIt.server.domain.heartRate.service;
 
 import KickIt.server.domain.heartRate.dto.FixtureHeartRateStatisticsRepository;
-import KickIt.server.domain.heartRate.dto.HeartRateDTO;
-import KickIt.server.domain.heartRate.dto.HeartRateStatisticsRepository;
+import KickIt.server.domain.heartRate.dto.HeartRateDto;
 import KickIt.server.domain.heartRate.entity.FixtureHeartRateStatistics;
-import KickIt.server.domain.heartRate.entity.HeartRateStatistics;
-import KickIt.server.domain.member.dto.MemberRepository;
 import KickIt.server.domain.realtime.dto.RealTimeRepository;
+import KickIt.server.domain.realtime.dto.RealTimeStatisticsDto;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -32,7 +30,7 @@ public class FixtureHeartRateStatisticsService {
         return startTime;
     }
 
-    public void calculateHeartRate(HeartRateDTO heartRateDTO) {
+    public void calculateHeartRate(HeartRateDto heartRateDTO) {
         Long fixture_id = heartRateDTO.getMatchId();
 
         // 중복처리
@@ -54,4 +52,5 @@ public class FixtureHeartRateStatisticsService {
             fixtureHeartRateStatisticsRepository.updateBPM(fixture_id, bpm3.get(0), bpm3.get(1), bpm3.get(2));
         }
     }
+
 }

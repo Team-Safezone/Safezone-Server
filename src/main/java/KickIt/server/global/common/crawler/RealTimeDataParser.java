@@ -16,6 +16,7 @@ public class RealTimeDataParser {
     private static boolean isMatch2 = false;
     private static boolean isExtra = false;
     private static int gameTime = 45;
+    private static int doneTime;
 
     // 로컬 시간 가져오기
     public static String getDateTime(){
@@ -116,9 +117,21 @@ public class RealTimeDataParser {
     // 전반, 후반 추가시간 확인
     public static String isBeforeAfter() {
         if (!isMatch2 && isExtra){
-            return "전반";
+            return "45";
         } else if (isMatch2 && isExtra) {
-             return "후반";
+             return "90";
+        }
+        return " ";
+    }
+
+    // 종료 시간
+    public static String isDone(String extraTime) {
+        if (!isMatch2 && isExtra){
+            doneTime = 45 + parseInt(extraTime);
+            return Integer.toString(doneTime);
+        } else if (isMatch2 && isExtra) {
+            doneTime = 90 + parseInt(extraTime);
+            return Integer.toString(doneTime);
         }
         return " ";
     }

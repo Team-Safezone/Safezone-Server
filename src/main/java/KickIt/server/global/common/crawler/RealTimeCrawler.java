@@ -196,7 +196,7 @@ public class RealTimeCrawler {
                         getHalfScore();
                         realTimeBuilder
                                 .eventCode(2)
-                                .time(elements[0])
+                                .time(isDone(extraTime))
                                 .eventName("하프타임")
                                 .eventTime(halfTime(startTime, extraTime))
                                 .player1(homeTeamScore)
@@ -209,7 +209,7 @@ public class RealTimeCrawler {
                         getHalfScore();
                         realTimeBuilder
                                 .eventCode(6)
-                                .time(elements[0])
+                                .time(isDone(extraTime))
                                 .eventTime(halfTime(startTime, extraTime))
                                 .eventName(elements[0])
                                 .player1(homeTeamScore)
@@ -259,22 +259,10 @@ public class RealTimeCrawler {
         homeTeamScore = score1.getText();
         awayTeamScore = score2.getText();
     }
+
     // 크롤링 멈추기
     public void quit() {
         WebDriverUtil.quit(driver);
     }
 
-    /*
-     else if (eventText.contains("0′")) {
-                        realTimeBuilder
-                                .eventCode(0)
-                                .compareTime(compareTime(startTime, "0"))
-                                .eventTime("0")
-                                .eventName("경기시작");
-                        realTime = realTimeBuilder.build();
-                        System.out.println("realTime = " + realTime);
-                        return realTime;
-                        //realTimeService.saveEvent(realTime);
-                    }
-     */
 }

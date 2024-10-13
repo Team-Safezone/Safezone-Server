@@ -1,10 +1,8 @@
 package KickIt.server.domain.heartRate.service;
 
-import KickIt.server.domain.heartRate.dto.HeartRateDTO;
+import KickIt.server.domain.heartRate.dto.HeartRateDto;
 import KickIt.server.domain.heartRate.dto.HeartRateRepository;
-import KickIt.server.domain.heartRate.dto.HeartRateStatisticsRepository;
 import KickIt.server.domain.heartRate.entity.HeartRate;
-import KickIt.server.domain.heartRate.entity.HeartRateStatistics;
 import KickIt.server.domain.member.dto.MemberRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -30,13 +28,13 @@ public class HeartRateService {
     }
 
     // 심박수 저장
-    public void save(String email, HeartRateDTO heartRateDTO) {
+    public void save(String email, HeartRateDto heartRateDTO) {
         Long member_id = getMemberId(email);
         Long fixture_id = heartRateDTO.getMatchId();
 
         // 중복 아닐 때만 저장
         if(heartRateRepository.findByMemberIdAndFixtureId(member_id,fixture_id).isEmpty()){
-            for (HeartRateDTO.MatchHeartRateRecords records : heartRateDTO.getMatchHeartRateRecords()) {
+            for (HeartRateDto.MatchHeartRateRecords records : heartRateDTO.getMatchHeartRateRecords()) {
                 HeartRate heartRate = new HeartRate(member_id, heartRateDTO.getMatchId(), records.getHeartRate(), records.getDate());
                 heartRateRepository.save(heartRate);
             }

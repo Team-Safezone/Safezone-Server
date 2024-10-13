@@ -1,12 +1,12 @@
 package KickIt.server.domain.heartRate.service;
 
-import KickIt.server.domain.heartRate.dto.HeartRateDTO;
-import KickIt.server.domain.heartRate.dto.HeartRateRepository;
+import KickIt.server.domain.heartRate.dto.HeartRateDto;
 import KickIt.server.domain.heartRate.dto.HeartRateStatisticsRepository;
+import KickIt.server.domain.heartRate.dto.StatisticsDto;
 import KickIt.server.domain.heartRate.entity.HeartRateStatistics;
 import KickIt.server.domain.member.dto.MemberRepository;
-import KickIt.server.domain.realtime.dto.RealTimeRepository;
-import KickIt.server.domain.realtime.entity.RealTime;
+import KickIt.server.domain.realtime.dto.RealTimeStatisticsDto;
+import org.hibernate.stat.Statistics;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -42,7 +42,7 @@ public class HeartRateStatisticsService {
     }
 
     // 통계 저장
-    public void saveStatistics(String email, HeartRateDTO heartRateDTO) {
+    public void saveStatistics(String email, HeartRateDto heartRateDTO) {
         Long member_id = getMemberId(email);
         Long fixture_id = heartRateDTO.getMatchId();
 
@@ -62,5 +62,6 @@ public class HeartRateStatisticsService {
             }
         }
     }
+
 
 }
