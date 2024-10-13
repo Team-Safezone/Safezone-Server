@@ -1,4 +1,5 @@
-package KickIt.server;
+package KickIt.server.jwt;
+
 
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;

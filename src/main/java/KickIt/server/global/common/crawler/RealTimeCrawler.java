@@ -1,6 +1,7 @@
 package KickIt.server.global.common.crawler;
 
 import KickIt.server.domain.fixture.entity.Fixture;
+import KickIt.server.domain.fixture.service.FixtureService;
 import KickIt.server.domain.realtime.entity.RealTime;
 import KickIt.server.domain.realtime.service.RealTimeService;
 import KickIt.server.domain.teams.EplTeams;
@@ -50,15 +51,17 @@ public class RealTimeCrawler {
     private final RealTimeService realTimeService;
     private final TeaminfoRepository teaminfoRepository;
     private final TeamNameConvertService teamNameConvertService;
+    private final FixtureService fixtureService;
 
     List<RealTime> realTimeList = new ArrayList<>();
 
 
     @Autowired
-    public RealTimeCrawler(RealTimeService realTimeService, TeaminfoRepository teaminfoRepository, TeamNameConvertService teamNameConvertService) {
-        this.teaminfoRepository = teaminfoRepository;
+    public RealTimeCrawler(RealTimeService realTimeService, TeaminfoRepository teaminfoRepository, TeamNameConvertService teamNameConvertService, FixtureService fixtureService) {
         this.realTimeService = realTimeService;
+        this.teaminfoRepository = teaminfoRepository;
         this.teamNameConvertService = teamNameConvertService;
+        this.fixtureService = fixtureService;
     }
 
     public void initializeCrawler(Fixture fixture) {
@@ -214,6 +217,7 @@ public class RealTimeCrawler {
                                 .eventName(elements[0])
                                 .player1(homeTeamScore)
                                 .player2(awayTeamScore);
+                        fixtureService.updateFixtureScore(matchId, Integer.parseInt(homeTeamScore), Integer.parseInt(awayTeamScore));
                         realTime = realTimeBuilder.build();
                         realTimeService.saveEvent(realTime);
                         return "경기종료";

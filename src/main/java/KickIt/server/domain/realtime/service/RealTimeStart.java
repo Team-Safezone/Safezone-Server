@@ -2,12 +2,12 @@ package KickIt.server.domain.realtime.service;
 
 import KickIt.server.domain.fixture.entity.Fixture;
 import KickIt.server.domain.fixture.entity.FixtureRepository;
+import KickIt.server.domain.fixture.service.FixtureService;
 import KickIt.server.domain.teams.entity.TeaminfoRepository;
 import KickIt.server.domain.teams.service.TeamNameConvertService;
 import KickIt.server.global.common.crawler.RealTimeCrawler;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.RequestEntity;
 import org.springframework.http.ResponseEntity;
@@ -42,18 +42,19 @@ public class RealTimeStart {
     private final TeaminfoRepository teaminfoRepository;
     private final RestTemplate restTemplate = new RestTemplate();
     private final TeamNameConvertService teamNameConvertService;
+    private final FixtureService fixtureService;
+
 
     private String apiMatchId;
 
-    @Autowired
-    public RealTimeStart(FixtureRepository fixtureRepository, RealTimeService realTimeService, TeaminfoRepository teaminfoRepository, ThreadPoolTaskScheduler taskScheduler, TeamNameConvertService teamNameConvertService) {
-        this.taskScheduler = taskScheduler;
+    public RealTimeStart(FixtureRepository fixtureRepository, ThreadPoolTaskScheduler taskScheduler, RealTimeService realTimeService, TeaminfoRepository teaminfoRepository, TeamNameConvertService teamNameConvertService, FixtureService fixtureService) {
         this.fixtureRepository = fixtureRepository;
+        this.taskScheduler = taskScheduler;
         this.realTimeService = realTimeService;
         this.teaminfoRepository = teaminfoRepository;
         this.teamNameConvertService = teamNameConvertService;
+        this.fixtureService = fixtureService;
     }
-
 
     // 매 자정 마다 오늘 경기 여부 파악
     @Scheduled(cron = "0 0 0 * * ?")
@@ -117,7 +118,7 @@ public class RealTimeStart {
 
         String isDone;
 
-        RealTimeCrawler realTimeCrawler = new RealTimeCrawler(realTimeService, teaminfoRepository, teamNameConvertService);
+        RealTimeCrawler realTimeCrawler = new RealTimeCrawler(realTimeService, teaminfoRepository, teamNameConvertService, fixtureService);
 
         realTimeCrawler.initializeCrawler(fixture);
 
