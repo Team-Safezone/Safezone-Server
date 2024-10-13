@@ -1,13 +1,20 @@
 package KickIt.server.domain.lineup.dto;
 
 import KickIt.server.domain.lineup.entity.LineupPrediction;
+import KickIt.server.domain.lineup.entity.LineupPredictionRepository;
+import KickIt.server.domain.lineup.entity.PredictionPlayer;
+import KickIt.server.domain.teams.entity.Player;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
+import java.util.ArrayList;
 import java.util.List;
 
+@Component
 public class LineupPredictionDto {
     @Data
     @AllArgsConstructor
@@ -36,6 +43,42 @@ public class LineupPredictionDto {
          */
     }
 
+    @Data
+    @AllArgsConstructor
+    @NoArgsConstructor
+    @Builder
+    public static class LineUpPredictionEditResponse{
+        private int participant;
+
+        private int homeFormation;
+        private int awayFormation;
+
+        private ResponsePlayerInfo homeGoalkeeper;
+        private List<ResponsePlayerInfo> homeDefenders;
+        private List<ResponsePlayerInfo> homeMidfielders;
+        private List<ResponsePlayerInfo> homeStrikers;
+
+        private ResponsePlayerInfo awayGoalkeeper;
+        private List<ResponsePlayerInfo> awayDefenders;
+        private List<ResponsePlayerInfo> awayMidfielders;
+        private List<ResponsePlayerInfo> awayStrikers;
+
+        private ResponseLineup homeLineups;
+        private ResponseLineup awayLineups;
+
+        /*
+        public LineUpPredictionEditResponse(LineupPrediction lineupPrediction){
+            Long memberId = lineupPrediction.getMember().getMemberId();
+            Long fixtureId = lineupPrediction.getFixture().getId();
+
+            this.homeFormation = lineupPrediction.getHomeTeamForm();
+            this.awayFormation = lineupPrediction.getAwayTeamForm();
+
+
+        }
+         */
+    }
+
     public static class RequestPlayerInfo{
         private String playerName;
         private int playerNum;
@@ -46,5 +89,28 @@ public class LineupPredictionDto {
         public int getPlayerNum(){
             return playerNum;
         }
+    }
+
+    @Data
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public static class ResponsePlayerInfo{
+        private String playerImgURL;
+        private String playerName;
+        private Integer playerNum;
+
+        public ResponsePlayerInfo(Player player){
+            this.playerImgURL = player.getProfileImg();
+            this.playerName = player.getName();
+            this.playerNum = player.getNumber();
+        }
+    }
+
+    @Data
+    private static class ResponseLineup{
+        private ResponsePlayerInfo goalkeeper;
+        private List<ResponsePlayerInfo> defenders;
+        private List<ResponsePlayerInfo> midfielders;
+        private List<ResponsePlayerInfo> strikers;
     }
 }
