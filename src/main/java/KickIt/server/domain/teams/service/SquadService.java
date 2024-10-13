@@ -21,6 +21,8 @@ public class SquadService {
     @Autowired
     private SquadRepository squadRepository;
     @Autowired
+    private TeamNameConvertService teamNameConvertService;
+    @Autowired
     private PlayerRepository playerRepository;
 
     @Transactional
@@ -72,5 +74,25 @@ public class SquadService {
                 squadRepository.save(squad);
             }
         }
+    }
+
+    // 해당 시즌 팀 이름만을 반환
+    @Transactional
+    public List<String> getSeasonSquads(String season){
+        List<Squad> seasonSquads = squadRepository.findBySeason(season);
+        List<String> squadNames = new ArrayList<>();
+        for(Squad squad : seasonSquads){
+            squadNames.add(teamNameConvertService.convertToKrName(squad.getTeam()));
+        }
+        return squadNames;
+    }
+
+    @Transactional
+    public String getTeamLogoImg(String season, String team){
+        Optional<Squad> squad = squadRepository.findBySeasonAndTeam(season, team);
+        if(squad.isPresent()){
+            return squad.get().getLogoImg();
+        }
+        return null;
     }
 }

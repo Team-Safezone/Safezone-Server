@@ -79,7 +79,7 @@ public class FixtureController {
     @GetMapping("/dates")
     public ResponseEntity<Map<String, Object>> getFixturesByMonth(@RequestParam("yearMonth") @DateTimeFormat(pattern = "yyyy/MM") Date yearMonth, @RequestParam(value="teamName", required = false) String teamName){
         Map<String, Object> responseBody = new HashMap<>();
-        List<FixtureDto.FixtureDateResponse> responseList;
+        FixtureDto.FixtureDateResponse response;
         Calendar calendar = Calendar.getInstance();
         calendar.setTime(yearMonth);
         int year = calendar.get(Calendar.YEAR);
@@ -87,7 +87,7 @@ public class FixtureController {
 
         // teamName이 입력되지 않은 경우 월만으로 경기 조회
         if(teamName == null){
-            responseList = fixtureService.findFixturesByMonth(year, month);
+            response = fixtureService.findFixturesByMonth(year, month);
             // 입력된 teamName으로 EplTeam이 찾아지지 않는 경우 Bad Request 처리
         }
         // teamName이 입력된 경우 날짜와 팀으로 경기 조회
@@ -98,19 +98,35 @@ public class FixtureController {
                 responseBody.put("message", "팀 이름 입력 오류");
                 return new ResponseEntity<>(responseBody, HttpStatus.BAD_REQUEST);
             }
-            responseList = fixtureService.findFixtureByMonthAndTeam(year, month, team);
+            response = fixtureService.findFixtureByMonthAndTeam(year, month, team);
         }
         // 조회해 가져온 데이터가 존재하는 경우 성공, OK status로 반환
-        if(!responseList.isEmpty()){
+        if(response != null){
             responseBody.put("status", HttpStatus.OK.value());
             responseBody.put("message", "success");
-            responseBody.put("data", responseList);
+            responseBody.put("data", response);
             return new ResponseEntity<>(responseBody, HttpStatus.OK);
         }
         // 조회한 list가 비어있는 경우 데이터 없음 처리, NOT FOUND로 반환
         else{
             responseBody.put("status", HttpStatus.NOT_FOUND.value());
             responseBody.put("message", "데이터 없음");
+            return new ResponseEntity<>(responseBody, HttpStatus.NOT_FOUND);
+        }
+    }
+
+    @PatchMapping("/editScore")
+    public ResponseEntity<Map<String, Object>> editFixtureScore(@RequestParam("fixtureId") Long fixtureId, @RequestParam("homeTeamScore") Integer homeTeamScore, @RequestParam("awayTeamScore") Integer awayTeamScore){
+        Boolean isSuccess = fixtureService.updateFixtureScore(fixtureId, homeTeamScore, awayTeamScore);
+        Map<String, Object> responseBody = new HashMap<>();
+        if(isSuccess){
+            responseBody.put("status", HttpStatus.OK.value());
+            responseBody.put("message", "success");
+            return new ResponseEntity<>(responseBody, HttpStatus.OK);
+        }
+        else{
+            responseBody.put("status", HttpStatus.NOT_FOUND.value());
+            responseBody.put("message", "찾는 경기 없음");
             return new ResponseEntity<>(responseBody, HttpStatus.NOT_FOUND);
         }
     }

@@ -1,6 +1,6 @@
 package KickIt.server.domain.member.controller;
 
-import KickIt.server.domain.member.JwtService;
+import KickIt.server.jwt.JwtService;
 import KickIt.server.domain.member.entity.LoginRequest;
 import KickIt.server.domain.member.entity.Member;
 import KickIt.server.domain.member.entity.AuthProvider;
