@@ -30,7 +30,7 @@ public class HeartRateStatisticsService {
     public Long getMemberId(String email) {
         return memberRepository.findByEmail(email)
                 .orElseThrow(() -> new IllegalArgumentException("해당 이메일을 가진 사용자가 없습니다."))
-                .getMemberId();
+                .getId();
     }
 
     // min, max 가져오기
@@ -58,7 +58,15 @@ public class HeartRateStatisticsService {
             if(!minMax.isEmpty()) {
                 heartRateStatisticsRepository.updateHeartRate(member_id, fixture_id, minMax.get(0), minMax.get(1));
             } else {
-                System.out.println("해당 경기에 심박수를 츨정하지 않았습니다.");
+                System.out.println("해당 경기에 심박수를 측정하지 않았습니다.");
+            }
+
+            // 사용자의 선호팀이 홈팀 인지, 어웨이팀 인지
+            String teamType = heartRateParser.getTeamType(member_id, fixture_id);
+            if(teamType.equals("해당 경기에 선호하는 팀이 없습니다.")) {
+                heartRateStatisticsRepository.updateTeamType(member_id, fixture_id, "메롱");
+            } else {
+                heartRateStatisticsRepository.updateTeamType(member_id, fixture_id, teamType);
             }
         }
     }

@@ -23,4 +23,8 @@ public interface HeartRateStatisticsRepository extends JpaRepository<HeartRateSt
 
     List<HeartRateStatistics> findByMemberIdAndFixtureId(Long memberId, Long fixtureId);
 
+    @Modifying
+    @Transactional
+    @Query("UPDATE HeartRateStatistics SET teamType = :teamType WHERE memberId = :memberId AND fixtureId = :fixtureId")
+    void updateTeamType(@Param("memberId") Long memberId, @Param("fixtureId") Long fixtureId, @Param("teamType") String teamType);
 }

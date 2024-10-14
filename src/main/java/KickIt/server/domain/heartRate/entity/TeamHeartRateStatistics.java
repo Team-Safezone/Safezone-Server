@@ -9,24 +9,21 @@ import lombok.NoArgsConstructor;
 @Getter
 @Entity
 @NoArgsConstructor
-public class HeartRateStatistics {
+public class TeamHeartRateStatistics {
 
     @Id
     @GeneratedValue
     private Long id;
 
-    private Long memberId;
     private Long fixtureId;
-
-    private int lowHeartRate;
-    private int highHeartRate;
 
     private String teamType;
 
+    private int minBPM;
+    private int avgBPM;
+    private int maxBPM;
 
-    public HeartRateStatistics(Long memberId, Long fixtureId) {
-        this.memberId = memberId;
-        this.fixtureId = fixtureId;
-    }
+    private int fanQuantity;
+    private int totalFanQuantity;
 
 }

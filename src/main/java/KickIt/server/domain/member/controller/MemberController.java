@@ -35,7 +35,7 @@ public class MemberController {
         AuthProvider authProvider = memberService.transAuth(loginId);
 
         Member member = new Member(signupRequest.getEmail(), signupRequest.getNickname(),
-                signupRequest.getFavoriteTeams(), "탱탱볼", signupRequest.isMarketingConsent(), authProvider);
+                signupRequest.getFavoriteTeams(), "탱탱볼", signupRequest.isMarketingConsent(), 0, authProvider);
 
         if (memberService.saveMember(member)) {
             String accessToken = jwtService.createAccessToken(member.getEmail());

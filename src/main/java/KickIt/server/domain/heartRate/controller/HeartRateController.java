@@ -6,6 +6,7 @@ import KickIt.server.domain.heartRate.service.FixtureHeartRateStatisticsService;
 import KickIt.server.domain.heartRate.service.HeartRateService;
 import KickIt.server.domain.heartRate.service.HeartRateStatisticsService;
 import KickIt.server.domain.heartRate.service.StatisticsService;
+import KickIt.server.jwt.JwtTokenUtil;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
