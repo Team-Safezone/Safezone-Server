@@ -114,7 +114,7 @@ public class LineupPredictionController {
 
                 responseBody.put("status", HttpStatus.OK.value());
                 responseBody.put("message", "success");
-                responseBody.put("data", lineupPrediction);
+                responseBody.put("data", new LineupPredictionDto.LineupSaveResponse(foundMember.get()));
                 return new ResponseEntity<>(responseBody, HttpStatus.OK);
             }
             // id에 해당하는 경기 존재하지 않는 경우 -> 경기 id 잘못됨

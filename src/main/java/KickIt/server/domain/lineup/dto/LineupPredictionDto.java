@@ -3,6 +3,7 @@ package KickIt.server.domain.lineup.dto;
 import KickIt.server.domain.lineup.entity.LineupPrediction;
 import KickIt.server.domain.lineup.entity.LineupPredictionRepository;
 import KickIt.server.domain.lineup.entity.PredictionPlayer;
+import KickIt.server.domain.member.entity.Member;
 import KickIt.server.domain.teams.entity.Player;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -112,5 +113,33 @@ public class LineupPredictionDto {
         private List<ResponsePlayerInfo> defenders;
         private List<ResponsePlayerInfo> midfielders;
         private List<ResponsePlayerInfo> strikers;
+    }
+
+    @Data
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public static class LineupSaveResponse{
+        private int grade;
+        private int point;
+        public LineupSaveResponse(Member member){
+            switch (member.getGrade()){
+                case("탱탱볼"):
+                    grade = 1;
+                    break;
+                case("브론즈 축구공"):
+                    grade = 2;
+                    break;
+                case("실버 축구공"):
+                    grade = 3;
+                    break;
+                case("골드 축구공"):
+                    grade = 4;
+                    break;
+                case("다이아 축구공"):
+                    grade = 5;
+                    break;
+            }
+            // point는 이후에 추가
+        }
     }
 }
