@@ -56,6 +56,7 @@ public class FixtureController {
             if(team == null){
                 responseBody.put("status", HttpStatus.BAD_REQUEST.value());
                 responseBody.put("message", "팀 이름 입력 오류");
+                responseBody.put("isSuccess", false);
                 return new ResponseEntity<>(responseBody, HttpStatus.BAD_REQUEST);
             }
             responseList = fixtureService.findFixturesByDateAndTeam(date, team);
@@ -64,12 +65,14 @@ public class FixtureController {
         if(!responseList.isEmpty()){
             responseBody.put("status", HttpStatus.OK.value());
             responseBody.put("message", "success");
+            responseBody.put("isSuccess", true);
             responseBody.put("data", responseList);
             return new ResponseEntity<>(responseBody, HttpStatus.OK);
         }
         // 조회한 list가 비어있는 경우 데이터 없음 처리, NOT FOUND로 반환
         else{
             responseBody.put("status", HttpStatus.NOT_FOUND.value());
+            responseBody.put("isSuccess", false);
             responseBody.put("message", "데이터 없음");
             return new ResponseEntity<>(responseBody, HttpStatus.NOT_FOUND);
         }
@@ -96,6 +99,7 @@ public class FixtureController {
             if(team == null){
                 responseBody.put("status", HttpStatus.BAD_REQUEST.value());
                 responseBody.put("message", "팀 이름 입력 오류");
+                responseBody.put("isSuccess", false);
                 return new ResponseEntity<>(responseBody, HttpStatus.BAD_REQUEST);
             }
             response = fixtureService.findFixtureByMonthAndTeam(year, month, team);
@@ -105,12 +109,14 @@ public class FixtureController {
             responseBody.put("status", HttpStatus.OK.value());
             responseBody.put("message", "success");
             responseBody.put("data", response);
+            responseBody.put("isSuccess", true);
             return new ResponseEntity<>(responseBody, HttpStatus.OK);
         }
         // 조회한 list가 비어있는 경우 데이터 없음 처리, NOT FOUND로 반환
         else{
             responseBody.put("status", HttpStatus.NOT_FOUND.value());
             responseBody.put("message", "데이터 없음");
+            responseBody.put("isSuccess", false);
             return new ResponseEntity<>(responseBody, HttpStatus.NOT_FOUND);
         }
     }
