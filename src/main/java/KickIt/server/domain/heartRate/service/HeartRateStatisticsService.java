@@ -2,11 +2,8 @@ package KickIt.server.domain.heartRate.service;
 
 import KickIt.server.domain.heartRate.dto.HeartRateDto;
 import KickIt.server.domain.heartRate.dto.HeartRateStatisticsRepository;
-import KickIt.server.domain.heartRate.dto.StatisticsDto;
 import KickIt.server.domain.heartRate.entity.HeartRateStatistics;
 import KickIt.server.domain.member.dto.MemberRepository;
-import KickIt.server.domain.realtime.dto.RealTimeStatisticsDto;
-import org.hibernate.stat.Statistics;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -61,10 +58,11 @@ public class HeartRateStatisticsService {
                 System.out.println("해당 경기에 심박수를 측정하지 않았습니다.");
             }
 
-            // 사용자의 선호팀이 홈팀 인지, 어웨이팀 인지
+            // 사용자의 선호팀이 홈 팀 인지, 어웨이 팀 인지, 아예 다른 팀인지
             String teamType = heartRateParser.getTeamType(member_id, fixture_id);
-            if(teamType.equals("해당 경기에 선호하는 팀이 없습니다.")) {
-                heartRateStatisticsRepository.updateTeamType(member_id, fixture_id, "메롱");
+            if(teamType.equals("others")) {
+                // 선호 팀이 아닌경우 추가 처리 필요
+                heartRateStatisticsRepository.updateTeamType(member_id, fixture_id, "others");
             } else {
                 heartRateStatisticsRepository.updateTeamType(member_id, fixture_id, teamType);
             }

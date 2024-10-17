@@ -1,10 +1,10 @@
 package KickIt.server.domain.heartRate.service;
 
-import KickIt.server.domain.heartRate.dto.HeartRateStatisticsRepository;
+import KickIt.server.domain.heartRate.dto.HeartRateDto;
 import KickIt.server.domain.heartRate.dto.StatisticsDto;
 import KickIt.server.domain.heartRate.dto.StatisticsRepository;
+import KickIt.server.domain.heartRate.entity.HeartRate;
 import KickIt.server.domain.member.dto.MemberRepository;
-import KickIt.server.domain.realtime.dto.RealTimeStatisticsDto;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -26,20 +26,31 @@ public class StatisticsService {
                 .getId();
     }
 
+    // API에 전달할 리스트 get
     public List<StatisticsDto> getHeartRateStatistics(String email, Long fixtureId) {
         Long memberId = getMemberId(email);
 
         List<StatisticsDto> statistics = statisticsRepository.findJoinedData(memberId, fixtureId);
 
         for (StatisticsDto stat : statistics) {
-            List<RealTimeStatisticsDto> events = getRealTimeStatistics(fixtureId);
+            List<StatisticsDto.RealTimeStatisticsDto> events = getRealTimeStatistics(fixtureId);
             stat.setEvent(events);
         }
+
+        for (StatisticsDto stat : statistics) {
+            List<HeartRateDto.MatchHeartRateRecords> heartRateRecordsList = getHomeTeamHeartRate(fixtureId, "home");
+            stat.setHomeTeamHeartRateRecords(heartRateRecordsList);
+        }
+
 
         return statistics;
     }
 
-    public List<RealTimeStatisticsDto> getRealTimeStatistics(Long fixtureId) {
+    public List<StatisticsDto.RealTimeStatisticsDto> getRealTimeStatistics(Long fixtureId) {
         return statisticsRepository.getRealTimeStatistics(fixtureId);
+    }
+
+    public List<HeartRateDto.MatchHeartRateRecords> getHomeTeamHeartRate(Long fixtureId, String teamType) {
+        return statisticsRepository.getHomeTeamHeartRate(fixtureId, teamType);
     }
 }

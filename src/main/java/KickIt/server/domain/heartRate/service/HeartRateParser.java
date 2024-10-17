@@ -92,33 +92,38 @@ public class HeartRateParser {
     }
 
     public String getTeamType(Long memberId, Long fixtureId) {
+        String home;
+        String away;
+
         List<Object[]> homeawayTeam = fixtureRepository.findHomeAwayTeam(fixtureId);
-        Object[] teams = homeawayTeam.get(0);
 
-        String home = teamNameConvertService.convertToKrName((String) teams[0]);
-        String away = teamNameConvertService.convertToKrName((String) teams[1]);
-
-        List<Object[]> memberFavoriteTeams = memberRepository.getFavoriteTeam(memberId);
-        Object[] memberTeams = homeawayTeam.get(0);
-        String team1 = (String) memberTeams[0];
-        String team2 = (String) memberTeams[1];
-        String team3 = (String) memberTeams[2];
-
-        if (team1.equals(home)) {
-            return "home";
-        } else if (team1.equals(away)) {
-            return "away";
-        } else if (team2.equals(home)) {
-            return "home";
-        } else if (team2.equals(away)) {
-            return "away";
-        } else if (team3.equals(home)) {
-            return "home";
-        } else if (team3.equals(away)) {
-            return "away";
+        if (homeawayTeam.isEmpty()) {
+            // homeawayTeam이 비어 있을 경우 처리
+            throw new IllegalArgumentException("해당 fixture에 대한 팀 정보가 없습니다.");
+        } else {
+            Object[] teams = homeawayTeam.get(0);
+            home = teamNameConvertService.convertToKrName((String) teams[0]);
+            away = teamNameConvertService.convertToKrName((String) teams[1]);
         }
 
-        return "해당 경기에 선호하는 팀이 없습니다.";
+        List<Object[]> memberFavoriteTeams = memberRepository.getFavoriteTeam(memberId);
+
+        if (memberFavoriteTeams.isEmpty()) {
+            // memberFavoriteTeams가 비어 있을 경우 처리
+            throw new IllegalArgumentException("해당 멤버의 좋아하는 팀 정보가 없습니다.");
+        }
+
+        Object[] memberTeams = memberFavoriteTeams.get(0);
+
+        for (Object memberTeam : memberTeams) {
+            if (memberTeam.equals(home)) {
+                return "home";
+            } else if (memberTeam.equals(away)) {
+                return "away";
+            }
+        }
+
+        return "others";
     }
 
 }

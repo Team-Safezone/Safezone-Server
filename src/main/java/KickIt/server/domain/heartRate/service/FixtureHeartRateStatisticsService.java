@@ -4,7 +4,6 @@ import KickIt.server.domain.heartRate.dto.FixtureHeartRateStatisticsRepository;
 import KickIt.server.domain.heartRate.dto.HeartRateDto;
 import KickIt.server.domain.heartRate.entity.FixtureHeartRateStatistics;
 import KickIt.server.domain.realtime.dto.RealTimeRepository;
-import KickIt.server.domain.realtime.dto.RealTimeStatisticsDto;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -50,6 +49,7 @@ public class FixtureHeartRateStatisticsService {
             // BPM 업데이트
             List<Integer> bpm3 = heartRateParser.minAvgMax(fixture_id);
             fixtureHeartRateStatisticsRepository.updateBPM(fixture_id, bpm3.get(0), bpm3.get(1), bpm3.get(2));
+
         }
     }
 
