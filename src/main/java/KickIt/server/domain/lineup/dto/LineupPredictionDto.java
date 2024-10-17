@@ -15,13 +15,14 @@ import org.springframework.stereotype.Component;
 import java.util.ArrayList;
 import java.util.List;
 
+// 선발 라인업 예측 DTO
 @Component
 public class LineupPredictionDto {
     @Data
     @AllArgsConstructor
     @NoArgsConstructor
     @Builder
-    // fixture request
+    // 선발 라인업 예측 Request
     public static class LineUpPredictionRequest{
         private int homeFormation;
         private int awayFormation;
@@ -48,6 +49,7 @@ public class LineupPredictionDto {
     @AllArgsConstructor
     @NoArgsConstructor
     @Builder
+    // 선발 라인업 수정 API가 호출 후 반환할 Response
     public static class LineUpPredictionEditResponse{
         private int participant;
 
@@ -80,6 +82,7 @@ public class LineupPredictionDto {
          */
     }
 
+    // RequestBody로 들어오는 선수 정보 형식
     public static class RequestPlayerInfo{
         private String playerName;
         private int playerNum;
@@ -95,6 +98,7 @@ public class LineupPredictionDto {
     @Data
     @NoArgsConstructor
     @AllArgsConstructor
+    // 선발라인업 예측 수정 API 호출 시 반환할 선수 정보 형태
     public static class ResponsePlayerInfo{
         private String playerImgURL;
         private String playerName;
@@ -108,6 +112,7 @@ public class LineupPredictionDto {
     }
 
     @Data
+    // 선발라인업 예측 수정 API 호출 시 반환할 선발 라인업 정보 형태
     private static class ResponseLineup{
         private ResponsePlayerInfo goalkeeper;
         private List<ResponsePlayerInfo> defenders;
@@ -118,6 +123,7 @@ public class LineupPredictionDto {
     @Data
     @NoArgsConstructor
     @AllArgsConstructor
+    // 선발라인업 예측 저장 API 호출 시 반환할 Response
     public static class LineupSaveResponse{
         private int grade;
         private int point;
