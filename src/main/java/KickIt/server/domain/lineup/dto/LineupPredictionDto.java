@@ -53,33 +53,18 @@ public class LineupPredictionDto {
     public static class LineUpPredictionEditResponse{
         private int participant;
 
-        private int homeFormation;
-        private int awayFormation;
+        private int userHomeFormation;
+        private int userAwayFormation;
+        private ResponseLineup userHomePrediction;
+        private ResponseLineup userAwayPrediction;
 
-        private ResponsePlayerInfo homeGoalkeeper;
-        private List<ResponsePlayerInfo> homeDefenders;
-        private List<ResponsePlayerInfo> homeMidfielders;
-        private List<ResponsePlayerInfo> homeStrikers;
+        private int avgHomeFormation;
+        private ResponseLineup avgHomePrediction;
+        private int avgAwayFormation;
+        private ResponseLineup avgAwayPrediction;
 
-        private ResponsePlayerInfo awayGoalkeeper;
-        private List<ResponsePlayerInfo> awayDefenders;
-        private List<ResponsePlayerInfo> awayMidfielders;
-        private List<ResponsePlayerInfo> awayStrikers;
-
-        private ResponseLineup homeLineups;
-        private ResponseLineup awayLineups;
-
-        /*
-        public LineUpPredictionEditResponse(LineupPrediction lineupPrediction){
-            Long memberId = lineupPrediction.getMember().getMemberId();
-            Long fixtureId = lineupPrediction.getFixture().getId();
-
-            this.homeFormation = lineupPrediction.getHomeTeamForm();
-            this.awayFormation = lineupPrediction.getAwayTeamForm();
-
-
-        }
-         */
+        private List<Boolean> userPrediction;
+        private List<Boolean> avgPrediction;
     }
 
     // RequestBody로 들어오는 선수 정보 형식
@@ -112,9 +97,12 @@ public class LineupPredictionDto {
     }
 
     @Data
+    @NoArgsConstructor
+    @AllArgsConstructor
+    @Builder
     // 선발라인업 예측 수정 API 호출 시 반환할 선발 라인업 정보 형태
-    private static class ResponseLineup{
-        private ResponsePlayerInfo goalkeeper;
+    public static class ResponseLineup{
+        private List<ResponsePlayerInfo> goalkeeper;
         private List<ResponsePlayerInfo> defenders;
         private List<ResponsePlayerInfo> midfielders;
         private List<ResponsePlayerInfo> strikers;
@@ -128,6 +116,7 @@ public class LineupPredictionDto {
         private int grade;
         private int point;
         public LineupSaveResponse(Member member){
+            // 나중에 grade 숫자로 바뀌면 수정할 것 !!!
             switch (member.getGrade()){
                 case("탱탱볼"):
                     grade = 1;

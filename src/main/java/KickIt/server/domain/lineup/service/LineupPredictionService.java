@@ -38,17 +38,31 @@ public class LineupPredictionService {
         Long memberId = lineupPrediction.getMember().getMemberId();
         Long fixtureId = lineupPrediction.getFixture().getId();
 
+        // 기존에 예측한 홈팀 라인업 정보 DB에서 가져와 구성
+        LineupPredictionDto.ResponseLineup currentHomePrediction = LineupPredictionDto.ResponseLineup.builder()
+                .goalkeeper(convertToPlayerInfo(lineupPredictionRepository.findFilteredPlayersByMemberAndFixture(memberId, fixtureId, 0, 0)))
+                .defenders(convertToPlayerInfo(lineupPredictionRepository.findFilteredPlayersByMemberAndFixture(memberId, fixtureId, 1, 0)))
+                .midfielders(convertToPlayerInfo(lineupPredictionRepository.findFilteredPlayersByMemberAndFixture(memberId, fixtureId, 2, 0)))
+                .strikers(convertToPlayerInfo(lineupPredictionRepository.findFilteredPlayersByMemberAndFixture(memberId, fixtureId, 3, 0)))
+                .build();
+
+        // 기존에 예측한 원정팀 라인업 정보 DB에서 가져와 구성
+        LineupPredictionDto.ResponseLineup currentAwayPrediction = LineupPredictionDto.ResponseLineup.builder()
+                .goalkeeper(convertToPlayerInfo(lineupPredictionRepository.findFilteredPlayersByMemberAndFixture(memberId, fixtureId, 0, 1)))
+                .defenders(convertToPlayerInfo(lineupPredictionRepository.findFilteredPlayersByMemberAndFixture(memberId, fixtureId, 1, 1)))
+                .midfielders(convertToPlayerInfo(lineupPredictionRepository.findFilteredPlayersByMemberAndFixture(memberId, fixtureId, 2, 1)))
+                .strikers(convertToPlayerInfo(lineupPredictionRepository.findFilteredPlayersByMemberAndFixture(memberId, fixtureId, 3, 1)))
+                .build();
+
         LineupPredictionDto.LineUpPredictionEditResponse response = LineupPredictionDto.LineUpPredictionEditResponse.builder()
-                .homeFormation(lineupPrediction.getHomeTeamForm())
-                .awayFormation(lineupPrediction.getAwayTeamForm())
-                .homeGoalkeeper(new LineupPredictionDto.ResponsePlayerInfo(lineupPredictionRepository.findFilteredPlayersByMemberAndFixture(memberId, fixtureId, 0, 0).get(0).getPlayer()))
-                .homeDefenders(convertToPlayerInfo(lineupPredictionRepository.findFilteredPlayersByMemberAndFixture(memberId, fixtureId, 1, 0)))
-                .homeMidfielders(convertToPlayerInfo(lineupPredictionRepository.findFilteredPlayersByMemberAndFixture(memberId, fixtureId, 2, 0)))
-                .homeStrikers(convertToPlayerInfo(lineupPredictionRepository.findFilteredPlayersByMemberAndFixture(memberId, fixtureId, 3, 0)))
-                .awayGoalkeeper(new LineupPredictionDto.ResponsePlayerInfo(lineupPredictionRepository.findFilteredPlayersByMemberAndFixture(memberId, fixtureId, 0, 1).get(0).getPlayer()))
-                .awayDefenders(convertToPlayerInfo(lineupPredictionRepository.findFilteredPlayersByMemberAndFixture(memberId, fixtureId, 1, 1)))
-                .awayMidfielders(convertToPlayerInfo(lineupPredictionRepository.findFilteredPlayersByMemberAndFixture(memberId, fixtureId, 2, 1)))
-                .awayStrikers(convertToPlayerInfo(lineupPredictionRepository.findFilteredPlayersByMemberAndFixture(memberId, fixtureId, 3, 1))).build();
+                .participant(lineupPredictionRepository.findByFixture(fixtureId).size())
+                .userHomeFormation(currentPrediction.getHomeTeamForm())
+                .userHomePrediction(currentHomePrediction)
+                .userAwayFormation(currentPrediction.getAwayTeamForm())
+                .userAwayPrediction(currentAwayPrediction)
+                .avgHomeFormation(lineupPredictionRepository.findAvgHomeTeamForm(fixtureId))
+                .avgAwayFormation(lineupPredictionRepository.findAvgAwayTeamForm(fixtureId))
+                .build();
 
         currentPrediction.getPlayers().clear();
         lineupPredictionRepository.save(currentPrediction);
@@ -66,4 +80,6 @@ public class LineupPredictionService {
         }
         return convertedPlayers;
     }
+
+    // 현재 DB에서 전체 사용자 선발 라인업 예측 평균 데이터 조회
 }
