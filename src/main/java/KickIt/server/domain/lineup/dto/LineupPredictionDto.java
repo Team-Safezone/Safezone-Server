@@ -4,6 +4,7 @@ import KickIt.server.domain.lineup.entity.LineupPrediction;
 import KickIt.server.domain.lineup.entity.LineupPredictionRepository;
 import KickIt.server.domain.lineup.entity.PredictionPlayer;
 import KickIt.server.domain.member.entity.Member;
+import KickIt.server.domain.teams.PlayerPosition;
 import KickIt.server.domain.teams.entity.Player;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -137,4 +138,57 @@ public class LineupPredictionDto {
             // point는 이후에 추가
         }
     }
+
+    @Data
+    @NoArgsConstructor
+    @AllArgsConstructor
+    @Builder
+    // 선발 라인업 예측 조회 API 호출 시 반환할 Response
+    public static class LineupInquireResponse{
+        List<ResponsePlayerInfo2> homePlayers;
+        List<ResponsePlayerInfo2> awayPlayers;
+        InquiredLineupPrediction homePrediction;
+        InquiredLineupPrediction awayPrediction;
+    }
+
+    @Data
+    @NoArgsConstructor
+    @AllArgsConstructor
+    // 선발라인업 예측 조회 API 호출 시 반환할 선수 정보 형태
+    public static class ResponsePlayerInfo2{
+        private String playerImgURL;
+        private String playerName;
+        private Integer playerNum;
+        private Integer playerPos;
+
+        public ResponsePlayerInfo2(Player player){
+            this.playerImgURL = player.getProfileImg();
+            this.playerName = player.getName();
+            this.playerNum = player.getNumber();
+            this.playerPos = convertPositionToInt(player.getPosition());
+        }
+
+        Integer convertPositionToInt(PlayerPosition p){
+            return switch (p) {
+                case GK -> 0;
+                case DF -> 1;
+                case MF -> 2;
+                case FW -> 3;
+            };
+        }
+    }
+
+    @Data
+    @NoArgsConstructor
+    @AllArgsConstructor
+    @Builder
+    public static class InquiredLineupPrediction{
+        private int formation;
+        private ResponsePlayerInfo goalkeeper;
+        private List<ResponsePlayerInfo> defenders;
+        private List<ResponsePlayerInfo> midfielders;
+        private List<ResponsePlayerInfo> strikers;
+
+    }
+
 }
