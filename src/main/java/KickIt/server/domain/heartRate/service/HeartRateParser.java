@@ -29,33 +29,6 @@ public class HeartRateParser {
         this.teamNameConvertService = teamNameConvertService;
     }
 
-    public List<Integer> minMax(Long memberId, Long fixtureId) {
-
-        List<Integer> heartRate = heartRateRepository.getUserHeartRate(memberId, fixtureId);
-
-        // 데이터 없을 경우
-        if (heartRate == null || heartRate.isEmpty()) {
-            return Collections.emptyList();  // 빈 리스트 반환
-        }
-
-        int min = heartRate.get(0);
-        int max = heartRate.get(0);
-
-        for (Integer i : heartRate) {
-            if (min > i) {
-                min = i;
-            }
-            if (max < i) {
-                max = i;
-            }
-        }
-
-        List<Integer> minmaxList = new ArrayList<>();
-        minmaxList.add(min);
-        minmaxList.add(max);
-
-        return minmaxList;
-    }
 
     public List<Integer> minAvgMaxInt(List<Integer> bpm) {
 
@@ -116,9 +89,25 @@ public class HeartRateParser {
     }
 
 
+    public int avgInt(List<Integer> bpm) {
+        int avg = 0;
+        int sum = 0;
+
+        for (Integer i : bpm) {
+            sum += i;
+        }
+
+        if(!bpm.isEmpty()){
+            avg = sum/bpm.size();
+        }
+
+        return avg;
+    }
+
+
     public List<Object[]> avgObject(List<Object[]> bpm) {
 
-        // 1. heartRateDate 값을 기준으로 그룹화 (두 번째 요소가 heartRateDate라고 가정)
+        // 1. heartRateDate 값을 기준으로 그룹화
         Map<Integer, List<Integer>> groupedByHeartRateDate = bpm.stream()
                 .collect(Collectors.groupingBy(
                         record -> (Integer) record[0],
@@ -131,8 +120,12 @@ public class HeartRateParser {
             Integer heartRateDate = entry.getKey();
             List<Integer> heartRates = entry.getValue();
 
-            // heartRate 그룹 내에서 평균 계산
-            double averageHeartRate = heartRates.stream().mapToInt(Integer::intValue).average().orElse(0.0);
+            // 0이 아닌 heartRate 값들만 사용하여 평균 계산
+            double averageHeartRate = heartRates.stream()
+                    .filter(rate -> rate != 0) // 0인 값 제외
+                    .mapToInt(Integer::intValue)
+                    .average()
+                    .orElse(0.0);
 
             // 결과 리스트에 heartRateDate와 평균 heartRate 추가
             result.add(new Object[]{heartRateDate, (int) averageHeartRate});

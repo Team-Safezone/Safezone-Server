@@ -23,6 +23,8 @@ public class Member {
     private String team2;
     private String team3;
 
+    private int avgHeartRate;
+
     private int point;
     private String grade;
 

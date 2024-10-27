@@ -2,7 +2,6 @@ package KickIt.server.domain.heartRate.controller;
 
 import KickIt.server.domain.heartRate.dto.HeartRateDto;
 import KickIt.server.domain.heartRate.dto.StatisticsDto;
-import KickIt.server.domain.heartRate.entity.TeamHeartRate;
 import KickIt.server.domain.heartRate.service.*;
 import KickIt.server.jwt.JwtTokenUtil;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -78,7 +77,7 @@ public class HeartRateController {
 
         Map<String, Object> responseBody = new HashMap<>();
 
-        List<StatisticsDto> response = statisticsService.getHeartRateStatistics(email,matchId);
+        List<StatisticsDto> response = statisticsService.getHeartRateStatistics(email, matchId);
 
         if (jwtTokenUtil.validateToken(xAuthToken, email)) {
             responseBody.put("status", HttpStatus.OK.value());
@@ -94,4 +93,6 @@ public class HeartRateController {
             return new ResponseEntity<>(responseBody, HttpStatus.FORBIDDEN);
         }
     }
+
 }
+

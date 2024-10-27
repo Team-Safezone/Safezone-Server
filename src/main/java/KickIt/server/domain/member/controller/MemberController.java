@@ -1,17 +1,20 @@
 package KickIt.server.domain.member.controller;
 
+import KickIt.server.domain.heartRate.dto.StatisticsDto;
 import KickIt.server.jwt.JwtService;
 import KickIt.server.domain.member.entity.LoginRequest;
 import KickIt.server.domain.member.entity.Member;
 import KickIt.server.domain.member.entity.AuthProvider;
 import KickIt.server.domain.member.entity.SignupRequest;
 import KickIt.server.domain.member.service.MemberService;
+import KickIt.server.jwt.JwtTokenUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 
@@ -21,11 +24,13 @@ public class MemberController {
 
     private final MemberService memberService;
     private final JwtService jwtService;
+    private final JwtTokenUtil jwtTokenUtil;
 
     @Autowired
-    public MemberController(MemberService memberService, JwtService jwtService) {
+    public MemberController(MemberService memberService, JwtService jwtService, JwtTokenUtil jwtTokenUtil) {
         this.memberService = memberService;
         this.jwtService = jwtService;
+        this.jwtTokenUtil = jwtTokenUtil;
     }
 
     @PostMapping("/signup")
@@ -96,5 +101,27 @@ public class MemberController {
         }
     }
 
+    @GetMapping("/avgHeartRate")
+    public ResponseEntity<Map<String, Object>> getMemberAvgHeartRate(@RequestParam(value = "xAuthToken") String xAuthToken) {
+        String email = jwtTokenUtil.getEmailFromToken(xAuthToken);
+
+        Map<String, Object> responseBody = new HashMap<>();
+
+        int response = memberService.getMemberAvgHeartRate(email);
+
+        if (jwtTokenUtil.validateToken(xAuthToken, email)) {
+            responseBody.put("status", HttpStatus.OK.value());
+            responseBody.put("message", "success");
+            responseBody.put("data", response);
+            responseBody.put("isSuccess", true);
+            return new ResponseEntity<>(responseBody, HttpStatus.OK);
+        } else {
+            responseBody.put("status", HttpStatus.FORBIDDEN.value());
+            responseBody.put("message", "유효한 토큰이 아닙니다.");
+            responseBody.put("data", response);
+            responseBody.put("isSuccess", false);
+            return new ResponseEntity<>(responseBody, HttpStatus.FORBIDDEN);
+        }
+    }
 }
 

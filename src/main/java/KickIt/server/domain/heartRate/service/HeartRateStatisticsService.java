@@ -32,41 +32,54 @@ public class HeartRateStatisticsService {
 
     // min, max 가져오기
     public List<Integer> getMinMax(Long memberId, Long fixtureId) {
-        List<Integer> minMaxList;
-        minMaxList = heartRateParser.minMax(memberId, fixtureId);
+        List<Integer> heartRate = heartRateStatisticsRepository.getUserHeartRate(memberId, fixtureId);
+        List<Integer> minAvgMaxList = heartRateParser.minAvgMaxInt(heartRate);
 
-        return minMaxList;
+        return minAvgMaxList;
+    }
+
+    public int calculateAvgHeartRate(Long memberId) {
+        List<Integer> getHeartRate = heartRateStatisticsRepository.getHeartRate(memberId);
+        int avgHeartRate = heartRateParser.avgInt(getHeartRate);
+
+        return avgHeartRate;
     }
 
     // 통계 저장
     public void saveStatistics(String email, HeartRateDto heartRateDTO) {
-        Long member_id = getMemberId(email);
-        Long fixture_id = heartRateDTO.getMatchId();
+        Long memberId = getMemberId(email);
+        Long fixtureId = heartRateDTO.getMatchId();
 
         // 중복 처리
-        if(heartRateStatisticsRepository.findByMemberIdAndFixtureId(member_id,fixture_id).isEmpty()) {
+        if(heartRateStatisticsRepository.findByMemberIdAndFixtureId(memberId,fixtureId).isEmpty()) {
 
             // 객체 생성
-            HeartRateStatistics heartRateStatistics = new HeartRateStatistics(member_id, fixture_id);
+            HeartRateStatistics heartRateStatistics = new HeartRateStatistics(memberId, fixtureId);
             heartRateStatisticsRepository.save(heartRateStatistics);
 
-            // min, max 업데이트
-            List<Integer> minMax = getMinMax(member_id, fixture_id);
-            if(!minMax.isEmpty()) {
-                heartRateStatisticsRepository.updateHeartRate(member_id, fixture_id, minMax.get(0), minMax.get(1));
+            // min, avg, max 업데이트
+            List<Integer> minAvgMax = getMinMax(memberId, fixtureId);
+            if(!minAvgMax.isEmpty()) {
+                heartRateStatisticsRepository.updateHeartRate(memberId, fixtureId, minAvgMax.get(0), minAvgMax.get(1), minAvgMax.get(2));
             } else {
                 System.out.println("해당 경기에 심박수를 측정하지 않았습니다.");
             }
 
             // 사용자의 선호팀이 홈 팀 인지, 어웨이 팀 인지, 아예 다른 팀인지
-            String teamType = heartRateParser.getTeamType(member_id, fixture_id);
+            String teamType = heartRateParser.getTeamType(memberId, fixtureId);
             if(teamType.equals("others")) {
                 // 선호 팀이 아닌경우 추가 처리 필요
-                heartRateStatisticsRepository.updateTeamType(member_id, fixture_id, "others");
+                heartRateStatisticsRepository.updateTeamType(memberId, fixtureId, "others");
             } else {
-                heartRateStatisticsRepository.updateTeamType(member_id, fixture_id, teamType);
+                heartRateStatisticsRepository.updateTeamType(memberId, fixtureId, teamType);
             }
+
+            // 사용자 심박수 평균값 업데이트
+            int avgHeartRate = calculateAvgHeartRate(memberId);
+            heartRateStatisticsRepository.updateAvg(memberId, avgHeartRate);
+
         }
+
     }
 
 

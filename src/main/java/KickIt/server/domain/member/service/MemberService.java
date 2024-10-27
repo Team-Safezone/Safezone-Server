@@ -10,8 +10,17 @@ import org.springframework.stereotype.Service;
 @Service
 public class MemberService {
 
-    @Autowired
     private MemberRepository memberRepository;
+
+    public MemberService(MemberRepository memberRepository) {
+        this.memberRepository = memberRepository;
+    }
+
+    public Long getMemberId(String email) {
+        return memberRepository.findByEmail(email)
+                .orElseThrow(() -> new IllegalArgumentException("해당 이메일을 가진 사용자가 없습니다."))
+                .getId();
+    }
 
     @Transactional
     public boolean isMemberExist(String email, AuthProvider authProvider) {
@@ -52,6 +61,12 @@ public class MemberService {
         } else {
             return true;
         }
+    }
+
+    // 사용자 평균 심박수
+    public int getMemberAvgHeartRate(String email) {
+        Long memberId = getMemberId(email);
+        return memberRepository.getMemberAvgHeartRate(memberId);
     }
 
 }

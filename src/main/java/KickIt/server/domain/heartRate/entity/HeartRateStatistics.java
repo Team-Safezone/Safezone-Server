@@ -21,6 +21,7 @@ public class HeartRateStatistics {
 
     private int lowHeartRate;
     private int highHeartRate;
+    private int averageRate;
 
     private String teamType;
 
