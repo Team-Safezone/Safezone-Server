@@ -20,11 +20,12 @@ public class HeartRate {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private int heartRate;
     private int heartRateDate;
+    private int heartRate;
 
     private Long memberId;
     private Long fixtureId;
+
 
     public HeartRate(Long memberId, Long fixtureId, int heartRate, int heartRateDate) {
         this.memberId = memberId;

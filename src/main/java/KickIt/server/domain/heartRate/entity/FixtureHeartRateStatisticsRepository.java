@@ -1,4 +1,4 @@
-package KickIt.server.domain.heartRate.dto;
+package KickIt.server.domain.heartRate.entity;
 
 import KickIt.server.domain.heartRate.entity.FixtureHeartRateStatistics;
 import jakarta.transaction.Transactional;
@@ -24,4 +24,16 @@ public interface FixtureHeartRateStatisticsRepository extends JpaRepository<Fixt
     void updateBPM(@Param("fixtureId") Long fixtureId, @Param("minBPM") int minBPM, @Param("avgBPM") int avgBPM, @Param("maxBPM") int maxBPM);
 
     List<FixtureHeartRateStatistics> findByFixtureId(Long fixtureId);
+
+    // 팀 중 심박수 기록 사용자 수
+    @Query("SELECT count(hh) " +
+            "FROM HeartRateStatistics hh " +
+            "WHERE hh.fixtureId = :fixtureId AND hh.teamType = :teamType")
+    int teamUser(@Param("fixtureId") Long fixtureId, @Param("teamType") String teamType);
+
+    @Modifying
+    @Transactional
+    @Query("UPDATE FixtureHeartRateStatistics SET homeTeamViewerPercentage = :homeTeamViewerPercentage WHERE fixtureId = :fixtureId")
+    void updatePercent (@Param("fixtureId") Long fixtureId, @Param("homeTeamViewerPercentage") int homeTeamViewerPercentage);
+
 }

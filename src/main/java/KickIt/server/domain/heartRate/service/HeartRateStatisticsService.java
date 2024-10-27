@@ -1,7 +1,7 @@
 package KickIt.server.domain.heartRate.service;
 
 import KickIt.server.domain.heartRate.dto.HeartRateDto;
-import KickIt.server.domain.heartRate.dto.HeartRateStatisticsRepository;
+import KickIt.server.domain.heartRate.entity.HeartRateStatisticsRepository;
 import KickIt.server.domain.heartRate.entity.HeartRateStatistics;
 import KickIt.server.domain.member.dto.MemberRepository;
 import org.springframework.beans.factory.annotation.Autowired;

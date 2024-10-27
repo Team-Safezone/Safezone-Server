@@ -15,5 +15,9 @@ public class HeartRateDto {
         private int heartRate;
         private int date;
 
+        public MatchHeartRateRecords(int heartRate, int date) {
+            this.heartRate = heartRate;
+            this.date = date;
+        }
     }
 }

@@ -1,4 +1,4 @@
-package KickIt.server.domain.heartRate.dto;
+package KickIt.server.domain.heartRate.entity;
 
 import KickIt.server.domain.heartRate.entity.HeartRate;
 import KickIt.server.domain.member.entity.Member;

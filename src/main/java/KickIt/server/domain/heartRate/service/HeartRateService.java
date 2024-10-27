@@ -1,7 +1,8 @@
 package KickIt.server.domain.heartRate.service;
 
 import KickIt.server.domain.heartRate.dto.HeartRateDto;
-import KickIt.server.domain.heartRate.dto.HeartRateRepository;
+import KickIt.server.domain.heartRate.entity.HeartRateRepository;
+import KickIt.server.domain.heartRate.entity.HeartRateStatisticsRepository;
 import KickIt.server.domain.heartRate.entity.HeartRate;
 import KickIt.server.domain.member.dto.MemberRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,13 +13,16 @@ public class HeartRateService {
 
     private final HeartRateRepository heartRateRepository;
     private final MemberRepository memberRepository;
+    private final HeartRateParser heartRateParser;
+    private final HeartRateStatisticsRepository heartRateStatisticsRepository;
 
     @Autowired
-    public HeartRateService(HeartRateRepository heartRateRepository, MemberRepository memberRepository) {
+    public HeartRateService(HeartRateRepository heartRateRepository, MemberRepository memberRepository, HeartRateParser heartRateParser, HeartRateStatisticsRepository heartRateStatisticsRepository) {
         this.heartRateRepository = heartRateRepository;
         this.memberRepository = memberRepository;
+        this.heartRateParser = heartRateParser;
+        this.heartRateStatisticsRepository = heartRateStatisticsRepository;
     }
-
 
     // 사용자 Id
     public Long getMemberId(String email) {

@@ -1,9 +1,6 @@
 package KickIt.server.domain.heartRate.entity;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -12,8 +9,9 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class TeamHeartRateStatistics {
 
+
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue
     private Long id;
 
     private Long fixtureId;
@@ -24,7 +22,11 @@ public class TeamHeartRateStatistics {
     private int avgBPM;
     private int maxBPM;
 
-    private int fanQuantity;
-    private int totalFanQuantity;
-
+    public TeamHeartRateStatistics(Long fixtureId, String teamType, int minBPM, int avgBPM, int maxBPM) {
+        this.fixtureId = fixtureId;
+        this.teamType = teamType;
+        this.minBPM = minBPM;
+        this.avgBPM = avgBPM;
+        this.maxBPM = maxBPM;
+    }
 }

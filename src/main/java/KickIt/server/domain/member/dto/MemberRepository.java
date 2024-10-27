@@ -21,4 +21,7 @@ public interface MemberRepository extends JpaRepository<Member, Long> {
     // 심박수 통계용
     @Query("SELECT m.team1, m.team2, m.team3 FROM Member m WHERE id = :id ")
     List<Object[]> getFavoriteTeam(@Param("id") Long id);
+
+    @Query("SELECT m.team1, m.team2, m.team3 FROM Member m")
+    List<Object[]> getFavoriteTeamAll();
 }

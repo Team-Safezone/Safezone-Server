@@ -25,6 +25,8 @@ public class FixtureHeartRateStatistics {
     private int avgBPM;
     private int maxBPM;
 
+    private int homeTeamViewerPercentage;
+
     public FixtureHeartRateStatistics(Long fixtureId) {
         this.fixtureId = fixtureId;
     }

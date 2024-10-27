@@ -20,8 +20,12 @@ public class StatisticsDto {
     private int maxBPM;
     private List<RealTimeStatisticsDto> event;
     private List<HeartRateDto.MatchHeartRateRecords> homeTeamHeartRateRecords;
+    private List<HeartRateDto.MatchHeartRateRecords> awayTeamHeartRateRecords;
+    private List<MinAvgMaxDto> homeTeamHeartRate;
+    private List<MinAvgMaxDto> awayTeamHeartRate;
+    private int homeTeamViewerPercentage;
 
-    public StatisticsDto(String startDate, String endDate, int lowHeartRate, int highHeartRate, int minBPM, int avgBPM, int maxBPM) {
+    public StatisticsDto(String startDate, String endDate, int lowHeartRate, int highHeartRate, int minBPM, int avgBPM, int maxBPM, int homeTeamViewerPercentage) {
         this.startDate = startDate;
         this.endDate = endDate;
         this.lowHeartRate = lowHeartRate;
@@ -29,24 +33,7 @@ public class StatisticsDto {
         this.minBPM = minBPM;
         this.avgBPM = avgBPM;
         this.maxBPM = maxBPM;
-    }
-
-    public class RealTimeStatisticsDto {
-        private String teamUrl;
-        private String eventName;
-        private int eventTime;
-        private String player1;
-
-        public RealTimeStatisticsDto(String teamUrl, String eventName, String time, String player1) {
-            this.teamUrl = teamUrl;
-            this.eventName = eventName;
-            try {
-                this.eventTime = Integer.parseInt(time);
-            } catch (NumberFormatException e) {
-                this.eventTime = 0;
-            }
-            this.player1 = player1;
-        }
+        this.homeTeamViewerPercentage = homeTeamViewerPercentage;
     }
 
 }

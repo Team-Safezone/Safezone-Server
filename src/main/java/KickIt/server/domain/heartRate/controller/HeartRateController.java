@@ -2,11 +2,10 @@ package KickIt.server.domain.heartRate.controller;
 
 import KickIt.server.domain.heartRate.dto.HeartRateDto;
 import KickIt.server.domain.heartRate.dto.StatisticsDto;
-import KickIt.server.domain.heartRate.service.FixtureHeartRateStatisticsService;
-import KickIt.server.domain.heartRate.service.HeartRateService;
-import KickIt.server.domain.heartRate.service.HeartRateStatisticsService;
-import KickIt.server.domain.heartRate.service.StatisticsService;
+import KickIt.server.domain.heartRate.entity.TeamHeartRate;
+import KickIt.server.domain.heartRate.service.*;
 import KickIt.server.jwt.JwtTokenUtil;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -23,14 +22,19 @@ public class HeartRateController {
     private final HeartRateStatisticsService heartRateStatisticsService;
     private final FixtureHeartRateStatisticsService fixtureHeartRateStatisticsService;
     private final StatisticsService statisticsService;
+    private final TeamHeartRateStatisticsService teamHeartRateStatisticsService;
+    private final TeamHeartRateService teamHeartRateService;
 
     private final JwtTokenUtil jwtTokenUtil;
 
-    public HeartRateController(HeartRateService heartRateService, HeartRateStatisticsService heartRateStatisticsService, FixtureHeartRateStatisticsService fixtureHeartRateStatisticsService, StatisticsService statisticsService, JwtTokenUtil jwtTokenUtil) {
+    @Autowired
+    public HeartRateController(HeartRateService heartRateService, HeartRateStatisticsService heartRateStatisticsService, FixtureHeartRateStatisticsService fixtureHeartRateStatisticsService, StatisticsService statisticsService, TeamHeartRateStatisticsService teamHeartRateStatisticsService, TeamHeartRateService teamHeartRateService, JwtTokenUtil jwtTokenUtil) {
         this.heartRateService = heartRateService;
         this.heartRateStatisticsService = heartRateStatisticsService;
         this.fixtureHeartRateStatisticsService = fixtureHeartRateStatisticsService;
         this.statisticsService = statisticsService;
+        this.teamHeartRateStatisticsService = teamHeartRateStatisticsService;
+        this.teamHeartRateService = teamHeartRateService;
         this.jwtTokenUtil = jwtTokenUtil;
     }
 
@@ -45,6 +49,12 @@ public class HeartRateController {
 
             // 데이터 저장과 동시에 통계 객체 생성
             heartRateStatisticsService.saveStatistics(email, heartRateDTO);
+
+            // 팀 별 통계 계산
+            teamHeartRateStatisticsService.calculateTeamHeartRate(heartRateDTO);
+
+            // 팀 별 평균 계산
+            teamHeartRateService.saveTeamMinAvgMax(heartRateDTO);
 
             // 통계 계산
             fixtureHeartRateStatisticsService.calculateHeartRate(heartRateDTO);
