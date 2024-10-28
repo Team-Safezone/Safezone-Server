@@ -32,9 +32,7 @@ public class FixtureHeartRateStatisticsService {
         return startTime;
     }
 
-    public void calculateHeartRate(HeartRateDto heartRateDTO) {
-        Long fixtureId = heartRateDTO.getMatchId();
-
+    public void calculateHeartRate(Long fixtureId) {
         // 중복처리
         if (fixtureHeartRateStatisticsRepository.findByFixtureId(fixtureId).isEmpty()) {
             // 객체 생성

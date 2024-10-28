@@ -3,11 +3,16 @@ package KickIt.server.domain.realtime.service;
 import KickIt.server.domain.fixture.entity.Fixture;
 import KickIt.server.domain.fixture.entity.FixtureRepository;
 import KickIt.server.domain.fixture.service.FixtureService;
+import KickIt.server.domain.heartRate.entity.TeamHeartRateStatistics;
+import KickIt.server.domain.heartRate.service.FixtureHeartRateStatisticsService;
+import KickIt.server.domain.heartRate.service.TeamHeartRateService;
+import KickIt.server.domain.heartRate.service.TeamHeartRateStatisticsService;
 import KickIt.server.domain.teams.entity.TeaminfoRepository;
 import KickIt.server.domain.teams.service.TeamNameConvertService;
 import KickIt.server.global.common.crawler.RealTimeCrawler;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.RequestEntity;
 import org.springframework.http.ResponseEntity;
@@ -43,17 +48,23 @@ public class RealTimeStart {
     private final RestTemplate restTemplate = new RestTemplate();
     private final TeamNameConvertService teamNameConvertService;
     private final FixtureService fixtureService;
-
+    private final TeamHeartRateStatisticsService teamHeartRateStatisticsService;
+    private final TeamHeartRateService teamHeartRateService;
+    private final FixtureHeartRateStatisticsService fixtureHeartRateStatisticsService;
 
     private String apiMatchId;
 
-    public RealTimeStart(FixtureRepository fixtureRepository, ThreadPoolTaskScheduler taskScheduler, RealTimeService realTimeService, TeaminfoRepository teaminfoRepository, TeamNameConvertService teamNameConvertService, FixtureService fixtureService) {
+    @Autowired
+    public RealTimeStart(FixtureRepository fixtureRepository, ThreadPoolTaskScheduler taskScheduler, RealTimeService realTimeService, TeaminfoRepository teaminfoRepository, TeamNameConvertService teamNameConvertService, FixtureService fixtureService, TeamHeartRateStatisticsService teamHeartRateStatisticsService, TeamHeartRateService teamHeartRateService, FixtureHeartRateStatisticsService fixtureHeartRateStatisticsService) {
         this.fixtureRepository = fixtureRepository;
         this.taskScheduler = taskScheduler;
         this.realTimeService = realTimeService;
         this.teaminfoRepository = teaminfoRepository;
         this.teamNameConvertService = teamNameConvertService;
         this.fixtureService = fixtureService;
+        this.teamHeartRateStatisticsService = teamHeartRateStatisticsService;
+        this.teamHeartRateService = teamHeartRateService;
+        this.fixtureHeartRateStatisticsService = fixtureHeartRateStatisticsService;
     }
 
     // 매 자정 마다 오늘 경기 여부 파악
@@ -143,6 +154,13 @@ public class RealTimeStart {
                         System.out.println("경기 종료");
                         eventEnd = true;
                         realTimeCrawler.quit();
+                        Thread.sleep(10 * 60 * 1000);
+                        // 팀 별 통계 계산
+                        teamHeartRateStatisticsService.calculateTeamHeartRate(fixture.getId());
+                        // 팀 별 평균 계산
+                        teamHeartRateService.saveTeamMinAvgMax(fixture.getId());
+                        // 통계 계산
+                        fixtureHeartRateStatisticsService.calculateHeartRate(fixture.getId());
                         return;
                     default:
                         System.out.println("예상치 못한 상태: " + isDone);

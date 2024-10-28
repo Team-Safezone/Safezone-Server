@@ -35,8 +35,7 @@ public class TeamHeartRateStatisticsService {
                 .getId();
     }
 
-    public void calculateTeamHeartRate(HeartRateDto heartRateDto) {
-        Long fixtureId = heartRateDto.getMatchId();
+    public void calculateTeamHeartRate(Long fixtureId) {
 
         if (teamHeartRateStatisticsRepository.findByFixtureId(fixtureId).isEmpty()) {
             // 심박수 업데이트

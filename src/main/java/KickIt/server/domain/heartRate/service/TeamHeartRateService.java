@@ -19,9 +19,7 @@ public class TeamHeartRateService {
         this.teamHeartRateRepository = teamHeartRateRepository;
     }
 
-    public void saveTeamMinAvgMax(HeartRateDto heartRateDto) {
-        Long fixtureId = heartRateDto.getMatchId();
-
+    public void saveTeamMinAvgMax(Long fixtureId) {
         List<Object[]> homeTeam = teamHeartRateRepository.getHeartRateRecords(fixtureId, "home");
         List<Object[]> awayTeam = teamHeartRateRepository.getHeartRateRecords(fixtureId, "away");
 
