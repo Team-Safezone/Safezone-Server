@@ -85,5 +85,4 @@ public class StatisticsService {
         return teamHeartRateRepository.getHomeAwayTeamHeartRate(fixtureId, teamType);
     }
 
-
 }

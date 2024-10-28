@@ -8,6 +8,8 @@ import KickIt.server.domain.member.dto.MemberRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 @Service
 public class HeartRateService {
 
@@ -42,6 +44,19 @@ public class HeartRateService {
                 HeartRate heartRate = new HeartRate(member_id, heartRateDTO.getMatchId(), records.getHeartRate(), records.getDate());
                 heartRateRepository.save(heartRate);
             }
+        }
+
+    }
+
+    public boolean isExist(String email, Long fixtureId) {
+        Long memberId = getMemberId(email);
+
+        List<HeartRate> getHeartRate = heartRateRepository.findByMemberIdAndFixtureId(memberId, fixtureId);
+
+        if (getHeartRate.isEmpty()) {
+            return false;
+        } else {
+            return true;
         }
 
     }

@@ -94,5 +94,38 @@ public class HeartRateController {
         }
     }
 
+    @GetMapping("/check-dataExists/matchId/{matchId}")
+    public ResponseEntity<Map<String, Object>> getAllStatistics(@RequestParam(value = "xAuthToken") String xAuthToken, @PathVariable(value = "matchId") Long matchId) {
+        String email = jwtTokenUtil.getEmailFromToken(xAuthToken);
+
+        Map<String, Object> responseBody = new HashMap<>();
+
+        boolean response = heartRateService.isExist(email, matchId);
+
+        if (jwtTokenUtil.validateToken(xAuthToken, email)) {
+            if(response){
+                responseBody.put("status", HttpStatus.OK.value());
+                responseBody.put("message", "해당 경기의 심박수 데이터가 존재합니다.");
+                responseBody.put("data", response);
+                responseBody.put("isSuccess", true);
+                return new ResponseEntity<>(responseBody, HttpStatus.OK);
+            } else {
+                responseBody.put("status", HttpStatus.OK.value());
+                responseBody.put("message", "해당 경기의 심박수 데이터가 존재하지 않습니다.");
+                responseBody.put("data", response);
+                responseBody.put("isSuccess", true);
+                return new ResponseEntity<>(responseBody, HttpStatus.OK);
+            }
+        } else {
+            responseBody.put("status", HttpStatus.FORBIDDEN.value());
+            responseBody.put("message", "해당 토큰이 유효하지 않습니다.");
+            responseBody.put("data", response);
+            responseBody.put("isSuccess", false);
+            return new ResponseEntity<>(responseBody, HttpStatus.FORBIDDEN);
+        }
+
+    }
 }
+
+
 
