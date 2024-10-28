@@ -28,14 +28,14 @@ public class MemberController {
         this.jwtService = jwtService;
     }
 
-    @PostMapping("/signup")
-    public ResponseEntity<Map<String, Object>> getMember(@RequestParam(value = "loginId") String loginId, @RequestBody SignupRequest signupRequest) {
+    @PostMapping("/signup/{loginId}")
+    public ResponseEntity<Map<String, Object>> getMember(@PathVariable(value = "loginId") String loginId, @RequestBody SignupRequest signupRequest) {
         Map<String, Object> responseBody = new HashMap<>();
 
         AuthProvider authProvider = memberService.transAuth(loginId);
 
         Member member = new Member(signupRequest.getEmail(), signupRequest.getNickname(),
-                signupRequest.getFavoriteTeams(), "탱탱볼", signupRequest.isMarketingConsent(), authProvider);
+                signupRequest.getFavoriteTeams(),0,0, signupRequest.isMarketingConsent(), authProvider);
 
         if (memberService.saveMember(member)) {
             String accessToken = jwtService.createAccessToken(member.getEmail());
@@ -55,8 +55,8 @@ public class MemberController {
 
     }
 
-    @PostMapping("/login")
-    public ResponseEntity<Map<String, Object>> authLogin(@RequestParam(value = "loginId") String loginId, @RequestBody LoginRequest loginRequest) {
+    @PostMapping("/login/{loginId}")
+    public ResponseEntity<Map<String, Object>> authLogin(@PathVariable(value = "loginId") String loginId, @RequestBody LoginRequest loginRequest) {
         Map<String, Object> responseBody = new HashMap<>();
 
         AuthProvider authProvider = memberService.transAuth(loginId);
