@@ -1,11 +1,13 @@
 package KickIt.server.domain.member.service;
 
-import KickIt.server.domain.member.dto.MemberRepository;
+import KickIt.server.domain.member.entity.MemberRepository;
 import KickIt.server.domain.member.entity.Member;
 import KickIt.server.domain.member.entity.AuthProvider;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
 
 @Service
 public class MemberService {
@@ -16,6 +18,12 @@ public class MemberService {
     @Transactional
     public boolean isMemberExist(String email, AuthProvider authProvider) {
         return memberRepository.findByEmailAndAuthProvider(email, authProvider).isPresent();
+    }
+
+    public Long getMemberId(String email) {
+        return memberRepository.findByEmail(email)
+                .orElseThrow(() -> new IllegalArgumentException("해당 이메일을 가진 사용자가 없습니다."))
+                .getId();
     }
 
     @Transactional
@@ -54,4 +62,27 @@ public class MemberService {
         }
     }
 
+    // 선호 팀 수정
+    public void updateTeams(String email, List<String> favoriteTeams) {
+        Long memberId = getMemberId(email);
+
+        String team1 = favoriteTeams.get(0);
+        String team2 = null;
+        String team3 = null;
+
+        if(favoriteTeams.size() >= 2){
+            team2 = favoriteTeams.get(1);
+            if(favoriteTeams.size() >= 3) {
+                team3 = favoriteTeams.get(2);
+            }
+        }
+        memberRepository.updateTeams(memberId, team1, team2, team3);
+
+    }
+
+    public void updateNickname(String email, String nickname) {
+        Long memberId = getMemberId(email);
+
+        memberRepository.updateNickname(memberId, nickname);
+    }
 }
