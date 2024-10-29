@@ -1,6 +1,7 @@
 package KickIt.server.domain.member.controller;
 
 import KickIt.server.domain.member.dto.FavoriteTeamsDto;
+import KickIt.server.domain.member.dto.MypageDto;
 import KickIt.server.domain.member.dto.NicknameDto;
 import KickIt.server.jwt.JwtService;
 import KickIt.server.domain.member.entity.LoginRequest;
@@ -155,4 +156,29 @@ public class MemberController {
 
         }
     }
+
+    @GetMapping("/mypage")
+    public ResponseEntity<Map<String, Object>> getMypage(@RequestParam(value = "xAuthToken") String xAuthToken) {
+        String email = jwtTokenUtil.getEmailFromToken(xAuthToken);
+
+        Map<String, Object> responseBody = new HashMap<>();
+
+        if (jwtTokenUtil.validateToken(xAuthToken, email)) {
+            MypageDto response = memberService.getMypage(email);
+
+            responseBody.put("status", HttpStatus.OK.value());
+            responseBody.put("message", "success");
+            responseBody.put("data", response);
+            responseBody.put("isSuccess", true);
+            return new ResponseEntity<>(responseBody, HttpStatus.OK);
+        } else {
+            responseBody.put("status", HttpStatus.FORBIDDEN.value());
+            responseBody.put("message", "이유 작성");
+            responseBody.put("isSuccess", false);
+            return new ResponseEntity<>(responseBody, HttpStatus.FORBIDDEN);
+        }
+
+
+    }
+
 }
