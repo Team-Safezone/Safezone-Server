@@ -1,5 +1,6 @@
 package KickIt.server.domain.lineup.dto;
 
+import KickIt.server.domain.fixture.dto.ResponsePlayerInfo;
 import KickIt.server.domain.lineup.entity.LineupPrediction;
 import KickIt.server.domain.lineup.entity.LineupPredictionRepository;
 import KickIt.server.domain.lineup.entity.PredictionPlayer;
@@ -78,22 +79,6 @@ public class LineupPredictionDto {
         }
         public int getPlayerNum(){
             return playerNum;
-        }
-    }
-
-    @Data
-    @NoArgsConstructor
-    @AllArgsConstructor
-    // 선발라인업 예측 수정 API 호출 시 반환할 선수 정보 형태
-    public static class ResponsePlayerInfo{
-        private String playerImgURL;
-        private String playerName;
-        private Integer playerNum;
-
-        public ResponsePlayerInfo(Player player){
-            this.playerImgURL = player.getProfileImg();
-            this.playerName = player.getName();
-            this.playerNum = player.getNumber();
         }
     }
 
@@ -189,6 +174,33 @@ public class LineupPredictionDto {
         private List<ResponsePlayerInfo> midfielders;
         private List<ResponsePlayerInfo> strikers;
 
+    }
+
+    @Data
+    @NoArgsConstructor
+    @AllArgsConstructor
+    @Builder
+    // 선발 라인업 예측 결과 조회 API 호출 시 반환할 Response
+    public static class LineupResultInquireResponse{
+        private int participant;
+
+        private String homeFormation;
+        private ResponseLineup homeLineups;
+        private String awayFormation;
+        private ResponseLineup awayLineups;
+
+        private int userHomeFormation;
+        private ResponseLineup userHomePrediction;
+        private int userAwayFormation;
+        private ResponseLineup userAwayPrediction;
+
+        private int avgHomeFormation;
+        private ResponseLineup avgHomePrediction;
+        private int avgAwayFormation;
+        private ResponseLineup avgAwayPrediction;
+
+        private List<Boolean> userPrediction;
+        private List<Boolean> avgPrediction;
     }
 
 }

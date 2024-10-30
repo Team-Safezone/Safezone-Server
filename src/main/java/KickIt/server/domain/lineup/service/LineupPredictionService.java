@@ -1,5 +1,6 @@
 package KickIt.server.domain.lineup.service;
 
+import KickIt.server.domain.fixture.dto.ResponsePlayerInfo;
 import KickIt.server.domain.lineup.dto.LineupPredictionDto;
 import KickIt.server.domain.lineup.dto.MatchLineupDto;
 import KickIt.server.domain.lineup.entity.*;
@@ -9,10 +10,7 @@ import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import javax.sound.sampled.Line;
 import java.util.*;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 @Service
 public class LineupPredictionService {
@@ -117,13 +115,13 @@ public class LineupPredictionService {
 
         // 홈팀과 원정팀의 첫 줄 미드 필더와 두 번째 줄 미드필더 미리 합쳐 줌
         // 홈팀 미드필더
-        List<MatchLineupDto.MatchPlayerDto> homeMidfielders = new ArrayList<>();
+        List<ResponsePlayerInfo> homeMidfielders = new ArrayList<>();
         homeMidfielders.addAll(matchLineup.getHomeLineups().getMidfielders());
         if(matchLineup.getHomeLineups().getSecondMidFielders() != null){
             homeMidfielders.addAll(matchLineup.getHomeLineups().getSecondMidFielders());
         }
         // 원정팀 미드필더
-        List<MatchLineupDto.MatchPlayerDto> awayMidfielders = new ArrayList<>();
+        List<ResponsePlayerInfo> awayMidfielders = new ArrayList<>();
         awayMidfielders.addAll(matchLineup.getAwayLineups().getMidfielders());
         if(matchLineup.getAwayLineups().getSecondMidFielders() != null){
             awayMidfielders.addAll(matchLineup.getAwayLineups().getSecondMidFielders());
@@ -197,7 +195,7 @@ public class LineupPredictionService {
 
     // MatchLineupDTO.MatchLineupResponse의 Formation의 각 포지션 선수 정보와 LineupPredictionDTO.ResponseLineup의 각 포지션 선수 정보 일치하는지 비교
     // 예상 라인업과 실제 라인업의 각 선수 비교하는 작업 반복할 때 호출
-    Boolean isPosPredictionAllCorrect(List<MatchLineupDto.MatchPlayerDto> realPosPlayers, List<LineupPredictionDto.ResponsePlayerInfo> predictedPostPlayers){
+    Boolean isPosPredictionAllCorrect(List<ResponsePlayerInfo> realPosPlayers, List<ResponsePlayerInfo> predictedPostPlayers){
         for(int i = 0; i < realPosPlayers.size(); i++) {
             if (!Objects.equals(realPosPlayers.get(i).getPlayerNum(), predictedPostPlayers.get(i).getPlayerNum())) {
                 return false;
@@ -234,20 +232,20 @@ public class LineupPredictionService {
             default:
                 dfSize = 0; mfSize = 0; fwSize = 0;
         }
-        List<LineupPredictionDto.ResponsePlayerInfo> defenders = new ArrayList<>();
+        List<ResponsePlayerInfo> defenders = new ArrayList<>();
         for (int i = 0; i < dfSize; i++){
-            defenders.add(new LineupPredictionDto.ResponsePlayerInfo(lineupPredictionRepository.findAvgHomePlayer(fixtureId, formation, 1, i)));
+            defenders.add(new ResponsePlayerInfo(lineupPredictionRepository.findAvgHomePlayer(fixtureId, formation, 1, i)));
         }
-        List<LineupPredictionDto.ResponsePlayerInfo> midfielders = new ArrayList<>();
+        List<ResponsePlayerInfo> midfielders = new ArrayList<>();
         for (int i = 0; i < mfSize; i++){
-            midfielders.add(new LineupPredictionDto.ResponsePlayerInfo(lineupPredictionRepository.findAvgHomePlayer(fixtureId, formation, 2, i)));
+            midfielders.add(new ResponsePlayerInfo(lineupPredictionRepository.findAvgHomePlayer(fixtureId, formation, 2, i)));
         }
-        List<LineupPredictionDto.ResponsePlayerInfo> strikers = new ArrayList<>();
+        List<ResponsePlayerInfo> strikers = new ArrayList<>();
         for (int i = 0; i < fwSize; i++){
-            strikers.add(new LineupPredictionDto.ResponsePlayerInfo(lineupPredictionRepository.findAvgHomePlayer(fixtureId, formation, 3, i)));
+            strikers.add(new ResponsePlayerInfo(lineupPredictionRepository.findAvgHomePlayer(fixtureId, formation, 3, i)));
         }
         LineupPredictionDto.ResponseLineup avgHomeTeamLineup = LineupPredictionDto.ResponseLineup.builder()
-                .goalkeeper(new LineupPredictionDto.ResponsePlayerInfo(lineupPredictionRepository.findAvgHomePlayer(fixtureId, formation, 0, 0)))
+                .goalkeeper(new ResponsePlayerInfo(lineupPredictionRepository.findAvgHomePlayer(fixtureId, formation, 0, 0)))
                 .defenders(defenders)
                 .midfielders(midfielders)
                 .strikers(strikers)
@@ -278,20 +276,20 @@ public class LineupPredictionService {
             default:
                 dfSize = 0; mfSize = 0; fwSize = 0;
         }
-        List<LineupPredictionDto.ResponsePlayerInfo> defenders = new ArrayList<>();
+        List<ResponsePlayerInfo> defenders = new ArrayList<>();
         for (int i = 0; i < dfSize; i++){
-            defenders.add(new LineupPredictionDto.ResponsePlayerInfo(lineupPredictionRepository.findAvgAwayPlayer(fixtureId, formation, 1, i)));
+            defenders.add(new ResponsePlayerInfo(lineupPredictionRepository.findAvgAwayPlayer(fixtureId, formation, 1, i)));
         }
-        List<LineupPredictionDto.ResponsePlayerInfo> midfielders = new ArrayList<>();
+        List<ResponsePlayerInfo> midfielders = new ArrayList<>();
         for (int i = 0; i < mfSize; i++){
-            midfielders.add(new LineupPredictionDto.ResponsePlayerInfo(lineupPredictionRepository.findAvgAwayPlayer(fixtureId, formation, 2, i)));
+            midfielders.add(new ResponsePlayerInfo(lineupPredictionRepository.findAvgAwayPlayer(fixtureId, formation, 2, i)));
         }
-        List<LineupPredictionDto.ResponsePlayerInfo> strikers = new ArrayList<>();
+        List<ResponsePlayerInfo> strikers = new ArrayList<>();
         for (int i = 0; i < fwSize; i++){
-            strikers.add(new LineupPredictionDto.ResponsePlayerInfo(lineupPredictionRepository.findAvgAwayPlayer(fixtureId, formation, 3, i)));
+            strikers.add(new ResponsePlayerInfo(lineupPredictionRepository.findAvgAwayPlayer(fixtureId, formation, 3, i)));
         }
         LineupPredictionDto.ResponseLineup avgAwayTeamLineup = LineupPredictionDto.ResponseLineup.builder()
-                .goalkeeper(new LineupPredictionDto.ResponsePlayerInfo(lineupPredictionRepository.findAvgAwayPlayer(fixtureId, formation, 0, 0)))
+                .goalkeeper(new ResponsePlayerInfo(lineupPredictionRepository.findAvgAwayPlayer(fixtureId, formation, 0, 0)))
                 .defenders(defenders)
                 .midfielders(midfielders)
                 .strikers(strikers)
@@ -300,15 +298,15 @@ public class LineupPredictionService {
     }
 
     // 사용자  or 평균 예측 선발라인업이 정확한지 실제 선발 라인업과 비교해 결과 반환하는 함수
-
-    private List<LineupPredictionDto.ResponsePlayerInfo> convertToPlayerInfo(List<PredictionPlayer> players){
-        List<LineupPredictionDto.ResponsePlayerInfo> convertedPlayers = new ArrayList<>();
+    private List<ResponsePlayerInfo> convertToPlayerInfo(List<PredictionPlayer> players){
+        List<ResponsePlayerInfo> convertedPlayers = new ArrayList<>();
         for (PredictionPlayer player : players){
-            convertedPlayers.add(new LineupPredictionDto.ResponsePlayerInfo(player.getPlayer()));
+            convertedPlayers.add(new ResponsePlayerInfo(player.getPlayer()));
         }
         return convertedPlayers;
     }
 
+    // 사용자 선발라인업 예측 조회를 위한 service
     public LineupPredictionDto.LineupInquireResponse inquireLineupPrediction(Long fixtureId, Long memberId, String homeTeam, String awayTeam, String season){
         LineupPrediction lineupPrediction = lineupPredictionRepository.findByMemberAndFixture(memberId, fixtureId).orElse(null);
 
@@ -363,5 +361,134 @@ public class LineupPredictionService {
         return response;
     }
 
-    // 현재 DB에서 전체 사용자 선발 라인업 예측 평균 데이터 조회
+    // 전체 선발라인업 예측 결과 조회를 위한 service
+    public LineupPredictionDto.LineupResultInquireResponse inquireLineupPredictionResult(Long fixtureId, Long memberId){
+        // 실제 경기 선발라인업 결과
+        MatchLineupDto.MatchLineupResponse foundMatchLineup = matchLineupService.findMatchLineupByFixture(fixtureId);
+        // 사용자 예측 경기 선발라인업 결과
+        LineupPrediction userPrediction = lineupPredictionRepository.findByMemberAndFixture(memberId, fixtureId).orElse(null);
+        // 평균 홈 포메이션 값
+        Integer avgHomeFormation = lineupPredictionRepository.findAvgHomeTeamForm(fixtureId);
+        // 평균 원정팀 포메이션 값
+        Integer avgAwayFormation = lineupPredictionRepository.findAvgAwayTeamForm(fixtureId);
+        // 평균 홈팀 선발라인업 값
+        LineupPredictionDto.ResponseLineup avgHomePrediction = findAvgHomeTeamLineup(fixtureId, avgHomeFormation);
+        // 평균 원정팀 선발라인업 값
+        LineupPredictionDto.ResponseLineup avgAwayPrediction = findAvgAwayTeamLineup(fixtureId, avgAwayFormation);
+
+        // 선발라인업 예측 결과 조회 API의 결과로 반환할 response
+        LineupPredictionDto.LineupResultInquireResponse response;
+
+        // 아직 선발라인업 결과가 나오지 않은 경우 -> 관련 항목 null 처리
+        // 만약 사용자 예측 선발 라인업이 없는 경우 -> 관련 항목 null 처리
+        // 각각 경우 나눠 수행
+        if(userPrediction == null){
+            // 사용자 예측 X / 선발 라인업 결과 X
+            if(foundMatchLineup == null){
+                response = LineupPredictionDto.LineupResultInquireResponse.builder()
+                        .participant(lineupPredictionRepository.findByFixture(fixtureId).size())
+                        .avgHomeFormation(avgHomeFormation)
+                        .avgHomePrediction(avgHomePrediction)
+                        .avgAwayFormation(avgAwayFormation)
+                        .avgAwayPrediction(avgAwayPrediction)
+                        .build();
+            }
+            // 사용자 예측 X / 선발 라인업 결과 O
+            else{
+                // 실제 홈팀 선발라인업 정보 필요한 형식의 클래스 객체로 만들어 줌
+                LineupPredictionDto.ResponseLineup foundHomeLineup = LineupPredictionDto.ResponseLineup.builder()
+                        .goalkeeper(foundMatchLineup.getHomeLineups().getGoalkeeper().get(0))
+                        .defenders(foundMatchLineup.getHomeLineups().getDefenders())
+                        .midfielders(foundMatchLineup.getHomeLineups().getMidfielders())
+                        .strikers(foundMatchLineup.getHomeLineups().getStrikers())
+                        .build();
+                // 실제 원정팀 선발라인업 정보 필요한 형식의 클래스 객체로 만들어 줌
+                LineupPredictionDto.ResponseLineup foundAwayLineup = LineupPredictionDto.ResponseLineup.builder()
+                        .goalkeeper(foundMatchLineup.getAwayLineups().getGoalkeeper().get(0))
+                        .defenders(foundMatchLineup.getAwayLineups().getDefenders())
+                        .midfielders(foundMatchLineup.getAwayLineups().getMidfielders())
+                        .strikers(foundMatchLineup.getAwayLineups().getStrikers())
+                        .build();
+
+                response = LineupPredictionDto.LineupResultInquireResponse.builder()
+                        .participant(lineupPredictionRepository.findByFixture(fixtureId).size())
+                        .homeFormation(foundMatchLineup.getHomeFormation())
+                        .homeLineups(foundHomeLineup)
+                        .awayFormation(foundMatchLineup.getAwayFormation())
+                        .awayLineups(foundAwayLineup)
+                        .avgHomeFormation(avgHomeFormation)
+                        .avgHomePrediction(avgHomePrediction)
+                        .avgAwayFormation(avgAwayFormation)
+                        .avgAwayPrediction(avgAwayPrediction)
+                        .avgPrediction(isPredictionCorrect(avgHomeFormation, avgAwayFormation, avgHomePrediction, avgAwayPrediction, foundMatchLineup))
+                        .build();
+            }
+        }
+        else{
+            // 사용자가 예측한 홈팀 선발라인업 정보 형식에 맞는 클래스 객체로 다시 생성
+            LineupPredictionDto.ResponseLineup userHomeLineup = LineupPredictionDto.ResponseLineup.builder()
+                    .goalkeeper(convertToPlayerInfo(lineupPredictionRepository.findFilteredPlayersByMemberAndFixture(memberId, fixtureId, 0, 0)).get(0))
+                    .defenders(convertToPlayerInfo(lineupPredictionRepository.findFilteredPlayersByMemberAndFixture(memberId, fixtureId, 1, 0)))
+                    .midfielders(convertToPlayerInfo(lineupPredictionRepository.findFilteredPlayersByMemberAndFixture(memberId, fixtureId, 2, 0)))
+                    .strikers(convertToPlayerInfo(lineupPredictionRepository.findFilteredPlayersByMemberAndFixture(memberId, fixtureId, 3, 0))).build();
+
+            // 사용자가 예측한 원정팀 선발라인업 정보 형식에 맞는 클래스 객체로 다시 생성
+            LineupPredictionDto.ResponseLineup userAwayLineup = LineupPredictionDto.ResponseLineup.builder()
+                    .goalkeeper(convertToPlayerInfo(lineupPredictionRepository.findFilteredPlayersByMemberAndFixture(memberId, fixtureId, 0, 1)).get(0))
+                    .defenders(convertToPlayerInfo(lineupPredictionRepository.findFilteredPlayersByMemberAndFixture(memberId, fixtureId, 1, 1)))
+                    .midfielders(convertToPlayerInfo(lineupPredictionRepository.findFilteredPlayersByMemberAndFixture(memberId, fixtureId, 2, 1)))
+                    .strikers(convertToPlayerInfo(lineupPredictionRepository.findFilteredPlayersByMemberAndFixture(memberId, fixtureId, 3, 1))).build();
+
+            // 사용자 예측 O / 선발 라인업 결과 X
+            if(foundMatchLineup == null){
+                response = LineupPredictionDto.LineupResultInquireResponse.builder()
+                        .participant(lineupPredictionRepository.findByFixture(fixtureId).size())
+                        .userHomeFormation(userPrediction.getHomeTeamForm())
+                        .userHomePrediction(userHomeLineup)
+                        .userAwayFormation(userPrediction.getAwayTeamForm())
+                        .userAwayPrediction(userAwayLineup)
+                        .avgHomeFormation(avgHomeFormation)
+                        .avgHomePrediction(avgHomePrediction)
+                        .avgAwayFormation(avgAwayFormation)
+                        .avgAwayPrediction(avgAwayPrediction)
+                        .build();
+            }
+            // 사용자 예측 O / 선발 라인업 결과 O
+            else{
+                // 실제 홈팀 선발라인업 정보 필요한 형식의 클래스 객체로 만들어 줌
+                LineupPredictionDto.ResponseLineup foundHomeLineup = LineupPredictionDto.ResponseLineup.builder()
+                        .goalkeeper(foundMatchLineup.getHomeLineups().getGoalkeeper().get(0))
+                        .defenders(foundMatchLineup.getHomeLineups().getDefenders())
+                        .midfielders(foundMatchLineup.getHomeLineups().getMidfielders())
+                        .strikers(foundMatchLineup.getHomeLineups().getStrikers())
+                        .build();
+                // 실제 원정팀 선발라인업 정보 필요한 형식의 클래스 객체로 만들어 줌
+                LineupPredictionDto.ResponseLineup foundAwayLineup = LineupPredictionDto.ResponseLineup.builder()
+                        .goalkeeper(foundMatchLineup.getAwayLineups().getGoalkeeper().get(0))
+                        .defenders(foundMatchLineup.getAwayLineups().getDefenders())
+                        .midfielders(foundMatchLineup.getAwayLineups().getMidfielders())
+                        .strikers(foundMatchLineup.getAwayLineups().getStrikers())
+                        .build();
+
+                response = LineupPredictionDto.LineupResultInquireResponse.builder()
+                        .participant(lineupPredictionRepository.findByFixture(fixtureId).size())
+                        .homeFormation(foundMatchLineup.getHomeFormation())
+                        .homeLineups(foundHomeLineup)
+                        .awayFormation(foundMatchLineup.getAwayFormation())
+                        .awayLineups(foundAwayLineup)
+                        .userHomeFormation(userPrediction.getHomeTeamForm())
+                        .userHomePrediction(userHomeLineup)
+                        .userAwayFormation(userPrediction.getAwayTeamForm())
+                        .userAwayPrediction(userAwayLineup)
+                        .avgHomeFormation(avgHomeFormation)
+                        .avgHomePrediction(avgHomePrediction)
+                        .avgAwayFormation(avgAwayFormation)
+                        .avgAwayPrediction(avgAwayPrediction)
+                        .userPrediction(isPredictionCorrect(userPrediction.getHomeTeamForm(), userPrediction.getAwayTeamForm(), userHomeLineup, userAwayLineup, foundMatchLineup))
+                        .avgPrediction(isPredictionCorrect(avgHomeFormation, avgAwayFormation, avgHomePrediction, avgAwayPrediction, foundMatchLineup))
+                        .build();
+            }
+        }
+        return response;
+    }
 }

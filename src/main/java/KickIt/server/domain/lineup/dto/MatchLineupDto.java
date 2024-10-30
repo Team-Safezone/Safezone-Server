@@ -1,5 +1,6 @@
 package KickIt.server.domain.lineup.dto;
 
+import KickIt.server.domain.fixture.dto.ResponsePlayerInfo;
 import KickIt.server.domain.lineup.entity.MatchLineup;
 import KickIt.server.domain.teams.entity.Player;
 import lombok.*;
@@ -16,8 +17,8 @@ public class MatchLineupDto {
         private String awayFormation;
         private MatchPosPlayersDto homeLineups;
         private MatchPosPlayersDto awayLineups;
-        private List<MatchPlayerDto> homeSubstitutes;
-        private List<MatchPlayerDto> awaySubstitutes;
+        private List<ResponsePlayerInfo> homeSubstitutes;
+        private List<ResponsePlayerInfo> awaySubstitutes;
         private String homeDirector;
         private String awayDirector;
 
@@ -32,7 +33,7 @@ public class MatchLineupDto {
             // 홈팀 선수 명단에서 포메이션대로 자른 선수 List를 전체 List에 순서대로 정렬해 추가하는 과정
             String[] homeFormNum = matchLineup.getHomeTeamLineup().getForm().split("-");
             List<List<Player>> homePlayers = new ArrayList<>();
-            List<List<MatchPlayerDto>> homePosPlayers = new ArrayList<>();
+            List<List<ResponsePlayerInfo>> homePosPlayers = new ArrayList<>();
             List<Player> homeGK = new ArrayList<>();
             homeGK.add(matchLineup.getHomeTeamLineup().getPlayers().get(0));
             homePlayers.add(homeGK);
@@ -50,9 +51,9 @@ public class MatchLineupDto {
                 homePlayers.add(tempPlayers);
             }
             for(List<Player> players : homePlayers){
-                List<MatchPlayerDto> playerDtos = new ArrayList<>();
+                List<ResponsePlayerInfo> playerDtos = new ArrayList<>();
                 for(Player player : players){
-                    playerDtos.add(new MatchPlayerDto(player));
+                    playerDtos.add(new ResponsePlayerInfo(player));
                 }
                 homePosPlayers.add(playerDtos);
             }
@@ -61,7 +62,7 @@ public class MatchLineupDto {
             // 원정팀 선수 명단에서 포메이션대로 자른 선수 List를 전체 List에 순서대로 정렬해 추가하는 과정
             String[] awayFormNum = matchLineup.getAwayTeamLineup().getForm().split("-");
             List<List<Player>> awayPlayers = new ArrayList<>();
-            List<List<MatchPlayerDto>> awayPosPlayers = new ArrayList<>();
+            List<List<ResponsePlayerInfo>> awayPosPlayers = new ArrayList<>();
             List<Player> awayGK = new ArrayList<>();
             awayGK.add(matchLineup.getAwayTeamLineup().getPlayers().get(0));
             awayPlayers.add(awayGK);
@@ -79,9 +80,9 @@ public class MatchLineupDto {
                 awayPlayers.add(tempPlayers);
             }
             for(List<Player> players : awayPlayers){
-                List<MatchPlayerDto> playerDtos = new ArrayList<>();
+                List<ResponsePlayerInfo> playerDtos = new ArrayList<>();
                 for(Player player : players){
-                    playerDtos.add(new MatchPlayerDto(player));
+                    playerDtos.add(new ResponsePlayerInfo(player));
                 }
                 awayPosPlayers.add(playerDtos);
             }
@@ -89,38 +90,25 @@ public class MatchLineupDto {
 
             // 홈팀 후보선수 명단에서 선수 이름만 가져와 리스트로 만들어 dto에 저장
             for(Player player : matchLineup.getHomeTeamLineup().getBenchPlayers()){
-                this.homeSubstitutes.add(new MatchPlayerDto(player));
+                this.homeSubstitutes.add(new ResponsePlayerInfo(player));
             }
 
             // 원정팀 후보선수 명단에서 선수 이름만 가져와 리스트로 만들어 dto에 저장
             for(Player player : matchLineup.getAwayTeamLineup().getBenchPlayers()){
-                this.awaySubstitutes.add(new MatchPlayerDto(player));
+                this.awaySubstitutes.add(new ResponsePlayerInfo(player));
             }
-        }
-    }
-
-    @Getter
-    public class MatchPlayerDto{
-        private String playerImgURL;
-        private String playerName;
-        private Integer playerNum;
-
-        public MatchPlayerDto(Player player){
-            this.playerImgURL = player.getProfileImg();
-            this.playerName = player.getName();
-            this.playerNum = player.getNumber();
         }
     }
 
     @Getter
     public class MatchPosPlayersDto{
-        private List<MatchPlayerDto> goalkeeper;
-        private List<MatchPlayerDto> defenders;
-        private List<MatchPlayerDto> midfielders;
-        private List<MatchPlayerDto> secondMidFielders;
-        private List<MatchPlayerDto> strikers;
+        private List<ResponsePlayerInfo> goalkeeper;
+        private List<ResponsePlayerInfo> defenders;
+        private List<ResponsePlayerInfo> midfielders;
+        private List<ResponsePlayerInfo> secondMidFielders;
+        private List<ResponsePlayerInfo> strikers;
 
-        public MatchPosPlayersDto(List<List<MatchPlayerDto>> players){
+        public MatchPosPlayersDto(List<List<ResponsePlayerInfo>> players){
             if(players.size() == 5){
                 goalkeeper = players.get(0);
                 defenders = players.get(1);

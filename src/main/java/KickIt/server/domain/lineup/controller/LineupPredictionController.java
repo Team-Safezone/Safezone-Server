@@ -143,6 +143,8 @@ public class LineupPredictionController {
         }
     }
 
+    // 입력 받은 정보 바탕으로 사용자의 기존 경기 선발 라인업 예측을 수정
+    // JWT 될 때까지 일단 member id로 처리 -> 차후 변경 예정
     @PatchMapping("/edit")
     public ResponseEntity<Map<String, Object>> editLineupPrediction(@RequestParam("memberId") long memberId, @RequestParam("matchId") long matchId, @RequestBody LineupPredictionDto.LineUpPredictionRequest lineUpPredictionRequest){
         Optional<Member> foundMember = memberRepository.findById(memberId);
@@ -254,6 +256,8 @@ public class LineupPredictionController {
         }
     }
 
+    // 사용자의 선발 라인업 예측 정보 조회
+    // JWT 될 때까지 일단 member id로 처리 -> 차후 변경 예정
     @GetMapping()
     public ResponseEntity<Map<String, Object>> getUserLineupPrediction(@RequestParam("memberId") long memberId, @RequestParam("matchId") Long matchId){
         Optional<Member> foundMember = memberRepository.findById(memberId);
@@ -295,6 +299,54 @@ public class LineupPredictionController {
         else{
             responseBody.put("status", HttpStatus.NOT_FOUND.value());
             responseBody.put("message", "해당 사용자 없음");
+            responseBody.put("isSuccess", false);
+            return new ResponseEntity<>(responseBody, HttpStatus.NOT_FOUND);
+        }
+    }
+
+    // 선발 라인업 예측 결과 정보 조회 (전체)
+    // JWT 될 때까지 일단 member id로 처리 -> 차후 변경 예정
+    @GetMapping("/result")
+    public ResponseEntity<Map<String, Object>> getLineupPrediction(@RequestParam("memberId") long memberId, @RequestParam("matchId") Long matchId) {
+        Optional<Member> foundMember = memberRepository.findById(memberId);
+        Map<String, Object> responseBody = new HashMap<>();
+
+        // id에 해당하는 사용자 존재하는 경우
+        if(foundMember.isPresent()){
+            Optional<Fixture> foundFixture = fixtureRepository.findById(matchId);
+            // id에 해당하는 경기 존재하는 경우
+            if(foundFixture.isPresent()){
+                String homeTeam = foundFixture.get().getHomeTeam();
+                String awayTeam = foundFixture.get().getAwayTeam();
+                String season = foundFixture.get().getSeason();
+                // 해당 사용자가 해당 경기에 대해 선발 라인업 예측 진행해 데이터 있는지 확인
+                LineupPredictionDto.LineupResultInquireResponse response = lineupPredictionService.inquireLineupPredictionResult(matchId, memberId);
+                // 사용자 id와 경기 id로 조회된 선발 라인업 예측 데이터 없음
+                if(response == null){
+                    responseBody.put("status", HttpStatus.NOT_FOUND.value());
+                    responseBody.put("message", "해당 사용자의 선발 라인업 예측 데이터 없음");
+                    responseBody.put("isSuccess", false);
+                    return new ResponseEntity<>(responseBody, HttpStatus.NOT_FOUND);
+                }
+                // 정상적으로 가져온 response data에 넣어 반환
+                responseBody.put("status", HttpStatus.OK.value());
+                responseBody.put("message", "success");
+                responseBody.put("data", response);
+                responseBody.put("isSuccess", true);
+                return new ResponseEntity<>(responseBody, HttpStatus.OK);
+            }
+            // id에 해당하는 경기 존재하지 않는 경우 -> 경기 id 잘못됨
+            else{
+                responseBody.put("status", HttpStatus.NOT_FOUND.value());
+                responseBody.put("message", "해당 경기 없음");
+                responseBody.put("isSuccess", false);
+                return new ResponseEntity<>(responseBody, HttpStatus.NOT_FOUND);
+            }
+        }
+        // id에 해당하는 경기 존재하지 않는 경우 -> 경기 id 잘못됨
+        else{
+            responseBody.put("status", HttpStatus.NOT_FOUND.value());
+            responseBody.put("message", "해당 경기 없음");
             responseBody.put("isSuccess", false);
             return new ResponseEntity<>(responseBody, HttpStatus.NOT_FOUND);
         }
