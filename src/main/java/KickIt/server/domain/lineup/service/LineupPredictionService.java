@@ -132,63 +132,51 @@ public class LineupPredictionService {
         // 홈팀 비교 진행
         // 만약 홈팀 포메이션이 다른 경우 false
         if(!convertFormation(homeFormation).equals(matchLineup.getHomeFormation())){
-            Logger.getGlobal().log(Level.INFO, "홈팀 포메이션 다름");
             response.add(false);
         }
         // 홈팀 골키퍼가 다른 경우 false
         else if(!isPosPredictionAllCorrect(matchLineup.getHomeLineups().getGoalkeeper(), Collections.singletonList(homeLineup.getGoalkeeper()))){
-            Logger.getGlobal().log(Level.INFO, "홈팀 골키퍼 다름");
             response.add(false);
         }
         // 홈팀 수비수가 다른 경우 false
         else if(!isPosPredictionAllCorrect(matchLineup.getHomeLineups().getDefenders(), homeLineup.getDefenders())){
-            Logger.getGlobal().log(Level.INFO, "홈팀 수비수 다름");
             response.add(false);
         }
         // 홈팀 미드필더가 다른 경우 false
         else if(!isPosPredictionAllCorrect(homeMidfielders, homeLineup.getMidfielders())){
-            Logger.getGlobal().log(Level.INFO, "홈팀 미드필더 다름");
             response.add(false);
         }
         // 홈팀 공격수가 다른 경우 false
         else if(!isPosPredictionAllCorrect(matchLineup.getHomeLineups().getStrikers(), homeLineup.getStrikers())){
-            Logger.getGlobal().log(Level.INFO, "홈팀 공격수 다름");
             response.add(false);
         }
         // 전부 맞았다면 true
         else{
-            Logger.getGlobal().log(Level.INFO, "홈팀 true");
             response.add(true);
         }
 
         // 원정팀 비교 진행
         // 만약 원정팀 포메이션이 다른 경우 false
         if(!convertFormation(awayFormation).equals(matchLineup.getAwayFormation())){
-            Logger.getGlobal().log(Level.INFO, "원정팀 포메이션 다름");
             response.add(false);
         }
         // 원정팀 골키퍼가 다른 경우 false
         else if(!isPosPredictionAllCorrect(matchLineup.getAwayLineups().getGoalkeeper(), Collections.singletonList(awayLineup.getGoalkeeper()))){
-            Logger.getGlobal().log(Level.INFO, "원정팀 골키퍼 다름");
             response.add(false);
         }
         // 원정팀 수비수가 다른 경우 false
         else if(!isPosPredictionAllCorrect(matchLineup.getAwayLineups().getDefenders(), awayLineup.getDefenders())){
-            Logger.getGlobal().log(Level.INFO, "원정팀 수비수 다름");
             response.add(false);
         }
         else if(!isPosPredictionAllCorrect(awayMidfielders, awayLineup.getMidfielders())){
-            Logger.getGlobal().log(Level.INFO, "원정팀 미드필더 다름");
             response.add(false);
         }
         // 원정팀 공격수가 다른 경우 false
         else if(!isPosPredictionAllCorrect(matchLineup.getAwayLineups().getStrikers(), awayLineup.getStrikers())){
-            Logger.getGlobal().log(Level.INFO, "원정팀 공격수 다름");
             response.add(false);
         }
         // 전부 맞았다면 true
         else{
-            Logger.getGlobal().log(Level.INFO, "원정팀 true");
             response.add(true);
         }
          return response;
@@ -212,12 +200,10 @@ public class LineupPredictionService {
     Boolean isPosPredictionAllCorrect(List<MatchLineupDto.MatchPlayerDto> realPosPlayers, List<LineupPredictionDto.ResponsePlayerInfo> predictedPostPlayers){
         for(int i = 0; i < realPosPlayers.size(); i++) {
             if (!Objects.equals(realPosPlayers.get(i).getPlayerNum(), predictedPostPlayers.get(i).getPlayerNum())) {
-                Logger.getGlobal().log(Level.INFO, String.format("번호 다름 %s %s", realPosPlayers.get(i).getPlayerNum(), predictedPostPlayers.get(i).getPlayerNum()));
                 return false;
             }
             if(realPosPlayers.get(i).getPlayerNum() == null){
                 if(!realPosPlayers.get(i).getPlayerName().equals(predictedPostPlayers.get(i).getPlayerName())){
-                    Logger.getGlobal().log(Level.INFO, String.format("이름 다름 %s %s", realPosPlayers.get(i).getPlayerName(), predictedPostPlayers.get(i).getPlayerName()));
                     return false;
                 }
             }
