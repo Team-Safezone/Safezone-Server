@@ -103,7 +103,7 @@ public class LineupPredictionDto {
     @Builder
     // 선발라인업 예측 수정 API 호출 시 반환할 선발 라인업 정보 형태
     public static class ResponseLineup{
-        private List<ResponsePlayerInfo> goalkeeper;
+        private ResponsePlayerInfo goalkeeper;
         private List<ResponsePlayerInfo> defenders;
         private List<ResponsePlayerInfo> midfielders;
         private List<ResponsePlayerInfo> strikers;
