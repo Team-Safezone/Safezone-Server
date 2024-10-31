@@ -13,7 +13,7 @@ public class Member {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long memberId;
+    private Long id;
 
     private String email;
 
@@ -23,14 +23,15 @@ public class Member {
     private String team2;
     private String team3;
 
-    private String grade;
+    private int point;
+    private int grade;
 
     private Boolean marketingConsent;
 
     @Enumerated(EnumType.STRING)
     private AuthProvider authProvider;
 
-    public Member(String email, String nickname, List<String> favoriteTeams, String grade, Boolean marketingConsent, AuthProvider authProvider) {
+    public Member(String email, String nickname, List<String> favoriteTeams, int point, int grade, Boolean marketingConsent, AuthProvider authProvider) {
         this.email = email;
         this.nickname = nickname;
         this.team1 = favoriteTeams.get(0);
@@ -43,9 +44,6 @@ public class Member {
         this.grade = grade;
         this.marketingConsent = marketingConsent;
         this.authProvider = authProvider;
-    }
-    public void setGrade(String grade) {
-        this.grade = grade;
     }
 
 }
