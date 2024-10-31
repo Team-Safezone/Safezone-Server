@@ -119,7 +119,7 @@ public class RealTimeStart {
                         break;
                     case "종료":
                         System.out.println("전반전 종료");
-                        Thread.sleep( 60 * 1000);
+                        Thread.sleep( 13 * 60 * 1000);
                         break;
                     case "경기종료":
                         System.out.println("경기 종료");
