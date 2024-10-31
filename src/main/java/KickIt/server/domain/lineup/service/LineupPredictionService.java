@@ -24,7 +24,7 @@ public class LineupPredictionService {
     @Transactional
     public void saveLineupPredictions(LineupPrediction lineupPrediction){
         // member id와 fixture id로 중복 검사해서 중복 데이터 존재 -> 저장하지 x.
-        if(lineupPredictionRepository.findByMemberAndFixture(lineupPrediction.getMember().getMemberId(), lineupPrediction.getFixture().getId()).isPresent()){
+        if(lineupPredictionRepository.findByMemberAndFixture(lineupPrediction.getMember().getId(), lineupPrediction.getFixture().getId()).isPresent()){
             /*
             LineupPrediction currentPrediction = lineupPredictionRepository.findByMemberAndFixture(lineupPrediction.getMember().getMemberId(), lineupPrediction.getFixture().getId()).get();
             currentPrediction.getPlayers().clear();
@@ -40,8 +40,8 @@ public class LineupPredictionService {
     }
 
     public LineupPredictionDto.LineUpPredictionEditResponse editLineupPredictions(LineupPrediction lineupPrediction){
-        LineupPrediction currentPrediction = lineupPredictionRepository.findByMemberAndFixture(lineupPrediction.getMember().getMemberId(), lineupPrediction.getFixture().getId()).get();
-        Long memberId = lineupPrediction.getMember().getMemberId();
+        LineupPrediction currentPrediction = lineupPredictionRepository.findByMemberAndFixture(lineupPrediction.getMember().getId(), lineupPrediction.getFixture().getId()).get();
+        Long memberId = lineupPrediction.getMember().getId();
         Long fixtureId = lineupPrediction.getFixture().getId();
 
         // 이후 기존 정보 반환할 수 있게 정보 수정 전 저장

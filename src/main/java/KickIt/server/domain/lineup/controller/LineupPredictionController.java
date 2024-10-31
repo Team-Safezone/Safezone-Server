@@ -9,8 +9,10 @@ import KickIt.server.domain.lineup.entity.PredictionPlayer;
 import KickIt.server.domain.lineup.service.LineupPredictionService;
 import KickIt.server.domain.member.dto.MemberRepository;
 import KickIt.server.domain.member.entity.Member;
+import KickIt.server.domain.member.service.MemberService;
 import KickIt.server.domain.teams.entity.Player;
 import KickIt.server.domain.teams.entity.PlayerRepository;
+import KickIt.server.jwt.JwtTokenUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -29,15 +31,20 @@ public class LineupPredictionController {
     PlayerRepository playerRepository;
     @Autowired
     LineupPredictionService lineupPredictionService;
+    @Autowired
+    JwtTokenUtil jwtTokenUtil;
+    @Autowired
+    MemberService memberService;
 
     // 입력 받은 정보 바탕으로 사용자의 경기 선발 라인업 예측을 DB에 POST
     // JWT 될 때까지 일단 member id로 처리 -> 차후 변경 예정
     @PostMapping("/save")
-    public ResponseEntity<Map<String, Object>> saveLineupPrediction(@RequestParam("memberId") long memberId, @RequestParam("matchId") long matchId, @RequestBody LineupPredictionDto.LineUpPredictionRequest lineUpPredictionRequest){
-        Optional<Member> foundMember = memberRepository.findById(memberId);
+    public ResponseEntity<Map<String, Object>> saveLineupPrediction(@RequestParam("xAuthToken") String xAuthToken, @RequestParam("matchId") long matchId, @RequestBody LineupPredictionDto.LineUpPredictionRequest lineUpPredictionRequest){
+        String memberEmail = jwtTokenUtil.getEmailFromToken(xAuthToken);
+        Member member = memberRepository.findByEmailAndAuthProvider(memberEmail, memberService.transAuth("kakao")).orElse(null);
         Map<String, Object> responseBody = new HashMap<>();
         // id에 해당하는 사용자 존재하는 경우
-        if(foundMember.isPresent()){
+        if(member != null){
             Optional<Fixture> foundFixture = fixtureRepository.findById(matchId);
             // id에 해당하는 경기 존재하는 경우
             if(foundFixture.isPresent()){
@@ -112,7 +119,7 @@ public class LineupPredictionController {
                 }
                 // save 처리
                 LineupPrediction lineupPrediction = LineupPrediction.builder()
-                        .member(foundMember.get())
+                        .member(member)
                         .fixture(foundFixture.get())
                         .homeTeamForm(lineUpPredictionRequest.getHomeFormation())
                         .awayTeamForm(lineUpPredictionRequest.getAwayFormation())
@@ -122,7 +129,7 @@ public class LineupPredictionController {
 
                 responseBody.put("status", HttpStatus.OK.value());
                 responseBody.put("message", "success");
-                responseBody.put("data", new LineupPredictionDto.LineupSaveResponse(foundMember.get()));
+                responseBody.put("data", new LineupPredictionDto.LineupSaveResponse(member));
                 responseBody.put("isSuccess", true);
                 return new ResponseEntity<>(responseBody, HttpStatus.OK);
             }
@@ -146,11 +153,12 @@ public class LineupPredictionController {
     // 입력 받은 정보 바탕으로 사용자의 기존 경기 선발 라인업 예측을 수정
     // JWT 될 때까지 일단 member id로 처리 -> 차후 변경 예정
     @PatchMapping("/edit")
-    public ResponseEntity<Map<String, Object>> editLineupPrediction(@RequestParam("memberId") long memberId, @RequestParam("matchId") long matchId, @RequestBody LineupPredictionDto.LineUpPredictionRequest lineUpPredictionRequest){
-        Optional<Member> foundMember = memberRepository.findById(memberId);
+    public ResponseEntity<Map<String, Object>> editLineupPrediction(@RequestParam("xAuthToken") String xAuthToken, @RequestParam("matchId") long matchId, @RequestBody LineupPredictionDto.LineUpPredictionRequest lineUpPredictionRequest){
+        String memberEmail = jwtTokenUtil.getEmailFromToken(xAuthToken);
+        Member member = memberRepository.findByEmailAndAuthProvider(memberEmail, memberService.transAuth("kakao")).orElse(null);
         Map<String, Object> responseBody = new HashMap<>();
         // id에 해당하는 사용자 존재하는 경우
-        if(foundMember.isPresent()){
+        if(member != null){
             Optional<Fixture> foundFixture = fixtureRepository.findById(matchId);
             // id에 해당하는 경기 존재하는 경우
             if(foundFixture.isPresent()){
@@ -225,7 +233,7 @@ public class LineupPredictionController {
                 }
                 // edit 처리
                 LineupPrediction lineupPrediction = LineupPrediction.builder()
-                        .member(foundMember.get())
+                        .member(member)
                         .fixture(foundFixture.get())
                         .homeTeamForm(lineUpPredictionRequest.getHomeFormation())
                         .awayTeamForm(lineUpPredictionRequest.getAwayFormation())
@@ -259,19 +267,20 @@ public class LineupPredictionController {
     // 사용자의 선발 라인업 예측 정보 조회
     // JWT 될 때까지 일단 member id로 처리 -> 차후 변경 예정
     @GetMapping()
-    public ResponseEntity<Map<String, Object>> getUserLineupPrediction(@RequestParam("memberId") long memberId, @RequestParam("matchId") Long matchId){
-        Optional<Member> foundMember = memberRepository.findById(memberId);
+    public ResponseEntity<Map<String, Object>> getUserLineupPrediction(@RequestParam("xAuthToken") String xAuthToken, @RequestParam("matchId") Long matchId){
+        String memberEmail = jwtTokenUtil.getEmailFromToken(xAuthToken);
+        Member member = memberRepository.findByEmailAndAuthProvider(memberEmail, memberService.transAuth("kakao")).orElse(null);
         Map<String, Object> responseBody = new HashMap<>();
 
         // id에 해당하는 사용자 존재하는 경우
-        if(foundMember.isPresent()){
+        if(member != null){
             Optional<Fixture> foundFixture = fixtureRepository.findById(matchId);
             // id에 해당하는 경기 존재하는 경우
             if(foundFixture.isPresent()){
                 String homeTeam = foundFixture.get().getHomeTeam();
                 String awayTeam = foundFixture.get().getAwayTeam();
                 String season = foundFixture.get().getSeason();
-                LineupPredictionDto.LineupInquireResponse response = lineupPredictionService.inquireLineupPrediction(matchId, memberId, homeTeam, awayTeam, season);
+                LineupPredictionDto.LineupInquireResponse response = lineupPredictionService.inquireLineupPrediction(matchId, member.getId(), homeTeam, awayTeam, season);
 
                 // 사용자 id와 경기 id로 조회된 선발 라인업 예측 데이터 없음
                 if(response == null){
@@ -307,20 +316,18 @@ public class LineupPredictionController {
     // 선발 라인업 예측 결과 정보 조회 (전체)
     // JWT 될 때까지 일단 member id로 처리 -> 차후 변경 예정
     @GetMapping("/result")
-    public ResponseEntity<Map<String, Object>> getLineupPrediction(@RequestParam("memberId") long memberId, @RequestParam("matchId") Long matchId) {
-        Optional<Member> foundMember = memberRepository.findById(memberId);
+    public ResponseEntity<Map<String, Object>> getLineupPrediction(@RequestParam("xAuthToken") String xAuthToken, @RequestParam("matchId") Long matchId) {
+        String memberEmail = jwtTokenUtil.getEmailFromToken(xAuthToken);
+        Member member = memberRepository.findByEmailAndAuthProvider(memberEmail, memberService.transAuth("kakao")).orElse(null);
         Map<String, Object> responseBody = new HashMap<>();
 
         // id에 해당하는 사용자 존재하는 경우
-        if(foundMember.isPresent()){
+        if(member != null){
             Optional<Fixture> foundFixture = fixtureRepository.findById(matchId);
             // id에 해당하는 경기 존재하는 경우
             if(foundFixture.isPresent()){
-                String homeTeam = foundFixture.get().getHomeTeam();
-                String awayTeam = foundFixture.get().getAwayTeam();
-                String season = foundFixture.get().getSeason();
                 // 해당 사용자가 해당 경기에 대해 선발 라인업 예측 진행해 데이터 있는지 확인
-                LineupPredictionDto.LineupResultInquireResponse response = lineupPredictionService.inquireLineupPredictionResult(matchId, memberId);
+                LineupPredictionDto.LineupResultInquireResponse response = lineupPredictionService.inquireLineupPredictionResult(matchId, member.getId());
                 // 사용자 id와 경기 id로 조회된 선발 라인업 예측 데이터 없음
                 if(response == null){
                     responseBody.put("status", HttpStatus.NOT_FOUND.value());

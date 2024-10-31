@@ -102,25 +102,8 @@ public class LineupPredictionDto {
         private int grade;
         private int point;
         public LineupSaveResponse(Member member){
-            // 나중에 grade 숫자로 바뀌면 수정할 것 !!!
-            switch (member.getGrade()){
-                case("탱탱볼"):
-                    grade = 1;
-                    break;
-                case("브론즈 축구공"):
-                    grade = 2;
-                    break;
-                case("실버 축구공"):
-                    grade = 3;
-                    break;
-                case("골드 축구공"):
-                    grade = 4;
-                    break;
-                case("다이아 축구공"):
-                    grade = 5;
-                    break;
-            }
-            // point는 이후에 추가
+            grade = member.getGrade();
+            point = member.getPoint();
         }
     }
 

@@ -11,10 +11,10 @@ import java.util.Optional;
 import java.util.UUID;
 
 public interface LineupPredictionRepository extends JpaRepository<LineupPrediction, Long> {
-    @Query("SELECT l FROM LineupPrediction l WHERE l.member.memberId = :memberId AND l.fixture.id = :fixtureId")
+    @Query("SELECT l FROM LineupPrediction l WHERE l.member.id = :memberId AND l.fixture.id = :fixtureId")
     Optional<LineupPrediction> findByMemberAndFixture(@Param("memberId") Long memberId, @Param("fixtureId") Long fixtureId);
 
-    @Query("SELECT p FROM LineupPrediction l JOIN l.players p WHERE l.member.memberId = :memberId AND l.fixture.id = :fixtureId AND p.position = :position AND p.team = :team ORDER BY p.location ASC")
+    @Query("SELECT p FROM LineupPrediction l JOIN l.players p WHERE l.member.id = :memberId AND l.fixture.id = :fixtureId AND p.position = :position AND p.team = :team ORDER BY p.location ASC")
     List<PredictionPlayer> findFilteredPlayersByMemberAndFixture(@Param("memberId") Long memberId, @Param("fixtureId") Long fixtureId, @Param("position") int position, @Param("team") int team);
 
     @Query("SELECT l FROM LineupPrediction l WHERE l.fixture.id = :fixtureId")
