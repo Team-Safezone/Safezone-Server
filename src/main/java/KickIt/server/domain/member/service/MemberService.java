@@ -56,8 +56,8 @@ public class MemberService {
 
     @Transactional
     public AuthProvider transAuth(String oAuthProvider) {
-        if(oAuthProvider.equals("naver")) {
-            return AuthProvider.NAVER;
+        if(oAuthProvider.equals("kakao")) {
+            return AuthProvider.KAKAO;
         } else if (oAuthProvider.equals("apple")) {
             return AuthProvider.APPLE;
         } else {
