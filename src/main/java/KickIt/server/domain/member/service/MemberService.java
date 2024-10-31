@@ -99,8 +99,6 @@ public class MemberService {
     }
 
     public MypageDto getMypage(String email) {
-        Long memberId = getMemberId(email);
-
         Optional<Member> member = memberRepository.findByEmail(email);
 
         MypageDto mypage = new MypageDto();
