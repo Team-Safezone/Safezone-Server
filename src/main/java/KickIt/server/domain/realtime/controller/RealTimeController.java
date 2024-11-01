@@ -1,20 +1,14 @@
 package KickIt.server.domain.realtime.controller;
 
 import KickIt.server.domain.realtime.dto.RealTimeDto;
-import KickIt.server.domain.realtime.dto.RealTimeRepository;
 import KickIt.server.domain.realtime.service.RealTimeService;
-import KickIt.server.domain.teams.dto.TeaminfoDto;
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.*;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.client.RestTemplate;
 
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 
 @RestController
 @RequestMapping("/realTime")
@@ -35,7 +29,7 @@ public class RealTimeController {
         if (!responseList.isEmpty()) {
             responseBody.put("status", HttpStatus.OK.value());
             responseBody.put("message", "success");
-            responseBody.put("realTime", responseList);
+            responseBody.put("data", responseList);
             return new ResponseEntity<>(responseBody, HttpStatus.OK);
         }
         // 조회한 list가 비어있는 경우 데이터 없음 처리, NOT FOUND로 반환

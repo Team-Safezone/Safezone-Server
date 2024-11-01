@@ -115,9 +115,9 @@ public class RealTimeDataParser {
 
     // 전반, 후반 추가시간 확인
     public static String isBeforeAfter() {
-        if (!isMatch2 && isExtra){
+        if (!isMatch2 && isExtra || !isMatch2 && !isExtra){
             return "전반";
-        } else if (isMatch2 && isExtra) {
+        } else if (isMatch2 && !isExtra || isMatch2 && isExtra) {
              return "후반";
         }
         return " ";

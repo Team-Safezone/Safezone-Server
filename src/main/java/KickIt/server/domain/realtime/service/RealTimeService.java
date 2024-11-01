@@ -1,14 +1,8 @@
 package KickIt.server.domain.realtime.service;
 
-import KickIt.server.domain.fixture.entity.Fixture;
 import KickIt.server.domain.realtime.dto.RealTimeDto;
-import KickIt.server.domain.realtime.dto.RealTimeRepository;
+import KickIt.server.domain.realtime.entity.RealTimeRepository;
 import KickIt.server.domain.realtime.entity.RealTime;
-import KickIt.server.domain.teams.dto.TeaminfoDto;
-import KickIt.server.domain.teams.entity.Teaminfo;
-import KickIt.server.domain.teams.entity.TeaminfoRepository;
-import KickIt.server.global.common.crawler.RealTimeCrawler;
-import KickIt.server.global.common.crawler.TeaminfoCrawler;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
