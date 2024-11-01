@@ -372,17 +372,24 @@ public class LineupPredictionService {
         // 평균 원정팀 포메이션 값
         Integer avgAwayFormation = lineupPredictionRepository.findAvgAwayTeamForm(fixtureId);
         // 평균 홈팀 선발라인업 값
-        LineupPredictionDto.ResponseLineup avgHomePrediction = findAvgHomeTeamLineup(fixtureId, avgHomeFormation);
+        LineupPredictionDto.ResponseLineup avgHomePrediction = avgHomeFormation == null? null : findAvgHomeTeamLineup(fixtureId, avgHomeFormation);
         // 평균 원정팀 선발라인업 값
-        LineupPredictionDto.ResponseLineup avgAwayPrediction = findAvgAwayTeamLineup(fixtureId, avgAwayFormation);
+        LineupPredictionDto.ResponseLineup avgAwayPrediction = avgAwayFormation == null? null: findAvgAwayTeamLineup(fixtureId, avgAwayFormation);
 
         // 선발라인업 예측 결과 조회 API의 결과로 반환할 response
         LineupPredictionDto.LineupResultInquireResponse response;
 
+        // 만약 아직 아무도 예측 진행하지 않은 경우
+        if(avgHomeFormation == null || avgAwayFormation == null){
+            response = LineupPredictionDto.LineupResultInquireResponse.builder()
+                    .participant(lineupPredictionRepository.findByFixture(fixtureId).size())
+                    .build();
+        }
+
         // 아직 선발라인업 결과가 나오지 않은 경우 -> 관련 항목 null 처리
         // 만약 사용자 예측 선발 라인업이 없는 경우 -> 관련 항목 null 처리
         // 각각 경우 나눠 수행
-        if(userPrediction == null){
+        else if(userPrediction == null){
             // 사용자 예측 X / 선발 라인업 결과 X
             if(foundMatchLineup == null){
                 response = LineupPredictionDto.LineupResultInquireResponse.builder()
