@@ -31,19 +31,11 @@ import java.util.List;
 @EnableAsync
 public class RealTimeStart {
 
-    private static final String API_URL = "https://api.football-data.org/v4/competitions/PL/matches";
-
-    @Value("${fixture-status-admin-key}")
-    private String AUTH_TOKEN;
-
     private final FixtureRepository fixtureRepository;
     private final ThreadPoolTaskScheduler taskScheduler;
     private final RealTimeService realTimeService;
     private final TeaminfoRepository teaminfoRepository;
-    private final RestTemplate restTemplate = new RestTemplate();
     private final TeamNameConvertService teamNameConvertService;
-
-    private String apiMatchId;
 
     @Autowired
     public RealTimeStart(FixtureRepository fixtureRepository, RealTimeService realTimeService, TeaminfoRepository teaminfoRepository, ThreadPoolTaskScheduler taskScheduler, TeamNameConvertService teamNameConvertService) {
@@ -82,27 +74,20 @@ public class RealTimeStart {
     public void getTimeMatch(List<Fixture> fixtureList) {
         LocalDateTime now = LocalDateTime.now();
         for (Fixture fixture : fixtureList) {
-            apiMatchId = getMatchIdFromApi(fixture);
-            String status = getMatchStatus(apiMatchId);
 
-            //&& !status.equals("FINISHED")
-            // 경기 연기, 취소 처리
-            if(!status.equals("POSTPONED") && !status.equals("CANCELLED")){
-                LocalDateTime fixtureMatchTime = fixture.getDate().toLocalDateTime();
+            LocalDateTime fixtureMatchTime = fixture.getDate().toLocalDateTime();
 
-                if (fixtureMatchTime.isAfter(now)) {
-                    Date startDate = Date.from(fixtureMatchTime.atZone(ZoneId.systemDefault()).toInstant());
-                    taskScheduler.schedule(() -> startStopCrawling(fixture,apiMatchId), startDate);
-                    System.out.println("오늘 경기 시작 시간: " + fixtureMatchTime);
-                }
-                else {
-                    // 이미 시작된 경기는 바로 크롤링 시작
-                    System.out.println("이미 시작: " + fixtureMatchTime);
-                    Date startDate = new Date();
-                    taskScheduler.schedule(() -> startStopCrawling(fixture, apiMatchId), startDate);
-                }
-
+            if (fixtureMatchTime.isAfter(now)) {
+                Date startDate = Date.from(fixtureMatchTime.atZone(ZoneId.systemDefault()).toInstant());
+                taskScheduler.schedule(() -> startStopCrawling(fixture), startDate);
+                System.out.println("오늘 경기 시작 시간: " + fixtureMatchTime);
+            } else {
+                // 이미 시작된 경기는 바로 크롤링 시작
+                System.out.println("이미 시작: " + fixtureMatchTime);
+                Date startDate = new Date();
+                taskScheduler.schedule(() -> startStopCrawling(fixture), startDate);
             }
+
         }
 
     }
@@ -110,10 +95,8 @@ public class RealTimeStart {
 
     // 크롤링 시작, 중지, 종료
     @Async
-    public void startStopCrawling(Fixture fixture, String apiMatchId){
+    public void startStopCrawling(Fixture fixture) {
         boolean eventEnd = false;
-
-        System.out.println("apiMatchId = " + apiMatchId);
 
         String isDone;
 
@@ -136,7 +119,7 @@ public class RealTimeStart {
                         break;
                     case "종료":
                         System.out.println("전반전 종료");
-                        Thread.sleep(13 * 60 * 1000);
+                        Thread.sleep( 13 * 60 * 1000);
                         break;
                     case "경기종료":
                         System.out.println("경기 종료");
@@ -160,6 +143,8 @@ public class RealTimeStart {
 
     }
 
+
+    /*
 
     // 경기 id 매칭하기
     private String getMatchIdFromApi(Fixture fixture) {
@@ -242,6 +227,10 @@ public class RealTimeStart {
 
         return apiMatchDate;
     }
+
+
+     */
+
 }
 
 

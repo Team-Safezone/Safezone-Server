@@ -1,4 +1,4 @@
-package KickIt.server.domain.realtime.dto;
+package KickIt.server.domain.realtime.entity;
 
 import KickIt.server.domain.realtime.entity.RealTime;
 import org.springframework.data.jpa.repository.JpaRepository;
