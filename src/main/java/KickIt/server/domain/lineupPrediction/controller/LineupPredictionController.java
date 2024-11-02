@@ -1,13 +1,12 @@
-package KickIt.server.domain.lineup.controller;
+package KickIt.server.domain.lineupPrediction.controller;
 
 import KickIt.server.domain.fixture.entity.Fixture;
 import KickIt.server.domain.fixture.entity.FixtureRepository;
-import KickIt.server.domain.lineup.dto.LineupPredictionDto;
-import KickIt.server.domain.lineup.entity.LineupPrediction;
-import KickIt.server.domain.lineup.entity.LineupPredictionRepository;
-import KickIt.server.domain.lineup.entity.PredictionPlayer;
-import KickIt.server.domain.lineup.service.LineupPredictionService;
-import KickIt.server.domain.member.dto.MemberRepository;
+import KickIt.server.domain.lineupPrediction.dto.LineupPredictionDto;
+import KickIt.server.domain.lineupPrediction.entity.LineupPrediction;
+import KickIt.server.domain.lineupPrediction.entity.PredictionPlayer;
+import KickIt.server.domain.lineupPrediction.service.LineupPredictionService;
+import KickIt.server.domain.member.entity.MemberRepository;
 import KickIt.server.domain.member.entity.Member;
 import KickIt.server.domain.member.service.MemberService;
 import KickIt.server.domain.teams.entity.Player;
