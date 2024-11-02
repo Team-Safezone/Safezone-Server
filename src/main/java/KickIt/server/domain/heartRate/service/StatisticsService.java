@@ -4,7 +4,7 @@ import KickIt.server.domain.heartRate.dto.*;
 import KickIt.server.domain.heartRate.dto.MinAvgMaxDto;
 import KickIt.server.domain.heartRate.entity.StatisticsRepository;
 import KickIt.server.domain.heartRate.entity.TeamHeartRateRepository;
-import KickIt.server.domain.member.dto.MemberRepository;
+import KickIt.server.domain.member.entity.MemberRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 

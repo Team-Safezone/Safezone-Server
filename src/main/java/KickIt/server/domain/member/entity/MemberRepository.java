@@ -9,6 +9,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
 import java.util.Optional;
 
 @Repository
@@ -28,4 +29,15 @@ public interface MemberRepository extends JpaRepository<Member, Long> {
     @Transactional
     @Query("UPDATE Member SET nickname = :nickname WHERE id = :id")
     void updateNickname(@Param("id") Long id, @Param("nickname") String nickname);
+
+    @Query("SELECT avgHeartRate FROM Member WHERE id = :id")
+    int getMemberAvgHeartRate(@Param("id") Long id);
+
+    // 심박수 통계용
+    @Query("SELECT m.team1, m.team2, m.team3 FROM Member m WHERE id = :id ")
+    List<Object[]> getFavoriteTeam(@Param("id") Long id);
+
+    @Query("SELECT m.team1, m.team2, m.team3 FROM Member m")
+    List<Object[]> getFavoriteTeamAll();
+
 }

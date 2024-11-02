@@ -1,10 +1,9 @@
 package KickIt.server.domain.heartRate.service;
 
 import KickIt.server.domain.fixture.entity.FixtureRepository;
-import KickIt.server.domain.heartRate.dto.HeartRateDto;
 import KickIt.server.domain.heartRate.entity.HeartRateRepository;
 import KickIt.server.domain.heartRate.dto.MinAvgMaxDto;
-import KickIt.server.domain.member.dto.MemberRepository;
+import KickIt.server.domain.member.entity.MemberRepository;
 import KickIt.server.domain.teams.service.TeamNameConvertService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;

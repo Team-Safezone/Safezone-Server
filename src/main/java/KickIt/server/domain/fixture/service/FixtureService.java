@@ -114,27 +114,4 @@ public class FixtureService {
         }
     }
 
-    @Transactional
-    public boolean updateFixtureScore(Long fixtureId, Integer homeTeamScore, Integer awayTeamScore){
-        Optional<Fixture> fixture = fixtureRepository.findById(fixtureId);
-        if(fixture.isPresent()){
-            Fixture updatedFixture = Fixture.builder()
-                    .id(fixtureId)
-                    .season(fixture.get().getSeason())
-                    .date(fixture.get().getDate())
-                    .homeTeam(fixture.get().getHomeTeam())
-                    .awayTeam(fixture.get().getAwayTeam())
-                    .homeTeamScore(homeTeamScore)
-                    .awayteamScore(awayTeamScore)
-                    .round(fixture.get().getRound())
-                    .status(fixture.get().getStatus())
-                    .stadium(fixture.get().getStadium())
-                    .lineupUrl(fixture.get().getLineupUrl()).build();
-            fixtureRepository.save(updatedFixture);
-            return true;
-        }
-        else{
-            return false;
-        }
-    }
 }

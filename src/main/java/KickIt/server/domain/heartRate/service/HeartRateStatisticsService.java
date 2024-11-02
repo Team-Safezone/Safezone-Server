@@ -1,12 +1,11 @@
 package KickIt.server.domain.heartRate.service;
 
 import KickIt.server.domain.fixture.entity.Fixture;
-import KickIt.server.domain.fixture.entity.FixtureRepository;
 import KickIt.server.domain.heartRate.dto.HeartRateDto;
 import KickIt.server.domain.heartRate.entity.HeartRateStatisticsRepository;
 import KickIt.server.domain.heartRate.entity.HeartRateStatistics;
-import KickIt.server.domain.member.dto.MemberRepository;
 import KickIt.server.domain.member.entity.Member;
+import KickIt.server.domain.member.entity.MemberRepository;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -64,7 +63,7 @@ public class HeartRateStatisticsService {
             Fixture fixture = entityManager.getReference(Fixture.class, fixtureId);
 
             // 객체 생성
-            HeartRateStatistics heartRateStatistics = new HeartRateStatistics(member, fixture);
+            HeartRateStatistics heartRateStatistics = new HeartRateStatistics(memberId, fixtureId);
             heartRateStatisticsRepository.save(heartRateStatistics);
 
             // min, avg, max 업데이트

@@ -4,7 +4,7 @@ import KickIt.server.domain.heartRate.entity.FixtureHeartRateStatisticsRepositor
 import KickIt.server.domain.heartRate.dto.HeartRateDto;
 import KickIt.server.domain.heartRate.entity.HeartRateRepository;
 import KickIt.server.domain.heartRate.entity.FixtureHeartRateStatistics;
-import KickIt.server.domain.realtime.dto.RealTimeRepository;
+import KickIt.server.domain.realtime.entity.RealTimeRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 

@@ -15,13 +15,13 @@ public class HeartRateStatistics {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne
-    @JoinColumn(name = "member_id", nullable = false)
-    private Member member;
-
-    @ManyToOne
-    @JoinColumn(name = "fixture_id", nullable = false)
-    private Fixture fixture;
+//    //@ManyToOne
+//    //@JoinColumn(name = "member_id", nullable = false)
+//    private Member member;
+//
+//    //@ManyToOne
+//    //@JoinColumn(name = "fixture_id", nullable = false)
+//    private Fixture fixture;
 
     private int lowHeartRate;
     private int highHeartRate;
@@ -29,9 +29,11 @@ public class HeartRateStatistics {
 
     private String teamType;
 
-    public HeartRateStatistics(Member member, Fixture fixture) {
-        this.member = member;
-        this.fixture = fixture;
-    }
+    private Long memberId;
+    private Long fixtureId;
 
+    public HeartRateStatistics(Long memberId, Long fixtureId) {
+        this.memberId = memberId;
+        this.fixtureId = fixtureId;
+    }
 }

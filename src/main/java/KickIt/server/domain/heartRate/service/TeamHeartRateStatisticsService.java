@@ -1,15 +1,13 @@
 package KickIt.server.domain.heartRate.service;
 
-import KickIt.server.domain.heartRate.dto.HeartRateDto;
 import KickIt.server.domain.heartRate.dto.MinAvgMaxDto;
 import KickIt.server.domain.heartRate.entity.StatisticsRepository;
 import KickIt.server.domain.heartRate.entity.TeamHeartRateStatisticsRepository;
 import KickIt.server.domain.heartRate.entity.TeamHeartRateStatistics;
-import KickIt.server.domain.member.dto.MemberRepository;
+import KickIt.server.domain.member.entity.MemberRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
 import java.util.List;
 
 @Service

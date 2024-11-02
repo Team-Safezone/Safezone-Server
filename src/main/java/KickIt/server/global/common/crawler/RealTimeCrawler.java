@@ -4,7 +4,6 @@ import KickIt.server.domain.fixture.entity.Fixture;
 import KickIt.server.domain.fixture.service.FixtureService;
 import KickIt.server.domain.realtime.entity.RealTime;
 import KickIt.server.domain.realtime.service.RealTimeService;
-import KickIt.server.domain.teams.EplTeams;
 import KickIt.server.domain.teams.entity.TeaminfoRepository;
 import KickIt.server.domain.teams.service.TeamNameConvertService;
 import KickIt.server.global.util.WebDriverUtil;
@@ -18,8 +17,6 @@ import org.springframework.stereotype.Component;
 
 import java.time.Duration;
 import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
