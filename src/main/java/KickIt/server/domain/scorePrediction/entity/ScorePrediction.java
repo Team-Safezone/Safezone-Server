@@ -9,6 +9,8 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+import java.time.LocalDateTime;
+
 @Entity
 @Getter
 @Builder
@@ -32,4 +34,14 @@ public class ScorePrediction {
     Integer homeTeamScore;
     // 사용자가 예측한 원정팀 점수
     Integer awayTeamScore;
+
+    // 수정 시각을 저장하는 필드
+    @Column(name = "last_updated", nullable = false)
+    private LocalDateTime lastUpdated;
+
+    @PrePersist
+    @PreUpdate
+    public void setLastUpdated() {
+        this.lastUpdated = LocalDateTime.now();
+    }
 }
