@@ -125,13 +125,27 @@ public class LineupPredictionController {
                         .awayTeamForm(lineUpPredictionRequest.getAwayFormation())
                         .players(predictionPlayer).build();
 
-                lineupPredictionService.saveLineupPredictions(lineupPrediction);
+                HttpStatus saveStatus = lineupPredictionService.saveLineupPredictions(lineupPrediction);
+                if(saveStatus == HttpStatus.OK){
+                    responseBody.put("status", HttpStatus.OK.value());
+                    responseBody.put("message", "success");
+                    responseBody.put("data", new LineupPredictionDto.LineupSaveResponse(member));
+                    responseBody.put("isSuccess", true);
+                    return new ResponseEntity<>(responseBody, HttpStatus.OK);
+                }
+                else if (saveStatus == HttpStatus.CONFLICT){
+                    responseBody.put("status", HttpStatus.CONFLICT.value());
+                    responseBody.put("message", "중복 저장 시도");
+                    responseBody.put("isSuccess", false);
+                    return new ResponseEntity<>(responseBody, HttpStatus.CONFLICT);
+                }
+                else {
+                    responseBody.put("status", HttpStatus.INTERNAL_SERVER_ERROR.value());
+                    responseBody.put("message", "저장 실패");
+                    responseBody.put("isSuccess", false);
+                    return new ResponseEntity<>(responseBody, HttpStatus.INTERNAL_SERVER_ERROR);
+                }
 
-                responseBody.put("status", HttpStatus.OK.value());
-                responseBody.put("message", "success");
-                responseBody.put("data", new LineupPredictionDto.LineupSaveResponse(member));
-                responseBody.put("isSuccess", true);
-                return new ResponseEntity<>(responseBody, HttpStatus.OK);
             }
             // id에 해당하는 경기 존재하지 않는 경우 -> 경기 id 잘못됨
             else{

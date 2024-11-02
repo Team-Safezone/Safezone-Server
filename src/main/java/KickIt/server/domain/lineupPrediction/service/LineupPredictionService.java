@@ -11,8 +11,10 @@ import KickIt.server.domain.teams.entity.Player;
 import KickIt.server.domain.teams.entity.SquadRepository;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
+import java.net.http.HttpClient;
 import java.util.*;
 
 @Service
@@ -25,20 +27,23 @@ public class LineupPredictionService {
     private MatchLineupService matchLineupService;
 
     @Transactional
-    public void saveLineupPredictions(LineupPrediction lineupPrediction){
+    public HttpStatus saveLineupPredictions(LineupPrediction lineupPrediction){
         // member id와 fixture id로 중복 검사해서 중복 데이터 존재 -> 저장하지 x.
         if(lineupPredictionRepository.findByMemberAndFixture(lineupPrediction.getMember().getId(), lineupPrediction.getFixture().getId()).isPresent()){
-            /*
-            LineupPrediction currentPrediction = lineupPredictionRepository.findByMemberAndFixture(lineupPrediction.getMember().getMemberId(), lineupPrediction.getFixture().getId()).get();
-            currentPrediction.getPlayers().clear();
-            currentPrediction.getPlayers().addAll(lineupPrediction.getPlayers());
-            lineupPredictionRepository.save(currentPrediction);
-             */
+            return HttpStatus.CONFLICT;
         }
         // member id와 fixture id로 중복 검사해서 중복 데이터 없음 -> 새로 저장
         else{
-            lineupPrediction.setLastUpdated();
-            lineupPredictionRepository.save(lineupPrediction);
+            try{
+                lineupPrediction.setLastUpdated();
+                lineupPredictionRepository.save(lineupPrediction);
+            }
+            catch (Exception e){
+                return HttpStatus.INTERNAL_SERVER_ERROR;
+            }
+            finally {
+                return HttpStatus.OK;
+            }
         }
     }
 
