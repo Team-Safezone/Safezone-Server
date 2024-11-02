@@ -35,13 +35,13 @@ public class HeartRateService {
 
     // 심박수 저장
     public void save(String email, HeartRateDto heartRateDTO) {
-        Long member_id = getMemberId(email);
-        Long fixture_id = heartRateDTO.getMatchId();
+        Long memberId = getMemberId(email);
+        Long fixtureId = heartRateDTO.getMatchId();
 
         // 중복 아닐 때만 저장
-        if(heartRateRepository.findByMemberIdAndFixtureId(member_id,fixture_id).isEmpty()){
+        if(heartRateRepository.findByMemberIdAndFixtureId(memberId,fixtureId).isEmpty()){
             for (HeartRateDto.MatchHeartRateRecords records : heartRateDTO.getMatchHeartRateRecords()) {
-                HeartRate heartRate = new HeartRate(member_id, heartRateDTO.getMatchId(), records.getHeartRate(), records.getDate());
+                HeartRate heartRate = new HeartRate(memberId, heartRateDTO.getMatchId(), records.getHeartRate(), records.getDate());
                 heartRateRepository.save(heartRate);
             }
         }
