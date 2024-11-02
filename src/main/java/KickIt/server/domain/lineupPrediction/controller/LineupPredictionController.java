@@ -8,6 +8,7 @@ import KickIt.server.domain.lineupPrediction.entity.PredictionPlayer;
 import KickIt.server.domain.lineupPrediction.service.LineupPredictionService;
 import KickIt.server.domain.member.entity.MemberRepository;
 import KickIt.server.domain.member.entity.Member;
+import KickIt.server.domain.member.entity.MemberRepository;
 import KickIt.server.domain.member.service.MemberService;
 import KickIt.server.domain.teams.entity.Player;
 import KickIt.server.domain.teams.entity.PlayerRepository;

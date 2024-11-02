@@ -149,4 +149,10 @@ public class MemberService {
             return null;
         }
     }
+    // 사용자 평균 심박수
+    public int getMemberAvgHeartRate(String email) {
+        Long memberId = getMemberId(email);
+        return memberRepository.getMemberAvgHeartRate(memberId);
+    }
+
 }

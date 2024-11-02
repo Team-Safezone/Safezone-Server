@@ -1,5 +1,6 @@
 package KickIt.server.jwt;
 
+
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import org.springframework.beans.factory.annotation.Value;
@@ -24,6 +25,8 @@ public class JwtService {
                 .signWith(SignatureAlgorithm.HS256, SECRET_KEY)
                 .compact();
     }
+
+
 
     /* 혹시 몰라서 만들어 둠
     // refresh token

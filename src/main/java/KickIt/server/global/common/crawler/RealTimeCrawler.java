@@ -1,9 +1,9 @@
 package KickIt.server.global.common.crawler;
 
 import KickIt.server.domain.fixture.entity.Fixture;
+import KickIt.server.domain.fixture.service.FixtureService;
 import KickIt.server.domain.realtime.entity.RealTime;
 import KickIt.server.domain.realtime.service.RealTimeService;
-import KickIt.server.domain.teams.EplTeams;
 import KickIt.server.domain.teams.entity.TeaminfoRepository;
 import KickIt.server.domain.teams.service.TeamNameConvertService;
 import KickIt.server.global.util.WebDriverUtil;
@@ -17,8 +17,6 @@ import org.springframework.stereotype.Component;
 
 import java.time.Duration;
 import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -50,13 +48,15 @@ public class RealTimeCrawler {
     private final RealTimeService realTimeService;
     private final TeaminfoRepository teaminfoRepository;
     private final TeamNameConvertService teamNameConvertService;
+    private final FixtureService fixtureService;
 
 
     @Autowired
-    public RealTimeCrawler(RealTimeService realTimeService, TeaminfoRepository teaminfoRepository, TeamNameConvertService teamNameConvertService) {
-        this.teaminfoRepository = teaminfoRepository;
+    public RealTimeCrawler(RealTimeService realTimeService, TeaminfoRepository teaminfoRepository, TeamNameConvertService teamNameConvertService, FixtureService fixtureService) {
         this.realTimeService = realTimeService;
+        this.teaminfoRepository = teaminfoRepository;
         this.teamNameConvertService = teamNameConvertService;
+        this.fixtureService = fixtureService;
     }
 
     public void initializeCrawler(Fixture fixture) {
@@ -100,8 +100,7 @@ public class RealTimeCrawler {
             WebElement timeLine = wait.until(ExpectedConditions.visibilityOfElementLocated(By.className("group_timeline")));
             List<WebElement> timeElements = timeLine.findElements(By.tagName("li"));
 
-
-            for (WebElement li : timeElements) { // 먼저 이벤트 텍스트를 파싱하여 가져옵니다.
+            for (WebElement li : timeElements) {
                 String eventText = li.getText();
 
                 if(eventText.contains("추가시간")){
@@ -202,7 +201,7 @@ public class RealTimeCrawler {
                         getHalfScore();
                         realTimeBuilder
                                 .eventCode(2)
-                                .time(elements[0])
+                                .time(isDone(extraTime))
                                 .eventName("하프타임")
                                 .eventTime(halfTime(startTime, extraTime))
                                 .player1(homeTeamScore)
@@ -215,11 +214,12 @@ public class RealTimeCrawler {
                         getHalfScore();
                         realTimeBuilder
                                 .eventCode(6)
-                                .time(elements[0])
+                                .time(isDone(extraTime))
                                 .eventTime(halfTime(startTime, extraTime))
                                 .eventName(elements[0])
                                 .player1(homeTeamScore)
                                 .player2(awayTeamScore);
+                        fixtureService.updateFixtureScore(matchId, Integer.parseInt(homeTeamScore), Integer.parseInt(awayTeamScore));
                         realTime = realTimeBuilder.build();
                         realTimeService.saveEvent(realTime);
                         return "경기종료";
@@ -257,6 +257,7 @@ public class RealTimeCrawler {
         homeTeamScore = score1.getText();
         awayTeamScore = score2.getText();
     }
+
     // 크롤링 멈추기
     public void quit() {
         WebDriverUtil.quit(driver);

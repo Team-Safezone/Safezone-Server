@@ -23,4 +23,9 @@ public interface RealTimeRepository extends JpaRepository<RealTime, Long>{
 
     @Query("SELECT r FROM RealTime r WHERE r.matchId = :matchId ORDER BY r.sequence ASC")
     List<RealTime> findRealTimeByMatchId(@Param("matchId") Long matchId);
+
+    // 심박수 통계에 필요한 정보
+    @Query("SELECT r.eventTime FROM RealTime r WHERE r.matchId = :matchId AND (r.eventCode = 0 OR r.eventCode = 6)")
+    List<String> getEventTime(@Param("matchId") Long matchId);
+
 }

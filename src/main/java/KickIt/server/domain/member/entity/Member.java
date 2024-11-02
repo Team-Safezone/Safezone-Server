@@ -43,6 +43,7 @@ public class Member {
                 this.team3 = favoriteTeams.get(2);
             }
         }
+        this.point = point;
         this.grade = grade;
         this.marketingConsent = marketingConsent;
         this.authProvider = authProvider;

@@ -27,4 +27,8 @@ public interface FixtureRepository extends JpaRepository<Fixture, Long>{
 
     @Query("SELECT f FROM Fixture f WHERE YEAR(f.date) = :year AND MONTH(f.date) = :month AND (f.homeTeam = :team OR f.awayTeam = :team)")
     List<Fixture> findByMonthAndTeam(@Param("year") int year, @Param("month") int month, @Param("team") String team);
+
+    // 심박수 통계
+    @Query("SELECT f.homeTeam, f.awayTeam FROM Fixture f WHERE id = :id")
+    List<Object[]> findHomeAwayTeam(@Param("id") Long id);
 }
