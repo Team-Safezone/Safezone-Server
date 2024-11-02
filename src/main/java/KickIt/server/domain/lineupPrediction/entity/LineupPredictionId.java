@@ -1,4 +1,4 @@
-package KickIt.server.domain.lineup.entity;
+package KickIt.server.domain.lineupPrediction.entity;
 
 import java.io.Serializable;
 import java.util.Objects;

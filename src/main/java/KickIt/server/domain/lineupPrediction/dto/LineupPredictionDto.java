@@ -1,9 +1,6 @@
-package KickIt.server.domain.lineup.dto;
+package KickIt.server.domain.lineupPrediction.dto;
 
 import KickIt.server.domain.fixture.dto.ResponsePlayerInfo;
-import KickIt.server.domain.lineup.entity.LineupPrediction;
-import KickIt.server.domain.lineup.entity.LineupPredictionRepository;
-import KickIt.server.domain.lineup.entity.PredictionPlayer;
 import KickIt.server.domain.member.entity.Member;
 import KickIt.server.domain.teams.PlayerPosition;
 import KickIt.server.domain.teams.entity.Player;
@@ -11,10 +8,8 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import java.util.ArrayList;
 import java.util.List;
 
 // 선발 라인업 예측 DTO
