@@ -22,6 +22,7 @@ public class ScorePredictionService {
     FixtureRepository fixtureRepository;
 
     @Transactional
+    // 우승팀 예측 저장
     public HttpStatus saveScorePrediction(ScorePrediction scorePrediction){
         // 중복 저장인지 확인하기 위해 사용자의 id와 경기 id로 DB에서 scorePrediction 데이터 조회
         ScorePrediction foundScorePrediction = scorePredictionRepository.findByFixtureAndMember(scorePrediction.getFixture().getId(), scorePrediction.getMember().getId()).orElse(null);
@@ -42,6 +43,7 @@ public class ScorePredictionService {
     }
 
     @Transactional
+    // 우승팀 예측 수정
     public ScorePredictionDto.ScorePredictionEditResponse editScorePrediction(ScorePrediction scorePrediction){
         // 해당 예측의 경기 id
         Long fixtureId = scorePrediction.getFixture().getId();
@@ -106,6 +108,7 @@ public class ScorePredictionService {
     }
 
     @Transactional
+    // 우승팀 예측 조회
     public ScorePredictionDto.ScorePredictionInquireResponse inquireScorePrediction(Fixture fixture, Member member){
         ScorePrediction userPrediction = scorePredictionRepository.findByFixtureAndMember(fixture.getId(), member.getId()).orElse(null);
         // 사용자가 기존에 예측한 데이터 없는 경우
@@ -118,6 +121,80 @@ public class ScorePredictionService {
                     .homeTeamScore(userPrediction.getHomeTeamScore())
                     .awayTeamScore(userPrediction.getAwayTeamScore())
                     .build();
+        }
+    }
+
+    @Transactional
+    // 우승팀 예측 결과 조회
+    public ScorePredictionDto.ScorePredictionEditResponse inquireScorePredictionResult(Fixture fixture, Member member){
+        // API 호출 시 전달할 response
+        ScorePredictionDto.ScorePredictionEditResponse response;
+        // 수정 전 기존 사용자의 우승팀 예측 정보 (존재하지 않는 경우 null)
+        ScorePrediction currentScorePrediction = scorePredictionRepository.findByFixtureAndMember(fixture.getId(), member.getId()).orElse(null);
+
+        // 예측 참여자 수
+        int participant = scorePredictionRepository.findByFixture(fixture.getId()).size();
+        // 평균 예측 홈팀 점수, 원정팀 점수
+        int avgHomeTeamScore;
+        int avgAwayTeamScore;
+
+        // 아직 아무도 예측을 진행하지 않은 경우
+        // 홈팀, 원정팀 점수 null -> 평균 값 계산 시 오류 발생하므로 따로 처리
+        if(participant == 0){
+            return ScorePredictionDto.ScorePredictionEditResponse.builder()
+                    .participant(participant)
+                    .build();
+        }
+        else{
+            avgHomeTeamScore = scorePredictionRepository.findAvgHomeTeamScore(fixture.getId());
+            avgAwayTeamScore = scorePredictionRepository.findAvgAwayTeamScore(fixture.getId());
+        }
+
+        // 사용자의 기존 예측 데이터가 있는지, 실제 경기 결과가 나왔는지에 따라 구성 필드 달라지므로 case 나누어 처리 함.
+        // 사용자가 기존에 예측을 진행하지 않은 경우
+        if(currentScorePrediction == null){
+            // 사용자 예측 X, 경기 결과 X
+            if(fixture.getHomeTeamScore() == null || fixture.getAwayteamScore() == null){
+                return ScorePredictionDto.ScorePredictionEditResponse.builder()
+                        .participant(participant)
+                        .avgHomeTeamScore(avgHomeTeamScore)
+                        .avgAwayTeamScore(avgAwayTeamScore)
+                        .build();
+            }
+            // 사용자 예측 X, 경기 결과 O
+            else{
+                return ScorePredictionDto.ScorePredictionEditResponse.builder()
+                        .participant(participant)
+                        .avgHomeTeamScore(avgHomeTeamScore)
+                        .avgAwayTeamScore(avgAwayTeamScore)
+                        .avgPrediction(isScoreCorrect(avgHomeTeamScore, avgAwayTeamScore, fixture))
+                        .build();
+            }
+        }
+        // 사용자가 진행한 예측 데이터가 있는 경우
+        else{
+            // 사용자 예측 O, 경기 결과 X
+            if(fixture.getHomeTeamScore() == null || fixture.getAwayteamScore() == null){
+                return ScorePredictionDto.ScorePredictionEditResponse.builder()
+                        .participant(participant)
+                        .homeTeamScore(currentScorePrediction.getHomeTeamScore())
+                        .awayTeamScore(currentScorePrediction.getAwayTeamScore())
+                        .avgHomeTeamScore(avgHomeTeamScore)
+                        .avgAwayTeamScore(avgAwayTeamScore)
+                        .build();
+            }
+            // 사용자 예측 O, 경기 결과 O
+            else{
+                return ScorePredictionDto.ScorePredictionEditResponse.builder()
+                        .participant(participant)
+                        .homeTeamScore(currentScorePrediction.getHomeTeamScore())
+                        .awayTeamScore(currentScorePrediction.getAwayTeamScore())
+                        .avgHomeTeamScore(avgHomeTeamScore)
+                        .avgAwayTeamScore(avgAwayTeamScore)
+                        .userPrediction(isScoreCorrect(currentScorePrediction.getHomeTeamScore(), currentScorePrediction.getAwayTeamScore(), fixture))
+                        .avgPrediction(isScoreCorrect(avgHomeTeamScore, avgAwayTeamScore, fixture))
+                        .build();
+            }
         }
     }
 }

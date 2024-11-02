@@ -41,7 +41,7 @@ public class ScorePredictionDto {
     @AllArgsConstructor
     @NoArgsConstructor
     @Builder
-    // 우승팀 예측 수정 Response
+    // 우승팀 예측 수정 / 결과 조회 Response
     public static class ScorePredictionEditResponse{
         int participant; // 예측에 참여한 사람 수
         int homeTeamScore; // 나의 홈팀 예상 스코어
