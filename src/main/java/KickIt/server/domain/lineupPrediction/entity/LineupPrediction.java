@@ -1,4 +1,4 @@
-package KickIt.server.domain.lineup.entity;
+package KickIt.server.domain.lineupPrediction.entity;
 
 import KickIt.server.domain.fixture.entity.Fixture;
 import KickIt.server.domain.member.entity.Member;

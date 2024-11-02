@@ -1,4 +1,4 @@
-package KickIt.server.domain.lineup.entity;
+package KickIt.server.domain.lineupPrediction.entity;
 
 import KickIt.server.domain.teams.entity.Player;
 import jakarta.persistence.*;

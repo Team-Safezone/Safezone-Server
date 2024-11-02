@@ -1,9 +1,10 @@
-package KickIt.server.domain.lineup.entity;
+package KickIt.server.domain.lineupPrediction.entity;
 
 import java.io.Serializable;
 import java.util.Objects;
 
 // LineupPrediction Entity class의 복합 키(경기 id + 사용자 id) 사용을 위한 클래스
+// ScorePrediction Entity에도 사용
 public class LineupPredictionId implements Serializable {
     private Long member;  // member_id
     private Long fixture;   // fixture_id

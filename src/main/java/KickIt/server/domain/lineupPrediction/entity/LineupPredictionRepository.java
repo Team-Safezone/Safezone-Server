@@ -1,6 +1,5 @@
-package KickIt.server.domain.lineup.entity;
+package KickIt.server.domain.lineupPrediction.entity;
 
-import KickIt.server.domain.lineup.dto.LineupPredictionDto;
 import KickIt.server.domain.teams.entity.Player;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -8,7 +7,6 @@ import org.springframework.data.repository.query.Param;
 
 import java.util.List;
 import java.util.Optional;
-import java.util.UUID;
 
 public interface LineupPredictionRepository extends JpaRepository<LineupPrediction, Long> {
     @Query("SELECT l FROM LineupPrediction l WHERE l.member.id = :memberId AND l.fixture.id = :fixtureId")
