@@ -62,7 +62,7 @@ public class ScorePredictionController {
                     return new ResponseEntity<>(responseBody, HttpStatus.OK);
                 }
                 else if(saveStatus == HttpStatus.CONFLICT){
-                    responseBody.put("status", saveStatus);
+                    responseBody.put("status", saveStatus.value());
                     responseBody.put("message", "중복 저장 시도");
                     responseBody.put("isSuccess", false);
                     return new ResponseEntity<>(responseBody, HttpStatus.CONFLICT);
