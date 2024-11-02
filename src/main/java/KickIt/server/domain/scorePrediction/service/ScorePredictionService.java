@@ -2,6 +2,7 @@ package KickIt.server.domain.scorePrediction.service;
 
 import KickIt.server.domain.fixture.entity.Fixture;
 import KickIt.server.domain.fixture.entity.FixtureRepository;
+import KickIt.server.domain.member.entity.Member;
 import KickIt.server.domain.scorePrediction.dto.ScorePredictionDto;
 import KickIt.server.domain.scorePrediction.entity.ScorePrediction;
 import KickIt.server.domain.scorePrediction.entity.ScorePredictionRepository;
@@ -102,5 +103,21 @@ public class ScorePredictionService {
         else{ response.add(true); }
 
         return response;
+    }
+
+    @Transactional
+    public ScorePredictionDto.ScorePredictionInquireResponse inquireScorePrediction(Fixture fixture, Member member){
+        ScorePrediction userPrediction = scorePredictionRepository.findByFixtureAndMember(fixture.getId(), member.getId()).orElse(null);
+        // 사용자가 기존에 예측한 데이터 없는 경우
+        if(userPrediction == null){
+            return null;
+        }
+        // 사용자가 기존에 예측한 데이터 있는 경우 -> response 생성 후 return
+        else{
+            return ScorePredictionDto.ScorePredictionInquireResponse.builder()
+                    .homeTeamScore(userPrediction.getHomeTeamScore())
+                    .awayTeamScore(userPrediction.getAwayTeamScore())
+                    .build();
+        }
     }
 }

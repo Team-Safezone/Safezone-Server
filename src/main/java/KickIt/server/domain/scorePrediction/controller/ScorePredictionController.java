@@ -135,4 +135,54 @@ public class ScorePredictionController {
             return new ResponseEntity<>(responseBody, HttpStatus.NOT_FOUND);
         }
     }
+
+    @GetMapping()
+    public ResponseEntity<Map<String, Object>> inquireScorePrediction(@RequestParam("xAuthToken") String xAuthToken, @RequestParam("matchId") Long matchId){
+        // 반환할 responseBody
+        Map<String, Object> responseBody = new HashMap<>();
+        // member를 찾기 위해 token으로 email 조회
+        String memberEmail = jwtTokenUtil.getEmailFromToken(xAuthToken);
+        // 찾은 email로 member 조회
+        Member foundMember = memberRepository.findByEmailAndAuthProvider(memberEmail, memberService.transAuth("kakao")).orElse(null);
+
+        // 입력된 token의 email로 찾은 member가 존재하는 경우
+        if(foundMember != null){
+            // 경기 id로 경기 조회
+            Fixture foundFixture = fixtureRepository.findById(matchId).orElse(null);
+            // 경기 id로 조회한 경기가 존재하는 경우
+            if(foundFixture != null){
+                // 사용자가 기존에 예측한 데이터 조회
+                ScorePredictionDto.ScorePredictionInquireResponse response = scorePredictionService.inquireScorePrediction(foundFixture, foundMember);
+                // 기존 예측 데이터 찾은 경우
+                if (response != null){
+                    responseBody.put("status", HttpStatus.OK.value());
+                    responseBody.put("message", "success");
+                    responseBody.put("data", response);
+                    responseBody.put("isSuccess", true);
+                    return new ResponseEntity<>(responseBody, HttpStatus.OK);
+                }
+                // 기존 예측 데이터 없는 경우
+                else{
+                    responseBody.put("status", HttpStatus.NOT_FOUND.value());
+                    responseBody.put("message", "사용자 예측 데이터 없음");
+                    responseBody.put("isSuccess", false);
+                    return new ResponseEntity<>(responseBody, HttpStatus.NOT_FOUND);
+                }
+            }
+            // 경기 id로 조회한 경기가 존재하지 않는 경우
+            else{
+                responseBody.put("status", HttpStatus.NOT_FOUND.value());
+                responseBody.put("message", "해당 경기 없음");
+                responseBody.put("isSuccess", false);
+                return new ResponseEntity<>(responseBody, HttpStatus.NOT_FOUND);
+            }
+        }
+        // 입력된 token의 email로 찾은 member가 존재하지 않는 경우
+        else{
+            responseBody.put("status", HttpStatus.NOT_FOUND.value());
+            responseBody.put("message", "해당 사용자 없음");
+            responseBody.put("isSuccess", false);
+            return new ResponseEntity<>(responseBody, HttpStatus.NOT_FOUND);
+        }
+    }
 }
