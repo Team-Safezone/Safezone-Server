@@ -384,9 +384,32 @@ public class LineupPredictionService {
 
         // 만약 아직 아무도 예측 진행하지 않은 경우
         if(avgHomeFormation == null || avgAwayFormation == null){
-            response = LineupPredictionDto.LineupResultInquireResponse.builder()
-                    .participant(lineupPredictionRepository.findByFixture(fixtureId).size())
-                    .build();
+            if(foundMatchLineup == null){
+                response = LineupPredictionDto.LineupResultInquireResponse.builder()
+                        .participant(lineupPredictionRepository.findByFixture(fixtureId).size())
+                        .build();
+            }
+            else{
+                // 실제 홈팀 선발라인업 정보 필요한 형식의 클래스 객체로 만들어 줌
+                LineupPredictionDto.ResponseLineup foundHomeLineup = LineupPredictionDto.ResponseLineup.builder()
+                        .goalkeeper(foundMatchLineup.getHomeLineups().getGoalkeeper().get(0))
+                        .defenders(foundMatchLineup.getHomeLineups().getDefenders())
+                        .midfielders(foundMatchLineup.getHomeLineups().getMidfielders())
+                        .strikers(foundMatchLineup.getHomeLineups().getStrikers())
+                        .build();
+                // 실제 원정팀 선발라인업 정보 필요한 형식의 클래스 객체로 만들어 줌
+                LineupPredictionDto.ResponseLineup foundAwayLineup = LineupPredictionDto.ResponseLineup.builder()
+                        .goalkeeper(foundMatchLineup.getAwayLineups().getGoalkeeper().get(0))
+                        .defenders(foundMatchLineup.getAwayLineups().getDefenders())
+                        .midfielders(foundMatchLineup.getAwayLineups().getMidfielders())
+                        .strikers(foundMatchLineup.getAwayLineups().getStrikers())
+                        .build();
+                response = LineupPredictionDto.LineupResultInquireResponse.builder()
+                        .participant(lineupPredictionRepository.findByFixture(fixtureId).size())
+                        .homeLineups(foundHomeLineup)
+                        .awayLineups(foundAwayLineup)
+                        .build();
+            }
         }
 
         // 아직 선발라인업 결과가 나오지 않은 경우 -> 관련 항목 null 처리
