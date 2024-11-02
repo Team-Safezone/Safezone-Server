@@ -58,10 +58,6 @@ public class HeartRateStatisticsService {
 
         // 중복 처리
         if (heartRateStatisticsRepository.findByMemberIdAndFixtureId(memberId, fixtureId).isEmpty()) {
-            // 프록시 객체로 `Member`와 `Fixture` 생성
-            Member member = entityManager.getReference(Member.class, memberId);
-            Fixture fixture = entityManager.getReference(Fixture.class, fixtureId);
-
             // 객체 생성
             HeartRateStatistics heartRateStatistics = new HeartRateStatistics(memberId, fixtureId);
             heartRateStatisticsRepository.save(heartRateStatistics);
