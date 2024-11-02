@@ -26,20 +26,31 @@ public class Squad {
     private String team;
     // 팀 로고 url
     private String logoImg;
+
+    // 선수 리스트
+    // 포지션은 이미 Player에서 관리되고 있으므로 포지션 상관 없이 통합된 선수 명단을 가지고 있도록 코드 변경
+    @ManyToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE})
+    @JoinTable(
+            name = "squad_players",  // 중간 테이블 이름
+            joinColumns = @JoinColumn(name = "squad_id"),  // Squad의 외래 키
+            inverseJoinColumns = @JoinColumn(name = "player_id")  // Player의 외래 키
+    )
+    private List<Player> players;
+    /*
     // 공격수(Forward) 선수 리스트
-    @OneToMany(mappedBy = "squad", cascade = CascadeType.ALL, orphanRemoval = true)
+    @ManyToMany
     @JsonManagedReference
     private List<Player> FWplayers;
     // 미드필더(Midfielder) 선수 리스트
-    @OneToMany(mappedBy = "squad", cascade = CascadeType.ALL, orphanRemoval = true)
+    @ManyToMany
     @JsonManagedReference
     private List<Player> MFplayers;
     // 수비수(Defender) 선수 리스트
-    @OneToMany(mappedBy = "squad", cascade = CascadeType.ALL, orphanRemoval = true)
+    @ManyToMany
     @JsonManagedReference
     private List<Player> DFplayers;
     // 골키퍼(Goalkeeper) 선수 리스트
-    @OneToMany(mappedBy = "squad", cascade = CascadeType.ALL, orphanRemoval = true)
+    @ManyToMany
     @JsonManagedReference
     private List<Player> GKplayers;
 
@@ -72,6 +83,15 @@ public class Squad {
         this.GKplayers = players;
         for(Player player : players){
             player.assignSquad(this);
+        }
+    }
+     */
+
+    // player 추가 및 양방향 관계 설정
+    public void addPlayers(List<Player> players){
+        for(Player player : players){
+            this.players.add(player);
+            //player.assignSquad(this);
         }
     }
 }

@@ -1,6 +1,8 @@
 package KickIt.server.domain.member.controller;
 
-import KickIt.server.domain.heartRate.dto.StatisticsDto;
+import KickIt.server.domain.member.dto.FavoriteTeamsDto;
+import KickIt.server.domain.member.dto.MypageDto;
+import KickIt.server.domain.member.dto.NicknameDto;
 import KickIt.server.jwt.JwtService;
 import KickIt.server.domain.member.entity.LoginRequest;
 import KickIt.server.domain.member.entity.Member;
@@ -33,14 +35,15 @@ public class MemberController {
         this.jwtTokenUtil = jwtTokenUtil;
     }
 
-    @PostMapping("/signup")
-    public ResponseEntity<Map<String, Object>> getMember(@RequestParam(value = "loginId") String loginId, @RequestBody SignupRequest signupRequest) {
+
+    @PostMapping("/signup/{loginId}")
+    public ResponseEntity<Map<String, Object>> getMember(@PathVariable(value = "loginId") String loginId, @RequestBody SignupRequest signupRequest) {
         Map<String, Object> responseBody = new HashMap<>();
 
         AuthProvider authProvider = memberService.transAuth(loginId);
 
         Member member = new Member(signupRequest.getEmail(), signupRequest.getNickname(),
-                signupRequest.getFavoriteTeams(), "탱탱볼", signupRequest.isMarketingConsent(), 0, authProvider);
+                signupRequest.getFavoriteTeams(),0,1, signupRequest.isMarketingConsent(), authProvider);
 
         if (memberService.saveMember(member)) {
             String accessToken = jwtService.createAccessToken(member.getEmail());
@@ -60,8 +63,8 @@ public class MemberController {
 
     }
 
-    @PostMapping("/login")
-    public ResponseEntity<Map<String, Object>> authLogin(@RequestParam(value = "loginId") String loginId, @RequestBody LoginRequest loginRequest) {
+    @PostMapping("/login/{loginId}")
+    public ResponseEntity<Map<String, Object>> authLogin(@PathVariable(value = "loginId") String loginId, @RequestBody LoginRequest loginRequest) {
         Map<String, Object> responseBody = new HashMap<>();
 
         AuthProvider authProvider = memberService.transAuth(loginId);
@@ -101,6 +104,83 @@ public class MemberController {
         }
     }
 
+    @PostMapping("/update-favoriteTeams")
+    public ResponseEntity<Map<String, Object>> updateTeams(@RequestParam(value = "xAuthToken") String xAuthToken, @RequestBody FavoriteTeamsDto favoriteTeamsDto) {
+        String email = jwtTokenUtil.getEmailFromToken(xAuthToken);
+        List<String> favoriteTeams = favoriteTeamsDto.getFavoriteTeams();
+
+        Map<String, Object> responseBody = new HashMap<>();
+
+        if (jwtTokenUtil.validateToken(xAuthToken, email)) {
+            memberService.updateTeams(email, favoriteTeams);
+
+            responseBody.put("status", HttpStatus.OK.value());
+            responseBody.put("message", "success");
+            responseBody.put("isSuccess", true);
+            return new ResponseEntity<>(responseBody, HttpStatus.OK);
+        } else {
+            responseBody.put("status", HttpStatus.FORBIDDEN.value());
+            responseBody.put("message", "유효하지 않은 사용자입니다.");
+            responseBody.put("isSuccess", false);
+            return new ResponseEntity<>(responseBody, HttpStatus.FORBIDDEN);
+
+        }
+    }
+
+    @PostMapping("update-nickname")
+    public ResponseEntity<Map<String, Object>> updateTeams(@RequestParam(value = "xAuthToken") String xAuthToken, @RequestBody NicknameDto nicknameDto) {
+        String email = jwtTokenUtil.getEmailFromToken(xAuthToken);
+        String nickname = nicknameDto.getNickname();
+
+        Map<String, Object> responseBody = new HashMap<>();
+
+        if (jwtTokenUtil.validateToken(xAuthToken, email)) {
+            if (memberService.checkNickname(nickname)) {
+                memberService.updateNickname(email, nickname);
+
+                responseBody.put("status", HttpStatus.OK.value());
+                responseBody.put("message", "success");
+                responseBody.put("isSuccess", true);
+                return new ResponseEntity<>(responseBody, HttpStatus.OK);
+            } else {
+                responseBody.put("status", HttpStatus.FORBIDDEN.value());
+                responseBody.put("message", "중복된 닉네임 입니다.");
+                responseBody.put("isSuccess", false);
+                return new ResponseEntity<>(responseBody, HttpStatus.OK);
+            }
+        } else {
+            responseBody.put("status", HttpStatus.FORBIDDEN.value());
+            responseBody.put("message", "유효하지 않은 사용자입니다.");
+            responseBody.put("isSuccess", false);
+            return new ResponseEntity<>(responseBody, HttpStatus.FORBIDDEN);
+
+        }
+    }
+
+    @GetMapping("/mypage")
+    public ResponseEntity<Map<String, Object>> getMypage(@RequestParam(value = "xAuthToken") String xAuthToken) {
+        String email = jwtTokenUtil.getEmailFromToken(xAuthToken);
+
+        Map<String, Object> responseBody = new HashMap<>();
+
+        if (jwtTokenUtil.validateToken(xAuthToken, email)) {
+            MypageDto response = memberService.getMypage(email);
+
+            responseBody.put("status", HttpStatus.OK.value());
+            responseBody.put("message", "success");
+            responseBody.put("data", response);
+            responseBody.put("isSuccess", true);
+            return new ResponseEntity<>(responseBody, HttpStatus.OK);
+        } else {
+            responseBody.put("status", HttpStatus.FORBIDDEN.value());
+            responseBody.put("message", "이유 작성");
+            responseBody.put("isSuccess", false);
+            return new ResponseEntity<>(responseBody, HttpStatus.FORBIDDEN);
+        }
+
+
+    }
+
     @GetMapping("/avgHeartRate")
     public ResponseEntity<Map<String, Object>> getMemberAvgHeartRate(@RequestParam(value = "xAuthToken") String xAuthToken) {
         String email = jwtTokenUtil.getEmailFromToken(xAuthToken);
@@ -124,4 +204,3 @@ public class MemberController {
         }
     }
 }
-

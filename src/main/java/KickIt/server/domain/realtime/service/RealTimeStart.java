@@ -40,7 +40,6 @@ public class RealTimeStart {
     private final ThreadPoolTaskScheduler taskScheduler;
     private final RealTimeService realTimeService;
     private final TeaminfoRepository teaminfoRepository;
-    private final RestTemplate restTemplate = new RestTemplate();
     private final TeamNameConvertService teamNameConvertService;
     private final FixtureService fixtureService;
     private final TeamHeartRateStatisticsService teamHeartRateStatisticsService;
@@ -60,8 +59,9 @@ public class RealTimeStart {
         this.fixtureHeartRateStatisticsService = fixtureHeartRateStatisticsService;
     }
 
+
     // 매 자정 마다 오늘 경기 여부 파악
-    @Scheduled(cron = "0 26 21 * * ?")
+    @Scheduled(cron = "0 0 0 * * ?")
     public void getTodayFixture() {
         //LocalDate today = LocalDate.of(2024, 9, 2);
         LocalDate today = LocalDate.now(); //-> default
@@ -89,17 +89,18 @@ public class RealTimeStart {
         for (Fixture fixture : fixtureList) {
 
             LocalDateTime fixtureMatchTime = fixture.getDate().toLocalDateTime();
+
             if (fixtureMatchTime.isAfter(now)) {
                 Date startDate = Date.from(fixtureMatchTime.atZone(ZoneId.systemDefault()).toInstant());
                 taskScheduler.schedule(() -> startStopCrawling(fixture), startDate);
                 System.out.println("오늘 경기 시작 시간: " + fixtureMatchTime);
-            }
-            else {
+            } else {
                 // 이미 시작된 경기는 바로 크롤링 시작
                 System.out.println("이미 시작: " + fixtureMatchTime);
                 Date startDate = new Date();
                 taskScheduler.schedule(() -> startStopCrawling(fixture), startDate);
             }
+
         }
 
     }
@@ -107,7 +108,7 @@ public class RealTimeStart {
 
     // 크롤링 시작, 중지, 종료
     @Async
-    public void startStopCrawling(Fixture fixture){
+    public void startStopCrawling(Fixture fixture) {
         boolean eventEnd = false;
 
         String isDone;
@@ -131,7 +132,7 @@ public class RealTimeStart {
                         break;
                     case "종료":
                         System.out.println("전반전 종료");
-                        Thread.sleep(13 * 60 * 1000);
+                        Thread.sleep( 13 * 60 * 1000);
                         break;
                     case "경기종료":
                         System.out.println("경기 종료");
@@ -161,6 +162,7 @@ public class RealTimeStart {
         }
 
     }
+
 
     /*
 
@@ -246,7 +248,9 @@ public class RealTimeStart {
         return apiMatchDate;
     }
 
+
      */
+
 }
 
 

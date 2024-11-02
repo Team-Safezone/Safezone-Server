@@ -23,17 +23,17 @@ public class Member {
     private String team2;
     private String team3;
 
-    private int avgHeartRate;
+    int avgHeartRate;
 
     private int point;
-    private String grade;
+    private int grade;
 
     private Boolean marketingConsent;
 
     @Enumerated(EnumType.STRING)
     private AuthProvider authProvider;
 
-    public Member(String email, String nickname, List<String> favoriteTeams, String grade, Boolean marketingConsent, int point, AuthProvider authProvider) {
+    public Member(String email, String nickname, List<String> favoriteTeams, int point, int grade, Boolean marketingConsent, AuthProvider authProvider) {
         this.email = email;
         this.nickname = nickname;
         this.team1 = favoriteTeams.get(0);
@@ -47,9 +47,6 @@ public class Member {
         this.grade = grade;
         this.marketingConsent = marketingConsent;
         this.authProvider = authProvider;
-    }
-    public void setGrade(String grade) {
-        this.grade = grade;
     }
 
 }

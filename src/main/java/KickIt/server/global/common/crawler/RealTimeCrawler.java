@@ -53,8 +53,6 @@ public class RealTimeCrawler {
     private final TeamNameConvertService teamNameConvertService;
     private final FixtureService fixtureService;
 
-    List<RealTime> realTimeList = new ArrayList<>();
-
 
     @Autowired
     public RealTimeCrawler(RealTimeService realTimeService, TeaminfoRepository teaminfoRepository, TeamNameConvertService teamNameConvertService, FixtureService fixtureService) {
@@ -107,6 +105,13 @@ public class RealTimeCrawler {
 
             for (WebElement li : timeElements) {
                 String eventText = li.getText();
+
+                if(eventText.contains("추가시간")){
+                    eventText += isBeforeAfter();
+                    System.out.println("eventText = " + eventText);
+                }
+
+                // 파싱한 후 전반/후반을 구분한 문자열로 중복을 확인합니다.
                 if (!previousList.contains(eventText)) {
                     previousList.add(eventText);
 
@@ -184,7 +189,7 @@ public class RealTimeCrawler {
                                 .player1(rmBracket(elements[3]));
                         realTime = realTimeBuilder.build();
                         realTimeService.saveEvent(realTime);
-                    } else if (eventText.contains("추가시간")) {
+                    } else if (eventText.contains("추가시간전반") || eventText.contains("추가시간후반")) {
                         isExtra();
                         realTimeBuilder
                                 .eventCode(4)
@@ -226,7 +231,7 @@ public class RealTimeCrawler {
                     } else if (eventText.contains("0′")) {
                         realTimeBuilder
                                 .eventCode(0)
-                                .time("0")
+                                .time(getAddTime(elements[0]))
                                 .eventTime(compareTime(startTime, "0"))
                                 .eventName("경기시작");
                         realTime = realTimeBuilder.build();
@@ -237,14 +242,6 @@ public class RealTimeCrawler {
         } catch (Exception e) {
             e.printStackTrace();
         }
-
-
-        if (realTime.getEventName() != null) {
-            realTimeList.add(realTime);
-
-        }
-        isHomeEventPresent = false;
-        isAwayEventPresent = false;
 
         return " ";
     }

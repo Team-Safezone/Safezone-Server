@@ -1,6 +1,7 @@
 package KickIt.server.domain.fixture.dto;
 
 import KickIt.server.domain.fixture.entity.Fixture;
+import KickIt.server.domain.teams.service.SquadService;
 import KickIt.server.domain.teams.service.TeamNameConvertService;
 import lombok.*;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -9,9 +10,7 @@ import org.springframework.stereotype.Component;
 import java.sql.Timestamp;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.TimeZone;
-import java.util.UUID;
+import java.util.*;
 
 @Component
 public class FixtureDto {
@@ -21,6 +20,9 @@ public class FixtureDto {
     public FixtureDto(TeamNameConvertService teamNameConvertService) {
         this.teamNameConvertService = teamNameConvertService;
     }
+
+    @Autowired
+    private SquadService squadService;
 
     @Data
     @AllArgsConstructor
@@ -65,6 +67,8 @@ public class FixtureDto {
         private String season;
         private String dateStr;
         private String timeStr;
+        private String homeTeamEmblemUrl;
+        private String awayTeamEmblemUrl;
         private String homeTeam;
         private String awayTeam;
         private Integer homeTeamScore;
@@ -81,7 +85,8 @@ public class FixtureDto {
             // 가져온 Date를 yyyy-MM-dd와 HH:mm 두 개로 나누어 문자열로 반환
             this.dateStr = new SimpleDateFormat("yyyy-MM-dd").format(fixture.getDate());
             this.timeStr = new SimpleDateFormat("HH:mm").format(fixture.getDate());
-
+            this.homeTeamEmblemUrl = squadService.getTeamLogoImg(fixture.getSeason(), fixture.getHomeTeam());
+            this.awayTeamEmblemUrl = squadService.getTeamLogoImg(fixture.getSeason(), fixture.getAwayTeam());
             this.homeTeam = teamNameConvertService.convertToKrName(fixture.getHomeTeam());
             this.awayTeam = teamNameConvertService.convertToKrName(fixture.getAwayTeam());
             this.homeTeamScore = fixture.getHomeTeamScore();
@@ -92,15 +97,26 @@ public class FixtureDto {
         }
     }
 
+    // 한달 경기 일정 정보 조회 response class
+    // soccerTeamNames 항목 유무 매개변수로 받아옴 (해당 API 호출 시 팀 네임 함께 입력되었는지 여부)
     @Getter
-    public static class FixtureDateResponse{
-        private String date;
+    public class FixtureDateResponse{
+        private String soccerSeason;
+        private List<String> matchDates;
+        private List<String> soccerTeamNames;
 
-        // entity to dto
-        public FixtureDateResponse(Fixture fixture){
-            SimpleDateFormat sdf = new SimpleDateFormat("yyyy.MM.dd");
-            sdf.setTimeZone(TimeZone.getTimeZone("Asia/Seoul"));
-            this.date = sdf.format(new Date(fixture.getDate().getTime()));
+        public FixtureDateResponse(List<Fixture> fixtures, Boolean isTeamNameExist){
+            matchDates = new ArrayList<>();
+            for (Fixture fixture: fixtures){
+                SimpleDateFormat sdf = new SimpleDateFormat("yyyy.MM.dd");
+                sdf.setTimeZone(TimeZone.getTimeZone("Asia/Seoul"));
+                this.matchDates.add(sdf.format(new Date(fixture.getDate().getTime())));
+            }
+            soccerSeason = fixtures.get(0).getSeason();
+            if(!isTeamNameExist){
+                soccerTeamNames = squadService.getSeasonSquads(soccerSeason);
+            }
         }
     }
+
 }

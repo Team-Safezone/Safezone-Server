@@ -15,4 +15,7 @@ public interface PlayerRepository extends JpaRepository<Player, UUID> {
 
     @Query("SELECT p FROM Player p WHERE p.team = :team AND (p.number = :number)")
     Optional<Player> findByTeamAndNumber(@Param("team") String team, @Param("number") Integer number);
+
+    @Query("SELECT p FROM Player p WHERE p.name = :name")
+    Optional<Player> findByName(@Param("name")String name);
 }
