@@ -36,11 +36,6 @@ import java.util.List;
 @EnableAsync
 public class RealTimeStart {
 
-    private static final String API_URL = "https://api.football-data.org/v4/competitions/PL/matches";
-
-    @Value("${fixture-status-admin-key}")
-    private String AUTH_TOKEN;
-
     private final FixtureRepository fixtureRepository;
     private final ThreadPoolTaskScheduler taskScheduler;
     private final RealTimeService realTimeService;
@@ -51,8 +46,6 @@ public class RealTimeStart {
     private final TeamHeartRateStatisticsService teamHeartRateStatisticsService;
     private final TeamHeartRateService teamHeartRateService;
     private final FixtureHeartRateStatisticsService fixtureHeartRateStatisticsService;
-
-    private String apiMatchId;
 
     @Autowired
     public RealTimeStart(FixtureRepository fixtureRepository, ThreadPoolTaskScheduler taskScheduler, RealTimeService realTimeService, TeaminfoRepository teaminfoRepository, TeamNameConvertService teamNameConvertService, FixtureService fixtureService, TeamHeartRateStatisticsService teamHeartRateStatisticsService, TeamHeartRateService teamHeartRateService, FixtureHeartRateStatisticsService fixtureHeartRateStatisticsService) {
@@ -68,7 +61,7 @@ public class RealTimeStart {
     }
 
     // 매 자정 마다 오늘 경기 여부 파악
-    @Scheduled(cron = "0 0 0 * * ?")
+    @Scheduled(cron = "0 26 21 * * ?")
     public void getTodayFixture() {
         //LocalDate today = LocalDate.of(2024, 9, 2);
         LocalDate today = LocalDate.now(); //-> default
@@ -94,26 +87,18 @@ public class RealTimeStart {
     public void getTimeMatch(List<Fixture> fixtureList) {
         LocalDateTime now = LocalDateTime.now();
         for (Fixture fixture : fixtureList) {
-            apiMatchId = getMatchIdFromApi(fixture);
-            String status = getMatchStatus(apiMatchId);
 
-            //&& !status.equals("FINISHED")
-            // 경기 연기, 취소 처리
-            if(!status.equals("POSTPONED") && !status.equals("CANCELLED")){
-                LocalDateTime fixtureMatchTime = fixture.getDate().toLocalDateTime();
-
-                if (fixtureMatchTime.isAfter(now)) {
-                    Date startDate = Date.from(fixtureMatchTime.atZone(ZoneId.systemDefault()).toInstant());
-                    taskScheduler.schedule(() -> startStopCrawling(fixture,apiMatchId), startDate);
-                    System.out.println("오늘 경기 시작 시간: " + fixtureMatchTime);
-                }
-                else {
-                    // 이미 시작된 경기는 바로 크롤링 시작
-                    System.out.println("이미 시작: " + fixtureMatchTime);
-                    Date startDate = new Date();
-                    taskScheduler.schedule(() -> startStopCrawling(fixture, apiMatchId), startDate);
-                }
-
+            LocalDateTime fixtureMatchTime = fixture.getDate().toLocalDateTime();
+            if (fixtureMatchTime.isAfter(now)) {
+                Date startDate = Date.from(fixtureMatchTime.atZone(ZoneId.systemDefault()).toInstant());
+                taskScheduler.schedule(() -> startStopCrawling(fixture), startDate);
+                System.out.println("오늘 경기 시작 시간: " + fixtureMatchTime);
+            }
+            else {
+                // 이미 시작된 경기는 바로 크롤링 시작
+                System.out.println("이미 시작: " + fixtureMatchTime);
+                Date startDate = new Date();
+                taskScheduler.schedule(() -> startStopCrawling(fixture), startDate);
             }
         }
 
@@ -122,10 +107,8 @@ public class RealTimeStart {
 
     // 크롤링 시작, 중지, 종료
     @Async
-    public void startStopCrawling(Fixture fixture, String apiMatchId){
+    public void startStopCrawling(Fixture fixture){
         boolean eventEnd = false;
-
-        System.out.println("apiMatchId = " + apiMatchId);
 
         String isDone;
 
@@ -156,11 +139,11 @@ public class RealTimeStart {
                         realTimeCrawler.quit();
                         Thread.sleep(10 * 60 * 1000);
                         // 팀 별 통계 계산
-                        teamHeartRateStatisticsService.calculateTeamHeartRate(fixture.getId());
+                        //teamHeartRateStatisticsService.calculateTeamHeartRate(fixture.getId());
                         // 팀 별 평균 계산
-                        teamHeartRateService.saveTeamMinAvgMax(fixture.getId());
+                        //teamHeartRateService.saveTeamMinAvgMax(fixture.getId());
                         // 통계 계산
-                        fixtureHeartRateStatisticsService.calculateHeartRate(fixture.getId());
+                        //fixtureHeartRateStatisticsService.calculateHeartRate(fixture.getId());
                         return;
                     default:
                         System.out.println("예상치 못한 상태: " + isDone);
@@ -179,6 +162,7 @@ public class RealTimeStart {
 
     }
 
+    /*
 
     // 경기 id 매칭하기
     private String getMatchIdFromApi(Fixture fixture) {
@@ -261,6 +245,8 @@ public class RealTimeStart {
 
         return apiMatchDate;
     }
+
+     */
 }
 
 

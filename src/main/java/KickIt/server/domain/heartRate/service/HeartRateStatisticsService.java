@@ -1,9 +1,14 @@
 package KickIt.server.domain.heartRate.service;
 
+import KickIt.server.domain.fixture.entity.Fixture;
+import KickIt.server.domain.fixture.entity.FixtureRepository;
 import KickIt.server.domain.heartRate.dto.HeartRateDto;
 import KickIt.server.domain.heartRate.entity.HeartRateStatisticsRepository;
 import KickIt.server.domain.heartRate.entity.HeartRateStatistics;
 import KickIt.server.domain.member.dto.MemberRepository;
+import KickIt.server.domain.member.entity.Member;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -15,6 +20,8 @@ public class HeartRateStatisticsService {
     private final HeartRateStatisticsRepository heartRateStatisticsRepository;
     private final HeartRateParser heartRateParser;
     private final MemberRepository memberRepository;
+    @PersistenceContext
+    private EntityManager entityManager;
 
     @Autowired
     public HeartRateStatisticsService(HeartRateStatisticsRepository heartRateStatisticsRepository, HeartRateParser heartRateParser, MemberRepository memberRepository) {
@@ -51,10 +58,13 @@ public class HeartRateStatisticsService {
         Long fixtureId = heartRateDTO.getMatchId();
 
         // 중복 처리
-        if(heartRateStatisticsRepository.findByMemberIdAndFixtureId(memberId,fixtureId).isEmpty()) {
+        if (heartRateStatisticsRepository.findByMemberIdAndFixtureId(memberId, fixtureId).isEmpty()) {
+            // 프록시 객체로 `Member`와 `Fixture` 생성
+            Member member = entityManager.getReference(Member.class, memberId);
+            Fixture fixture = entityManager.getReference(Fixture.class, fixtureId);
 
             // 객체 생성
-            HeartRateStatistics heartRateStatistics = new HeartRateStatistics(memberId, fixtureId);
+            HeartRateStatistics heartRateStatistics = new HeartRateStatistics(member, fixture);
             heartRateStatisticsRepository.save(heartRateStatistics);
 
             // min, avg, max 업데이트

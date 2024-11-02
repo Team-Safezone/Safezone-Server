@@ -9,7 +9,6 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class TeamHeartRateStatistics {
 
-
     @Id
     @GeneratedValue
     private Long id;
