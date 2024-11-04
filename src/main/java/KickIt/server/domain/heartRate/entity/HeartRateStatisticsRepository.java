@@ -40,4 +40,7 @@ public interface HeartRateStatisticsRepository extends JpaRepository<HeartRateSt
     @Transactional
     @Query("UPDATE Member m SET m.avgHeartRate = :avgHeartRate WHERE m.id = :id")
     void updateAvg(@Param("id") Long id, @Param("avgHeartRate") int avgHeartRate);
+
+    @Query("SELECT highHeartRate FROM HeartRateStatistics WHERE memberId = :memberId AND fixtureId = :fixtureId")
+    int getMaxHeartRate(@Param("memberId") Long memberId, @Param("fixtureId") Long fixtureId);
 }
