@@ -86,7 +86,7 @@ public class DiaryController {
             int highHeartRate = heartRateStatisticsService.getMax(email, matchId);
             if(highHeartRate != 0) {
                 responseBody.put("status", HttpStatus.OK.value());
-                responseBody.put("data", );
+                responseBody.put("data", highHeartRate);
                 responseBody.put("isSuccess", true);
                 return new ResponseEntity<>(responseBody, HttpStatus.OK);
             } else {
