@@ -3,6 +3,7 @@ package KickIt.server.domain.diary.service;
 import KickIt.server.aws.s3.service.S3Service;
 import KickIt.server.domain.diary.dto.DiarySaveDto;
 import KickIt.server.domain.diary.entity.Diary;
+import KickIt.server.domain.diary.entity.DiaryLiked;
 import KickIt.server.domain.diary.entity.DiaryPhoto;
 import KickIt.server.domain.diary.entity.DiaryRepository;
 import KickIt.server.domain.fixture.entity.Fixture;
@@ -10,10 +11,12 @@ import KickIt.server.domain.fixture.entity.FixtureRepository;
 import KickIt.server.domain.member.entity.Member;
 import KickIt.server.domain.member.entity.MemberRepository;
 import jakarta.transaction.Transactional;
+import org.joda.time.LocalDateTime;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
+
 
 @Service
 public class DiaryService {
@@ -52,7 +55,9 @@ public class DiaryService {
                 .diaryContent(diarySaveDto.getDiaryContext())
                 .mom(diarySaveDto.getMom())
                 .isPublic(diarySaveDto.isPublic())
+                .likeCount(0)
                 .build();
+
         diaryRepository.save(diary);
 
         // 사진 URL을 S3에 업로드하고 DiaryPhoto 엔티티 저장
@@ -82,5 +87,14 @@ public class DiaryService {
         // Diary 삭제
         diaryRepository.delete(diary);
     }
+
+    public void updateLike(Long diaryId,boolean islike) {
+        if (islike) {
+            diaryRepository.editLike(diaryId, 1);
+        } else {
+            diaryRepository.editLike(diaryId, -1);
+        }
+    }
+
 
 }

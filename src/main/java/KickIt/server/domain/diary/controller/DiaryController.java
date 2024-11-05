@@ -2,11 +2,14 @@ package KickIt.server.domain.diary.controller;
 
 
 import KickIt.server.domain.diary.dto.DiaryIdRequest;
+import KickIt.server.domain.diary.dto.DiaryLikeDto;
 import KickIt.server.domain.diary.dto.DiarySaveDto;
+import KickIt.server.domain.diary.dto.MyDiaryDto;
+import KickIt.server.domain.diary.service.DiaryLikedService;
 import KickIt.server.domain.diary.service.DiaryService;
+import KickIt.server.domain.diary.service.MyDiaryService;
 import KickIt.server.domain.heartRate.service.HeartRateStatisticsService;
 import KickIt.server.jwt.JwtTokenUtil;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -22,12 +25,15 @@ public class DiaryController {
     private final JwtTokenUtil jwtTokenUtil;
     private final DiaryService diaryService;
     private final HeartRateStatisticsService heartRateStatisticsService;
+    private final DiaryLikedService diaryLikedService;
+    private final MyDiaryService myDiaryService;
 
-    @Autowired
-    public DiaryController(JwtTokenUtil jwtTokenUtil, DiaryService diaryService, HeartRateStatisticsService heartRateStatisticsService) {
+    public DiaryController(JwtTokenUtil jwtTokenUtil, DiaryService diaryService, HeartRateStatisticsService heartRateStatisticsService, DiaryLikedService diaryLikedService, MyDiaryService myDiaryService) {
         this.jwtTokenUtil = jwtTokenUtil;
         this.diaryService = diaryService;
         this.heartRateStatisticsService = heartRateStatisticsService;
+        this.diaryLikedService = diaryLikedService;
+        this.myDiaryService = myDiaryService;
     }
 
     @PostMapping("/upload")
@@ -84,7 +90,7 @@ public class DiaryController {
 
         if (jwtTokenUtil.validateToken(xAuthToken, email)) {
             int highHeartRate = heartRateStatisticsService.getMax(email, matchId);
-            if(highHeartRate != 0) {
+            if (highHeartRate != 0) {
                 responseBody.put("status", HttpStatus.OK.value());
                 responseBody.put("data", highHeartRate);
                 responseBody.put("isSuccess", true);
@@ -104,34 +110,55 @@ public class DiaryController {
         }
     }
 
-    /*
+
     @PatchMapping("/isLiked/{diaryId}")
-    public ResponseEntity<Map<String, Object>> editLiked(@RequestHeader(value = "xAuthToken") String xAuthToken, @PathVariable(value = "diaryId") Long diaryId) {
+    public ResponseEntity<Map<String, Object>> editLiked(@RequestHeader(value = "xAuthToken") String xAuthToken, @PathVariable(value = "diaryId") Long diaryId, @RequestBody DiaryLikeDto diaryLikeDto) {
+        String email = jwtTokenUtil.getEmailFromToken(xAuthToken);
+
+        boolean isLiked = diaryLikeDto.isLiked();
+
+        Map<String, Object> responseBody = new HashMap<>();
+
+        if (jwtTokenUtil.validateToken(xAuthToken, email)) {
+            diaryService.updateLike(diaryId, isLiked);
+            diaryLikedService.saveLike(email, diaryId, isLiked);
+
+            responseBody.put("status", HttpStatus.OK.value());
+            responseBody.put("message", "success");
+            responseBody.put("isSuccess", true);
+            return new ResponseEntity<>(responseBody, HttpStatus.OK);
+
+        } else {
+            responseBody.put("status", HttpStatus.FORBIDDEN.value());
+            responseBody.put("message", "유효하지 않은 사용자 입니다.");
+            responseBody.put("isSuccess", false);
+            return new ResponseEntity<>(responseBody, HttpStatus.FORBIDDEN);
+        }
+    }
+
+    @GetMapping("/mine")
+    public ResponseEntity<Map<String, Object>> getMyDiary(@RequestHeader(value = "xAuthToken") String xAuthToken) {
         String email = jwtTokenUtil.getEmailFromToken(xAuthToken);
 
         Map<String, Object> responseBody = new HashMap<>();
 
         if (jwtTokenUtil.validateToken(xAuthToken, email)) {
-            if(highHeartRate != 0) {
-                responseBody.put("status", HttpStatus.OK.value());
-                responseBody.put("data", highHeartRate);
-                responseBody.put("isSuccess", true);
-                return new ResponseEntity<>(responseBody, HttpStatus.OK);
-            } else {
-                responseBody.put("status", HttpStatus.FORBIDDEN.value());
-                responseBody.put("message", "최고 심박수가 존재하지 않습니다.");
-                responseBody.put("isSuccess", false);
-                return new ResponseEntity<>(responseBody, HttpStatus.FORBIDDEN);
-            }
+            List<MyDiaryDto> response = myDiaryService.getMyDiary(email);
+
+            responseBody.put("status", HttpStatus.OK.value());
+            responseBody.put("message", "success");
+            responseBody.put("data", response);
+            responseBody.put("isSuccess", true);
+
+            return new ResponseEntity<>(responseBody, HttpStatus.OK);
+
 
         } else {
             responseBody.put("status", HttpStatus.FORBIDDEN.value());
             responseBody.put("message", "유효하지 않은 사용자 입니다.");
             responseBody.put("isSuccess", false);
+
             return new ResponseEntity<>(responseBody, HttpStatus.FORBIDDEN);
         }
     }
-
-     */
-
 }

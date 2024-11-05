@@ -1,6 +1,7 @@
 package KickIt.server.domain.diary.entity;
 
 import KickIt.server.domain.member.entity.Member;
+import KickIt.server.global.util.BaseEntity;
 import jakarta.persistence.*;
 import lombok.*;
 import org.joda.time.LocalDateTime;
@@ -11,7 +12,7 @@ import org.joda.time.LocalDateTime;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class DiaryLiked {
+public class DiaryLiked extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -24,7 +25,5 @@ public class DiaryLiked {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "diary_id", nullable = false)
     private Diary diary;
-
-    private LocalDateTime createdAt;
 
 }

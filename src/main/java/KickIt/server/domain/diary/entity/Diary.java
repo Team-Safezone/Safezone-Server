@@ -2,6 +2,7 @@ package KickIt.server.domain.diary.entity;
 
 import KickIt.server.domain.fixture.entity.Fixture;
 import KickIt.server.domain.member.entity.Member;
+import KickIt.server.global.util.BaseEntity;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -14,7 +15,7 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class Diary {
+public class Diary extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
