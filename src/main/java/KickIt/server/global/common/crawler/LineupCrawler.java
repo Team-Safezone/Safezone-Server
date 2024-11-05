@@ -48,7 +48,7 @@ public class LineupCrawler {
                 // => 실패 시 예외 처리
                 // 이후 getLineup 함수 자체를 5 분, 10 분 간격으로 null이 아닐 때까지 반복 실행해 보면 될 듯.
                 // 기다리는 간격 서버 과부하 없게 잘 조정하는 과정 필요!
-                WebDriverWait wait = new WebDriverWait(driver, Duration.ofMinutes(5));
+                WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(15));
                 wait.until(ExpectedConditions.presenceOfElementLocated(By.className("txt_lineup")));
 
                 // 홈팀과 원정팀의 선발 라인업 포메이션 정보를 문자열로 크롤링

@@ -55,67 +55,67 @@ public class LineupPredictionController {
                 // 골키퍼 처리
                 if(! convertPlayer(lineUpPredictionRequest.getHomeGoalkeeper(), homeTeam, predictionPlayer, 0, 0, 0)){
                     // 예외 처리
-                    responseBody.put("status", HttpStatus.NOT_FOUND.value());
+                    responseBody.put("status", HttpStatus.BAD_REQUEST.value());
                     responseBody.put("message", " 홈팀 골키퍼 데이터 누락");
                     responseBody.put("isSuccess", false);
-                    return new ResponseEntity<>(responseBody, HttpStatus.NOT_FOUND);
+                    return new ResponseEntity<>(responseBody, HttpStatus.BAD_REQUEST);
                 }
                 // 수비수 처리
                 if(! convertPlayer(lineUpPredictionRequest.getHomeDefenders(), homeTeam, predictionPlayer, 0, 1)){
                     // 예외 처리
-                    responseBody.put("status", HttpStatus.NOT_FOUND.value());
+                    responseBody.put("status", HttpStatus.BAD_REQUEST.value());
                     responseBody.put("message", " 홈팀 수비수 데이터 누락");
                     responseBody.put("isSuccess", false);
-                    return new ResponseEntity<>(responseBody, HttpStatus.NOT_FOUND);
+                    return new ResponseEntity<>(responseBody, HttpStatus.BAD_REQUEST);
                 }
                 // 미드필더 처리
                 if(! convertPlayer(lineUpPredictionRequest.getHomeMidfielders(), homeTeam, predictionPlayer, 0, 2)){
                     // 예외 처리
-                    responseBody.put("status", HttpStatus.NOT_FOUND.value());
+                    responseBody.put("status", HttpStatus.BAD_REQUEST.value());
                     responseBody.put("message", " 홈팀 미드필더 데이터 누락");
                     responseBody.put("isSuccess", false);
-                    return new ResponseEntity<>(responseBody, HttpStatus.NOT_FOUND);
+                    return new ResponseEntity<>(responseBody, HttpStatus.BAD_REQUEST);
                 }
                 // 공격수 처리
                 if (! convertPlayer(lineUpPredictionRequest.getHomeStrikers(), homeTeam, predictionPlayer, 0, 3)){
                     // 예외 처리
-                    responseBody.put("status", HttpStatus.NOT_FOUND.value());
+                    responseBody.put("status", HttpStatus.BAD_REQUEST.value());
                     responseBody.put("message", " 홈팀 공격수 데이터 누락");
                     responseBody.put("isSuccess", false);
-                    return new ResponseEntity<>(responseBody, HttpStatus.NOT_FOUND);
+                    return new ResponseEntity<>(responseBody, HttpStatus.BAD_REQUEST);
                 }
                 // 원정팀 선수 명단 predictionPlayer로 변환 후 List에 추가
                 // 골키퍼 처리
                 if(! convertPlayer(lineUpPredictionRequest.getAwayGoalkeeper(), awayTeam, predictionPlayer, 1, 0, 0)){
                     // 예외 처리
-                    responseBody.put("status", HttpStatus.NOT_FOUND.value());
+                    responseBody.put("status", HttpStatus.BAD_REQUEST.value());
                     responseBody.put("message", " 원정팀 골키퍼 데이터 누락");
                     responseBody.put("isSuccess", false);
-                    return new ResponseEntity<>(responseBody, HttpStatus.NOT_FOUND);
+                    return new ResponseEntity<>(responseBody, HttpStatus.BAD_REQUEST);
                 }
                 // 수비수 처리
                 if(! convertPlayer(lineUpPredictionRequest.getAwayDefenders(), awayTeam, predictionPlayer, 1, 1)){
                     // 예외 처리
-                    responseBody.put("status", HttpStatus.NOT_FOUND.value());
+                    responseBody.put("status", HttpStatus.BAD_REQUEST.value());
                     responseBody.put("message", " 원정팀 수비수 데이터 누락");
                     responseBody.put("isSuccess", false);
-                    return new ResponseEntity<>(responseBody, HttpStatus.NOT_FOUND);
+                    return new ResponseEntity<>(responseBody, HttpStatus.BAD_REQUEST);
                 }
                 // 미드필더 처리
                 if(! convertPlayer(lineUpPredictionRequest.getAwayMidfielders(), awayTeam, predictionPlayer, 1, 2)){
                     // 예외 처리
-                    responseBody.put("status", HttpStatus.NOT_FOUND.value());
+                    responseBody.put("status", HttpStatus.BAD_REQUEST.value());
                     responseBody.put("message", " 원정팀 미드필더 데이터 누락");
                     responseBody.put("isSuccess", false);
-                    return new ResponseEntity<>(responseBody, HttpStatus.NOT_FOUND);
+                    return new ResponseEntity<>(responseBody, HttpStatus.BAD_REQUEST);
                 }
                 // 공격수 처리
                 if (! convertPlayer(lineUpPredictionRequest.getAwayStrikers(), awayTeam, predictionPlayer, 1, 3)){
                     // 예외 처리
-                    responseBody.put("status", HttpStatus.NOT_FOUND.value());
+                    responseBody.put("status", HttpStatus.BAD_REQUEST.value());
                     responseBody.put("message", " 원정팀 공격수 데이터 누락");
                     responseBody.put("isSuccess", false);
-                    return new ResponseEntity<>(responseBody, HttpStatus.NOT_FOUND);
+                    return new ResponseEntity<>(responseBody, HttpStatus.BAD_REQUEST);
                 }
                 // save 처리
                 LineupPrediction lineupPrediction = LineupPrediction.builder()
@@ -125,13 +125,27 @@ public class LineupPredictionController {
                         .awayTeamForm(lineUpPredictionRequest.getAwayFormation())
                         .players(predictionPlayer).build();
 
-                lineupPredictionService.saveLineupPredictions(lineupPrediction);
+                HttpStatus saveStatus = lineupPredictionService.saveLineupPredictions(lineupPrediction);
+                if(saveStatus == HttpStatus.OK){
+                    responseBody.put("status", HttpStatus.OK.value());
+                    responseBody.put("message", "success");
+                    responseBody.put("data", new LineupPredictionDto.LineupSaveResponse(member));
+                    responseBody.put("isSuccess", true);
+                    return new ResponseEntity<>(responseBody, HttpStatus.OK);
+                }
+                else if (saveStatus == HttpStatus.CONFLICT){
+                    responseBody.put("status", HttpStatus.CONFLICT.value());
+                    responseBody.put("message", "중복 저장 시도");
+                    responseBody.put("isSuccess", false);
+                    return new ResponseEntity<>(responseBody, HttpStatus.CONFLICT);
+                }
+                else {
+                    responseBody.put("status", HttpStatus.INTERNAL_SERVER_ERROR.value());
+                    responseBody.put("message", "저장 실패");
+                    responseBody.put("isSuccess", false);
+                    return new ResponseEntity<>(responseBody, HttpStatus.INTERNAL_SERVER_ERROR);
+                }
 
-                responseBody.put("status", HttpStatus.OK.value());
-                responseBody.put("message", "success");
-                responseBody.put("data", new LineupPredictionDto.LineupSaveResponse(member));
-                responseBody.put("isSuccess", true);
-                return new ResponseEntity<>(responseBody, HttpStatus.OK);
             }
             // id에 해당하는 경기 존재하지 않는 경우 -> 경기 id 잘못됨
             else{
