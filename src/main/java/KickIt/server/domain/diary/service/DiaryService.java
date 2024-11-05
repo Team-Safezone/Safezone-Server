@@ -49,7 +49,7 @@ public class DiaryService {
                 .fixture(fixture)
                 .teamName(diarySaveDto.getTeamName())
                 .emotion(diarySaveDto.getEmotion())
-                .diaryContext(diarySaveDto.getDiaryContext())
+                .diaryContent(diarySaveDto.getDiaryContext())
                 .mom(diarySaveDto.getMom())
                 .isPublic(diarySaveDto.isPublic())
                 .build();

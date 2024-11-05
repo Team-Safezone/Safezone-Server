@@ -31,7 +31,8 @@ public class Diary {
     private String teamName;
 
     private int emotion;
-    private String diaryContext;
+    private String diaryContent;
+    private int likeCount;
 
     @OneToMany(mappedBy = "diary", cascade = CascadeType.ALL, orphanRemoval = true)
     @Builder.Default
@@ -39,4 +40,8 @@ public class Diary {
 
     private String mom;
     private boolean isPublic;
+
+    @OneToMany(mappedBy = "diary", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private List<DiaryLiked> likedBy;
+
 }

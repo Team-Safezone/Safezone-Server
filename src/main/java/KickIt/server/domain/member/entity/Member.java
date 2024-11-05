@@ -1,5 +1,7 @@
 package KickIt.server.domain.member.entity;
 
+import KickIt.server.domain.diary.entity.Diary;
+import KickIt.server.domain.diary.entity.DiaryLiked;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -48,5 +50,11 @@ public class Member {
         this.marketingConsent = marketingConsent;
         this.authProvider = authProvider;
     }
+
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private List<Diary> diaries;
+
+    @OneToMany(mappedBy = "member", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private List<DiaryLiked> likedDiaries;
 
 }

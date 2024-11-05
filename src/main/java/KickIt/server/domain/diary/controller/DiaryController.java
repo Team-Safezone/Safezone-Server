@@ -104,4 +104,34 @@ public class DiaryController {
         }
     }
 
+    /*
+    @PatchMapping("/isLiked/{diaryId}")
+    public ResponseEntity<Map<String, Object>> editLiked(@RequestHeader(value = "xAuthToken") String xAuthToken, @PathVariable(value = "diaryId") Long diaryId) {
+        String email = jwtTokenUtil.getEmailFromToken(xAuthToken);
+
+        Map<String, Object> responseBody = new HashMap<>();
+
+        if (jwtTokenUtil.validateToken(xAuthToken, email)) {
+            if(highHeartRate != 0) {
+                responseBody.put("status", HttpStatus.OK.value());
+                responseBody.put("data", highHeartRate);
+                responseBody.put("isSuccess", true);
+                return new ResponseEntity<>(responseBody, HttpStatus.OK);
+            } else {
+                responseBody.put("status", HttpStatus.FORBIDDEN.value());
+                responseBody.put("message", "최고 심박수가 존재하지 않습니다.");
+                responseBody.put("isSuccess", false);
+                return new ResponseEntity<>(responseBody, HttpStatus.FORBIDDEN);
+            }
+
+        } else {
+            responseBody.put("status", HttpStatus.FORBIDDEN.value());
+            responseBody.put("message", "유효하지 않은 사용자 입니다.");
+            responseBody.put("isSuccess", false);
+            return new ResponseEntity<>(responseBody, HttpStatus.FORBIDDEN);
+        }
+    }
+
+     */
+
 }
