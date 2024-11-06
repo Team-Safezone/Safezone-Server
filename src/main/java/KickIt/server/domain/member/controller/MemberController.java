@@ -43,17 +43,14 @@ public class MemberController {
         AuthProvider authProvider = memberService.transAuth(loginId);
 
         Member member = new Member(signupRequest.getEmail(), signupRequest.getNickname(),
-                signupRequest.getFavoriteTeams(),0,1, signupRequest.isMarketingConsent(), authProvider);
+                signupRequest.getFavoriteTeams(), 0, 1, signupRequest.isMarketingConsent(), authProvider);
 
         if (memberService.saveMember(member)) {
             String accessToken = jwtService.createAccessToken(member.getEmail());
 
-            Map<String, Object> data = new HashMap<>();
-            data.put("xAuthToken", accessToken);
-
             responseBody.put("status", HttpStatus.OK.value());
             responseBody.put("message", "success");
-            responseBody.put("data", data);
+            responseBody.put("data", accessToken);
             responseBody.put("isSuccess", true);
             return new ResponseEntity<>(responseBody, HttpStatus.OK);
         } else {
@@ -74,12 +71,9 @@ public class MemberController {
         if (memberService.isMemberExist(loginRequest.getEmail(), authProvider)) {
             String accessToken = jwtService.createAccessToken(loginRequest.getEmail());
 
-            Map<String, Object> data = new HashMap<>();
-            data.put("xAuthToken", accessToken);
-
             responseBody.put("status", HttpStatus.OK.value());
             responseBody.put("message", "success");
-            responseBody.put("data", data);
+            responseBody.put("data", accessToken);
             responseBody.put("isSuccess", true);
             return new ResponseEntity<>(responseBody, HttpStatus.OK);
         } else {
@@ -91,15 +85,39 @@ public class MemberController {
 
     }
 
-    // 닉네임 중복 확인 API
     @GetMapping("/check-nickname")
-    public ResponseEntity<Map<String, Object>> checkNickname(@RequestHeader("xAuthToken") String xAuthToken, @RequestParam(value = "nickname") String nickname) {
-        String email = jwtTokenUtil.getEmailFromToken(xAuthToken);
+    public ResponseEntity<Map<String, Object>> checkNickname(
+            @RequestParam(value = "nickname") String nickname,
+            @RequestHeader(value = "xAuthToken", required = false) String xAuthToken) {
 
         Map<String, Object> responseBody = new HashMap<>();
 
-        // 토큰 유효 확인
-        if (jwtTokenUtil.validateToken(xAuthToken, email)) {
+        // 토큰이 존재하는지 확인
+        if (xAuthToken != null && !xAuthToken.isEmpty()) {
+            String email = jwtTokenUtil.getEmailFromToken(xAuthToken);
+
+            // 토큰 유효성 검사
+            if (jwtTokenUtil.validateToken(xAuthToken, email)) {
+                // 닉네임 중복 확인
+                if (memberService.checkNickname(nickname)) {
+                    responseBody.put("status", HttpStatus.OK.value());
+                    responseBody.put("message", "사용 가능한 닉네임입니다.");
+                    responseBody.put("isSuccess", true);
+                    return new ResponseEntity<>(responseBody, HttpStatus.OK);
+                } else {
+                    responseBody.put("status", HttpStatus.FORBIDDEN.value());
+                    responseBody.put("message", "이미 사용 중인 닉네임입니다.");
+                    responseBody.put("isSuccess", false);
+                    return new ResponseEntity<>(responseBody, HttpStatus.FORBIDDEN);
+                }
+            } else {
+                responseBody.put("status", HttpStatus.FORBIDDEN.value());
+                responseBody.put("message", "유효하지 않은 사용자입니다.");
+                responseBody.put("isSuccess", false);
+                return new ResponseEntity<>(responseBody, HttpStatus.FORBIDDEN);
+            }
+        } else {
+            // 토큰이 없는 경우
             // 닉네임 중복 확인
             if (memberService.checkNickname(nickname)) {
                 responseBody.put("status", HttpStatus.OK.value());
@@ -112,41 +130,12 @@ public class MemberController {
                 responseBody.put("isSuccess", false);
                 return new ResponseEntity<>(responseBody, HttpStatus.FORBIDDEN);
             }
-        } else {
-            responseBody.put("status", HttpStatus.FORBIDDEN.value());
-            responseBody.put("message", "유효하지 않은 사용자입니다.");
-            responseBody.put("isSuccess", false);
-            return new ResponseEntity<>(responseBody, HttpStatus.FORBIDDEN);
-
-        }
-
-    }
-
-    @PostMapping("/update-favoriteTeams")
-    public ResponseEntity<Map<String, Object>> updateTeams(@RequestParam(value = "xAuthToken") String xAuthToken, @RequestBody FavoriteTeamsDto favoriteTeamsDto) {
-        String email = jwtTokenUtil.getEmailFromToken(xAuthToken);
-        List<String> favoriteTeams = favoriteTeamsDto.getFavoriteTeams();
-
-        Map<String, Object> responseBody = new HashMap<>();
-
-        if (jwtTokenUtil.validateToken(xAuthToken, email)) {
-            memberService.updateTeams(email, favoriteTeams);
-
-            responseBody.put("status", HttpStatus.OK.value());
-            responseBody.put("message", "success");
-            responseBody.put("isSuccess", true);
-            return new ResponseEntity<>(responseBody, HttpStatus.OK);
-        } else {
-            responseBody.put("status", HttpStatus.FORBIDDEN.value());
-            responseBody.put("message", "유효하지 않은 사용자입니다.");
-            responseBody.put("isSuccess", false);
-            return new ResponseEntity<>(responseBody, HttpStatus.FORBIDDEN);
-
         }
     }
+
 
     @PostMapping("update-nickname")
-    public ResponseEntity<Map<String, Object>> updateTeams(@RequestParam(value = "xAuthToken") String xAuthToken, @RequestBody NicknameDto nicknameDto) {
+    public ResponseEntity<Map<String, Object>> updateTeams(@RequestHeader(value = "xAuthToken") String xAuthToken, @RequestBody NicknameDto nicknameDto) {
         String email = jwtTokenUtil.getEmailFromToken(xAuthToken);
         String nickname = nicknameDto.getNickname();
 
