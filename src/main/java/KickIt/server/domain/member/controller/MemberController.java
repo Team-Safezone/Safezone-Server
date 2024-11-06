@@ -1,14 +1,13 @@
 package KickIt.server.domain.member.controller;
 
-import KickIt.server.domain.member.dto.FavoriteTeamsDto;
 import KickIt.server.domain.member.dto.MypageDto;
 import KickIt.server.domain.member.dto.NicknameDto;
-import KickIt.server.jwt.JwtService;
+import KickIt.server.domain.member.entity.AuthProvider;
 import KickIt.server.domain.member.entity.LoginRequest;
 import KickIt.server.domain.member.entity.Member;
-import KickIt.server.domain.member.entity.AuthProvider;
 import KickIt.server.domain.member.entity.SignupRequest;
 import KickIt.server.domain.member.service.MemberService;
+import KickIt.server.jwt.JwtService;
 import KickIt.server.jwt.JwtTokenUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -16,7 +15,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 

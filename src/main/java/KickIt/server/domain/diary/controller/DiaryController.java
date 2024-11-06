@@ -1,15 +1,14 @@
 package KickIt.server.domain.diary.controller;
 
 
-import KickIt.server.domain.diary.dto.DiaryIdRequest;
-import KickIt.server.domain.diary.dto.DiaryLikeDto;
-import KickIt.server.domain.diary.dto.DiarySaveDto;
-import KickIt.server.domain.diary.dto.MyDiaryDto;
+import KickIt.server.domain.diary.dto.*;
 import KickIt.server.domain.diary.service.DiaryLikedService;
+import KickIt.server.domain.diary.service.DiaryReportService;
 import KickIt.server.domain.diary.service.DiaryService;
 import KickIt.server.domain.diary.service.MyDiaryService;
 import KickIt.server.domain.heartRate.service.HeartRateStatisticsService;
 import KickIt.server.jwt.JwtTokenUtil;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -27,15 +26,19 @@ public class DiaryController {
     private final HeartRateStatisticsService heartRateStatisticsService;
     private final DiaryLikedService diaryLikedService;
     private final MyDiaryService myDiaryService;
+    private final DiaryReportService diaryReportService;
 
-    public DiaryController(JwtTokenUtil jwtTokenUtil, DiaryService diaryService, HeartRateStatisticsService heartRateStatisticsService, DiaryLikedService diaryLikedService, MyDiaryService myDiaryService) {
+    @Autowired
+    public DiaryController(JwtTokenUtil jwtTokenUtil, DiaryService diaryService, HeartRateStatisticsService heartRateStatisticsService, DiaryLikedService diaryLikedService, MyDiaryService myDiaryService, DiaryReportService diaryReportService) {
         this.jwtTokenUtil = jwtTokenUtil;
         this.diaryService = diaryService;
         this.heartRateStatisticsService = heartRateStatisticsService;
         this.diaryLikedService = diaryLikedService;
         this.myDiaryService = myDiaryService;
+        this.diaryReportService = diaryReportService;
     }
 
+    // 일기 업로드
     @PostMapping("/upload")
     public ResponseEntity<Map<String, Object>> uploadDiary(@RequestHeader(value = "xAuthToken") String xAuthToken, @RequestBody DiarySaveDto diarySaveDto) {
         String email = jwtTokenUtil.getEmailFromToken(xAuthToken);
@@ -57,6 +60,8 @@ public class DiaryController {
         }
     }
 
+
+    // 일기 삭제
     @DeleteMapping("/delete")
     public ResponseEntity<Map<String, Object>> deleteDiary(@RequestHeader(value = "xAuthToken") String xAuthToken, @RequestBody DiaryIdRequest diaryIdRequest) {
         String email = jwtTokenUtil.getEmailFromToken(xAuthToken);
@@ -82,6 +87,8 @@ public class DiaryController {
         }
     }
 
+
+    // 일기에 보여 줄 최고 심박수
     @GetMapping("/max-heartRate/{matchId}")
     public ResponseEntity<Map<String, Object>> getMaxHeartRate(@RequestHeader(value = "xAuthToken") String xAuthToken, @PathVariable(value = "matchId") Long matchId) {
         String email = jwtTokenUtil.getEmailFromToken(xAuthToken);
@@ -110,7 +117,7 @@ public class DiaryController {
         }
     }
 
-
+    // 일기 좋아요 반영
     @PatchMapping("/isLiked/{diaryId}")
     public ResponseEntity<Map<String, Object>> editLiked(@RequestHeader(value = "xAuthToken") String xAuthToken, @PathVariable(value = "diaryId") Long diaryId, @RequestBody DiaryLikeDto diaryLikeDto) {
         String email = jwtTokenUtil.getEmailFromToken(xAuthToken);
@@ -136,6 +143,7 @@ public class DiaryController {
         }
     }
 
+    // 나의 축구 일기 조회
     @GetMapping("/mine")
     public ResponseEntity<Map<String, Object>> getMyDiary(@RequestHeader(value = "xAuthToken") String xAuthToken) {
         String email = jwtTokenUtil.getEmailFromToken(xAuthToken);
@@ -158,6 +166,38 @@ public class DiaryController {
             responseBody.put("message", "유효하지 않은 사용자 입니다.");
             responseBody.put("isSuccess", false);
 
+            return new ResponseEntity<>(responseBody, HttpStatus.FORBIDDEN);
+        }
+    }
+
+    // 일기 신고하기
+    @PostMapping("/report/{diaryId}")
+    public ResponseEntity<Map<String, Object>> postReport(@RequestHeader(value = "xAuthToken") String xAuthToken, @PathVariable(value = "diaryId") Long diaryId, @RequestBody DiaryReportDto diaryReportDto) {
+        String email = jwtTokenUtil.getEmailFromToken(xAuthToken);
+
+        Map<String, Object> responseBody = new HashMap<>();
+
+        if (jwtTokenUtil.validateToken(xAuthToken, email)) {
+            boolean isReport = diaryReportService.saveReport(diaryReportDto, email, diaryId);
+
+            if(isReport) {
+                responseBody.put("status", HttpStatus.OK.value());
+                responseBody.put("message", "신고가 완료 되었습니다.");
+                responseBody.put("isSuccess", true);
+
+                return new ResponseEntity<>(responseBody, HttpStatus.OK);
+            } else {
+                responseBody.put("status", HttpStatus.CONFLICT.value());
+                responseBody.put("message", "이미 신고를 완료 하였습니다.");
+                responseBody.put("isSuccess", false);
+
+                return new ResponseEntity<>(responseBody, HttpStatus.OK);
+            }
+
+        } else {
+            responseBody.put("status", HttpStatus.FORBIDDEN.value());
+            responseBody.put("message", "유효하지 않은 사용자입니다.");
+            responseBody.put("isSuccess", false);
             return new ResponseEntity<>(responseBody, HttpStatus.FORBIDDEN);
         }
     }
