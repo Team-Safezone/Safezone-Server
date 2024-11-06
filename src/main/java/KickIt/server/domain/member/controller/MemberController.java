@@ -165,7 +165,7 @@ public class MemberController {
     }
 
     @GetMapping("/mypage")
-    public ResponseEntity<Map<String, Object>> getMypage(@RequestParam(value = "xAuthToken") String xAuthToken) {
+    public ResponseEntity<Map<String, Object>> getMypage(@RequestHeader(value = "xAuthToken") String xAuthToken) {
         String email = jwtTokenUtil.getEmailFromToken(xAuthToken);
 
         Map<String, Object> responseBody = new HashMap<>();
@@ -189,7 +189,7 @@ public class MemberController {
     }
 
     @GetMapping("/avgHeartRate")
-    public ResponseEntity<Map<String, Object>> getMemberAvgHeartRate(@RequestParam(value = "xAuthToken") String xAuthToken) {
+    public ResponseEntity<Map<String, Object>> getMemberAvgHeartRate(@RequestHeader(value = "xAuthToken") String xAuthToken) {
         String email = jwtTokenUtil.getEmailFromToken(xAuthToken);
 
         Map<String, Object> responseBody = new HashMap<>();
