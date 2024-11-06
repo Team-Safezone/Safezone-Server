@@ -2,10 +2,7 @@ package KickIt.server.domain.diary.controller;
 
 
 import KickIt.server.domain.diary.dto.*;
-import KickIt.server.domain.diary.service.DiaryLikedService;
-import KickIt.server.domain.diary.service.DiaryReportService;
-import KickIt.server.domain.diary.service.DiaryService;
-import KickIt.server.domain.diary.service.MyDiaryService;
+import KickIt.server.domain.diary.service.*;
 import KickIt.server.domain.heartRate.service.HeartRateStatisticsService;
 import KickIt.server.jwt.JwtTokenUtil;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,15 +24,17 @@ public class DiaryController {
     private final DiaryLikedService diaryLikedService;
     private final MyDiaryService myDiaryService;
     private final DiaryReportService diaryReportService;
+    private final DiaryRecommendService diaryRecommendService;
 
     @Autowired
-    public DiaryController(JwtTokenUtil jwtTokenUtil, DiaryService diaryService, HeartRateStatisticsService heartRateStatisticsService, DiaryLikedService diaryLikedService, MyDiaryService myDiaryService, DiaryReportService diaryReportService) {
+    public DiaryController(JwtTokenUtil jwtTokenUtil, DiaryService diaryService, HeartRateStatisticsService heartRateStatisticsService, DiaryLikedService diaryLikedService, MyDiaryService myDiaryService, DiaryReportService diaryReportService, DiaryRecommendService diaryRecommendService) {
         this.jwtTokenUtil = jwtTokenUtil;
         this.diaryService = diaryService;
         this.heartRateStatisticsService = heartRateStatisticsService;
         this.diaryLikedService = diaryLikedService;
         this.myDiaryService = myDiaryService;
         this.diaryReportService = diaryReportService;
+        this.diaryRecommendService = diaryRecommendService;
     }
 
     // 일기 업로드
@@ -201,4 +200,35 @@ public class DiaryController {
             return new ResponseEntity<>(responseBody, HttpStatus.FORBIDDEN);
         }
     }
+
+
+    /*
+    // 추천 축구 일기
+    @GetMapping("/recommend")
+    public ResponseEntity<Map<String, Object>> getRecommendDiary(@RequestHeader(value = "xAuthToken") String xAuthToken) {
+        String email = jwtTokenUtil.getEmailFromToken(xAuthToken);
+
+        Map<String, Object> responseBody = new HashMap<>();
+
+        if (jwtTokenUtil.validateToken(xAuthToken, email)) {
+            List<DiaryRecommendDto> response = (email);
+
+            responseBody.put("status", HttpStatus.OK.value());
+            responseBody.put("message", "success");
+            responseBody.put("data", response);
+            responseBody.put("isSuccess", true);
+
+            return new ResponseEntity<>(responseBody, HttpStatus.OK);
+
+
+        } else {
+            responseBody.put("status", HttpStatus.FORBIDDEN.value());
+            responseBody.put("message", "유효하지 않은 사용자 입니다.");
+            responseBody.put("isSuccess", false);
+
+            return new ResponseEntity<>(responseBody, HttpStatus.FORBIDDEN);
+        }
+    }
+
+     */
 }

@@ -32,6 +32,8 @@ public class Diary extends BaseEntity {
     private String teamName;
 
     private int emotion;
+
+    @Column(nullable = true, length = 500)
     private String diaryContent;
     private int likeCount;
 
