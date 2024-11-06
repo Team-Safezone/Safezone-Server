@@ -54,10 +54,12 @@ public class MemberController {
             responseBody.put("status", HttpStatus.OK.value());
             responseBody.put("message", "success");
             responseBody.put("data", data);
+            responseBody.put("isSuccess", true);
             return new ResponseEntity<>(responseBody, HttpStatus.OK);
         } else {
             responseBody.put("status", HttpStatus.FORBIDDEN.value());
             responseBody.put("message", "이미 가입된 회원입니다.");
+            responseBody.put("isSuccess", false);
             return new ResponseEntity<>(responseBody, HttpStatus.FORBIDDEN);
         }
 
@@ -78,30 +80,46 @@ public class MemberController {
             responseBody.put("status", HttpStatus.OK.value());
             responseBody.put("message", "success");
             responseBody.put("data", data);
+            responseBody.put("isSuccess", true);
             return new ResponseEntity<>(responseBody, HttpStatus.OK);
         } else {
             responseBody.put("status", HttpStatus.NOT_FOUND.value());
             responseBody.put("message", "가입된 회원이 아닙니다.");
+            responseBody.put("isSuccess", false);
             return new ResponseEntity<>(responseBody, HttpStatus.NOT_FOUND);
         }
 
     }
 
+    // 닉네임 중복 확인 API
     @GetMapping("/check-nickname")
-    public ResponseEntity<Map<String, Object>> checkNickname(@RequestParam(value = "nickname") String nickname) {
+    public ResponseEntity<Map<String, Object>> checkNickname(@RequestHeader("xAuthToken") String xAuthToken, @RequestParam(value = "nickname") String nickname) {
+        String email = jwtTokenUtil.getEmailFromToken(xAuthToken);
+
         Map<String, Object> responseBody = new HashMap<>();
 
-        if (memberService.checkNickname(nickname)) {
-            responseBody.put("status", HttpStatus.OK.value());
-            responseBody.put("message", "사용 가능한 닉네임입니다.");
-            responseBody.put("data", true);
-            return new ResponseEntity<>(responseBody, HttpStatus.OK);
+        // 토큰 유효 확인
+        if (jwtTokenUtil.validateToken(xAuthToken, email)) {
+            // 닉네임 중복 확인
+            if (memberService.checkNickname(nickname)) {
+                responseBody.put("status", HttpStatus.OK.value());
+                responseBody.put("message", "사용 가능한 닉네임입니다.");
+                responseBody.put("isSuccess", true);
+                return new ResponseEntity<>(responseBody, HttpStatus.OK);
+            } else {
+                responseBody.put("status", HttpStatus.FORBIDDEN.value());
+                responseBody.put("message", "이미 사용 중인 닉네임입니다.");
+                responseBody.put("isSuccess", false);
+                return new ResponseEntity<>(responseBody, HttpStatus.FORBIDDEN);
+            }
         } else {
             responseBody.put("status", HttpStatus.FORBIDDEN.value());
-            responseBody.put("message", "이미 사용 중인 닉네임입니다.");
-            responseBody.put("data", false);
+            responseBody.put("message", "유효하지 않은 사용자입니다.");
+            responseBody.put("isSuccess", false);
             return new ResponseEntity<>(responseBody, HttpStatus.FORBIDDEN);
+
         }
+
     }
 
     @PostMapping("/update-favoriteTeams")
