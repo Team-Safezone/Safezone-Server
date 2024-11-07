@@ -62,7 +62,7 @@ public class HeartRateController {
     }
 
     @GetMapping("/statistics/matchId/{matchId}")
-    public ResponseEntity<Map<String, Object>> getAllStatistics(@PathVariable("matchId") Long matchId, @RequestParam(value = "xAuthToken") String xAuthToken) {
+    public ResponseEntity<Map<String, Object>> getAllStatistics(@PathVariable("matchId") Long matchId, @RequestHeader(value = "xAuthToken") String xAuthToken) {
         String email = jwtTokenUtil.getEmailFromToken(xAuthToken);
 
         Map<String, Object> responseBody = new HashMap<>();
@@ -85,7 +85,7 @@ public class HeartRateController {
     }
 
     @GetMapping("/check-dataExists/matchId/{matchId}")
-    public ResponseEntity<Map<String, Object>> getAllStatistics(@RequestParam(value = "xAuthToken") String xAuthToken, @PathVariable(value = "matchId") Long matchId) {
+    public ResponseEntity<Map<String, Object>> getAllStatistics(@RequestHeader(value = "xAuthToken") String xAuthToken, @PathVariable(value = "matchId") Long matchId) {
         String email = jwtTokenUtil.getEmailFromToken(xAuthToken);
 
         Map<String, Object> responseBody = new HashMap<>();
