@@ -51,7 +51,6 @@ public class DiaryRecommendService {
         // 추천 축구 일기 존재
         if (recommendDiary.hasContent()) {
             for (Diary diary : recommendDiary) {
-                System.out.println("여기 들어옴 !");
                 DiaryRecommendDto diaryRecommendDto = recommendDto(email, diary);
                 diaryRecommendDtos.add(diaryRecommendDto);
             }
@@ -60,7 +59,6 @@ public class DiaryRecommendService {
 
         }  else {
             // 추천 축구 일기 존재 X
-            System.out.println("여기들어오면 안되는데");
             Page<Diary> generalDiary = diaryRepository.getDiary(sevenDaysAgo, pageable);
 
             for (Diary diary : generalDiary) {

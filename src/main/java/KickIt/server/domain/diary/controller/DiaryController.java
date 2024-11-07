@@ -212,10 +212,6 @@ public class DiaryController {
         if (jwtTokenUtil.validateToken(xAuthToken, email)) {
             List<DiaryRecommendDto> response = diaryRecommendService.getRecommendDiary(email);
 
-            for (DiaryRecommendDto diaryRecommendDto : response) {
-                System.out.println("controller!!!!");
-                System.out.println(diaryRecommendDto.getDiaryId());
-            }
             responseBody.put("status", HttpStatus.OK.value());
             responseBody.put("message", "success");
             responseBody.put("data", response);
