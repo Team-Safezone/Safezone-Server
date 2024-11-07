@@ -158,6 +158,7 @@ public class MemberController {
     }
 
 
+    @PostMapping("/update-nickname")
     public ResponseEntity<Map<String, Object>> updateNickname(@RequestHeader(value = "xAuthToken") String xAuthToken, @RequestBody NicknameDto nicknameDto) {
         String email = jwtTokenUtil.getEmailFromToken(xAuthToken);
         String nickname = nicknameDto.getNickname();
