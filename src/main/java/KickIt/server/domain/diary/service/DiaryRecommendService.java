@@ -77,6 +77,7 @@ public class DiaryRecommendService {
         diaryRecommendDto.setTeamName(diary.getTeamName());
         diaryRecommendDto.setTeamUrl(diaryDataParser.teamUrl(diary.getTeamName()));
         diaryRecommendDto.setDiaryDate(diaryDataParser.getDiaryDate(diary));
+        diaryRecommendDto.setNickname(getNickName(diary.getMember().getId()));
         diaryRecommendDto.setLikes(diary.getLikeCount());
         diaryRecommendDto.setEmotion(diary.getEmotion());
         diaryRecommendDto.setMom(diary.getMom());
@@ -111,5 +112,9 @@ public class DiaryRecommendService {
         diaryRecommendDto.setIsLiked(diaryDataParser.getIsLiked(email, diary.getId()));
 
         return diaryRecommendDto;
+    }
+
+    public String getNickName(Long memberId) {
+        return memberRepository.getNickname(memberId);
     }
 }
