@@ -78,7 +78,7 @@ public class ScorePredictionService {
                     .avgAwayTeamScore(scorePredictionRepository.findAvgAwayTeamScore(fixtureId))
                     .build();
         }
-        // 경기 결과가 아직 나오지 않은 경우
+        // 경기 결과가 나온 경우
         else{
             int avgHomeTeamScore = scorePredictionRepository.findAvgHomeTeamScore(fixtureId);
             int avgAwayTeamScore = scorePredictionRepository.findAvgAwayTeamScore(fixtureId);
@@ -95,7 +95,7 @@ public class ScorePredictionService {
         return response;
     }
 
-    List<Boolean> isScoreCorrect(int homeTeamScore, int awayTeamScore, Fixture fixture){
+    public List<Boolean> isScoreCorrect(int homeTeamScore, int awayTeamScore, Fixture fixture){
         List<Boolean> response = new ArrayList<>();
 
         // 실제 점수와 예측 점수 비교

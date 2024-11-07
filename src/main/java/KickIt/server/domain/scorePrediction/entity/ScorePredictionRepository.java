@@ -19,4 +19,7 @@ public interface ScorePredictionRepository extends JpaRepository<ScorePrediction
 
     @Query("SELECT s.awayTeamScore, COUNT(s.awayTeamScore) AS count FROM ScorePrediction s WHERE s.fixture.id = :fixtureId GROUP BY s.awayTeamScore ORDER BY count DESC, MAX(s.lastUpdated) DESC LIMIT 1")
     Integer findAvgAwayTeamScore(@Param("fixtureId") Long fixtureId);
+
+    @Query("SELECT COUNT(s) FROM ScorePrediction s WHERE s.fixture.id = :fixtureId AND s.homeTeamScore >= s.awayTeamScore")
+    Integer findHomeWinningParticipants(@Param("fixtureId") Long fixtureId);
 }
