@@ -29,4 +29,10 @@ public interface LineupPredictionRepository extends JpaRepository<LineupPredicti
 
     @Query(value = "SELECT p.player, COUNT(p.player.id) As count FROM LineupPrediction l JOIN l.players p WHERE l.fixture.id = :fixtureId and l.awayTeamForm = :awayFormation AND p.team = 1 AND p.position = :position AND p.location = :location GROUP BY p.player.id ORDER BY count DESC, p.player.number ASC LIMIT 1")
     Player findAvgAwayPlayer(@Param("fixtureId") Long fixtureId, @Param("awayFormation") Integer awayFormation, @Param("position") Integer position, @Param("location") Integer location);
+
+    @Query(value = "SELECT COUNT(l) FROM LineupPrediction l WHERE l.fixture.id = :fixtureId AND l.homeTeamForm = :avgHomeFormation")
+    Integer findAvgHomeTeamFormParticipant(@Param("fixtureId") Long fixtureId, @Param("avgHomeFormation") Integer avgHomeFormation);
+
+    @Query(value = "SELECT COUNT(l) FROM LineupPrediction l WHERE l.fixture.id = :fixtureId AND l.awayTeamForm = :avgAwayFormation")
+    Integer findAvgAwayTeamFormParticipant(@Param("fixtureId") Long fixtureId, @Param("avgAwayFormation") Integer avgAwayFormation);
 }

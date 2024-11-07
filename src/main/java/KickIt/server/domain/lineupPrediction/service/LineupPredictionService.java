@@ -118,7 +118,7 @@ public class LineupPredictionService {
 
     // 사용자와 평균 선발라인업 예측이 정확한지 확인 후 반환
     // 이미 선발 라인업 결과 존재할 때만 호출됨
-    List<Boolean> isPredictionCorrect(int homeFormation, int awayFormation, LineupPredictionDto.ResponseLineup homeLineup, LineupPredictionDto.ResponseLineup awayLineup, MatchLineupDto.MatchLineupResponse matchLineup){
+    public List<Boolean> isPredictionCorrect(int homeFormation, int awayFormation, LineupPredictionDto.ResponseLineup homeLineup, LineupPredictionDto.ResponseLineup awayLineup, MatchLineupDto.MatchLineupResponse matchLineup){
         List<Boolean> response = new ArrayList<>();
 
         // 홈팀과 원정팀의 첫 줄 미드 필더와 두 번째 줄 미드필더 미리 합쳐 줌
@@ -306,7 +306,7 @@ public class LineupPredictionService {
     }
 
     // 사용자  or 평균 예측 선발라인업이 정확한지 실제 선발 라인업과 비교해 결과 반환하는 함수
-    private List<ResponsePlayerInfo> convertToPlayerInfo(List<PredictionPlayer> players){
+    public List<ResponsePlayerInfo> convertToPlayerInfo(List<PredictionPlayer> players){
         List<ResponsePlayerInfo> convertedPlayers = new ArrayList<>();
         for (PredictionPlayer player : players){
             convertedPlayers.add(new ResponsePlayerInfo(player.getPlayer()));
