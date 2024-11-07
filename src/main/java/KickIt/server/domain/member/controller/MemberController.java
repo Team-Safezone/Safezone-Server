@@ -1,5 +1,6 @@
 package KickIt.server.domain.member.controller;
 
+import KickIt.server.domain.member.dto.FavoriteTeamsDto;
 import KickIt.server.domain.member.dto.MypageDto;
 import KickIt.server.domain.member.dto.NicknameDto;
 import KickIt.server.domain.member.entity.AuthProvider;
@@ -15,6 +16,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 
@@ -132,8 +134,32 @@ public class MemberController {
     }
 
 
-    @PostMapping("update-nickname")
-    public ResponseEntity<Map<String, Object>> updateTeams(@RequestHeader(value = "xAuthToken") String xAuthToken, @RequestBody NicknameDto nicknameDto) {
+    @PostMapping("/update-favoriteTeams")
+    public ResponseEntity<Map<String, Object>> updateTeams(@RequestHeader(value = "xAuthToken") String xAuthToken, @RequestBody FavoriteTeamsDto favoriteTeamsDto) {
+        String email = jwtTokenUtil.getEmailFromToken(xAuthToken);
+        List<String> favoriteTeams = favoriteTeamsDto.getFavoriteTeams();
+
+        Map<String, Object> responseBody = new HashMap<>();
+
+        if (jwtTokenUtil.validateToken(xAuthToken, email)) {
+            memberService.updateTeams(email, favoriteTeams);
+            responseBody.put("status", HttpStatus.OK.value());
+            responseBody.put("message", "success");
+            responseBody.put("isSuccess", true);
+            return new ResponseEntity<>(responseBody, HttpStatus.OK);
+        } else {
+            responseBody.put("status", HttpStatus.FORBIDDEN.value());
+            responseBody.put("message", "유효하지 않은 사용자입니다.");
+            responseBody.put("isSuccess", false);
+            return new ResponseEntity<>(responseBody, HttpStatus.FORBIDDEN);
+
+        }
+
+    }
+
+
+    @PostMapping("/update-nickname")
+    public ResponseEntity<Map<String, Object>> updateNickname(@RequestHeader(value = "xAuthToken") String xAuthToken, @RequestBody NicknameDto nicknameDto) {
         String email = jwtTokenUtil.getEmailFromToken(xAuthToken);
         String nickname = nicknameDto.getNickname();
 
