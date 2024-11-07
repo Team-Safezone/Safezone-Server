@@ -86,7 +86,7 @@ public class DiaryRecommendService {
                 diaryRecommendDtos.add(diaryRecommendDto);
 
             }
-            
+
             return diaryRecommendDtos;
 
         }  else {

@@ -47,7 +47,7 @@ public class Diary extends BaseEntity {
     @OneToMany(mappedBy = "diary", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<DiaryLiked> likedBy;
 
-    @OneToMany(mappedBy = "diary", fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "diary", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<DiaryReport> diaryReports = new ArrayList<>();
 
 }
