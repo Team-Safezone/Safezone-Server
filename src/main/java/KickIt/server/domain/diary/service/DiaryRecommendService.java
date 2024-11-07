@@ -9,6 +9,9 @@ import KickIt.server.domain.member.entity.Member;
 import KickIt.server.domain.member.entity.MemberRepository;
 import KickIt.server.domain.teams.service.TeamNameConvertService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -38,64 +41,77 @@ public class DiaryRecommendService {
 
         LocalDateTime sevenDaysAgo = LocalDateTime.now().minus(7, ChronoUnit.DAYS);
 
+        int page = 0;
+        Pageable pageable = PageRequest.of(page, 10);
+
         List<DiaryRecommendDto> diaryRecommendDtos = new ArrayList<>();
 
-        List<Diary> recommendDiary = diaryRepository.getRecommendDiary(member.getId(), sevenDaysAgo);
+        Page<Diary> recommendDiary = diaryRepository.getRecommendDiary(member.getId(), sevenDaysAgo, pageable);
 
         // 추천 축구 일기 존재
-        if (recommendDiary != null) {
+        if (recommendDiary.hasContent()) {
             for (Diary diary : recommendDiary) {
-                DiaryRecommendDto diaryRecommendDto = new DiaryRecommendDto();
-                diaryRecommendDto.setDiaryId(diary.getId());
-                diaryRecommendDto.setTeamName(diary.getTeamName());
-                diaryRecommendDto.setTeamUrl(diaryDataParser.teamUrl(diary.getTeamName()));
-                diaryRecommendDto.setDiaryDate(diaryDataParser.getDiaryDate(diary));
-                diaryRecommendDto.setLikes(diary.getLikeCount());
-                diaryRecommendDto.setEmotion(diary.getEmotion());
-                diaryRecommendDto.setMom(diary.getMom());
-
-                diaryRecommendDto.setDiaryPhotos(diaryDataParser.getPhotos(diary.getId()));
-
-                Fixture fixture = diary.getFixture();
-                String homeTeam = teamNameConvertService.convertToKrName(fixture.getHomeTeam());
-                String awayTeam = teamNameConvertService.convertToKrName(fixture.getAwayTeam());
-                Integer homeScore = fixture.getHomeTeamScore();
-                Integer awayScore = fixture.getAwayteamScore();
-                if(homeTeam == null){
-                    homeTeam = "홈팀";
-                }
-                if (awayTeam == null) {
-                    awayTeam = "어웨이팀";
-                }
-                if (homeScore == null) {
-                    homeScore = 100;
-                }
-                if (awayScore == null) {
-                    awayScore = 100;
-                }
-                diaryRecommendDto.setMatchDate(diaryDataParser.getMatchTime(fixture.getDate()));
-                diaryRecommendDto.setHomeTeamName(homeTeam);
-                diaryRecommendDto.setHomeTeamScore(homeScore);
-                diaryRecommendDto.setAwayTeamName(awayTeam);
-                diaryRecommendDto.setAwayTeamScore(awayScore);
-
-                diaryRecommendDto.setHighHeartRate(diaryDataParser.getHeartRate(email, fixture.getId()));
-
-                diaryRecommendDto.setIsLiked(diaryDataParser.getIsLiked(email, diary.getId()));
-
+                System.out.println("여기 들어옴 !");
+                DiaryRecommendDto diaryRecommendDto = recommendDto(email, diary);
                 diaryRecommendDtos.add(diaryRecommendDto);
-
             }
 
             return diaryRecommendDtos;
 
         }  else {
             // 추천 축구 일기 존재 X
-            // 무작위 반환
+            System.out.println("여기들어오면 안되는데");
+            Page<Diary> generalDiary = diaryRepository.getDiary(sevenDaysAgo, pageable);
 
+            for (Diary diary : generalDiary) {
+                DiaryRecommendDto diaryRecommendDto = recommendDto(email, diary);
+                diaryRecommendDtos.add(diaryRecommendDto);
+
+            }
             return diaryRecommendDtos;
         }
 
     }
 
+    public DiaryRecommendDto recommendDto(String email, Diary diary) {
+        DiaryRecommendDto diaryRecommendDto = new DiaryRecommendDto();
+        diaryRecommendDto.setDiaryId(diary.getId());
+        diaryRecommendDto.setTeamName(diary.getTeamName());
+        diaryRecommendDto.setTeamUrl(diaryDataParser.teamUrl(diary.getTeamName()));
+        diaryRecommendDto.setDiaryDate(diaryDataParser.getDiaryDate(diary));
+        diaryRecommendDto.setLikes(diary.getLikeCount());
+        diaryRecommendDto.setEmotion(diary.getEmotion());
+        diaryRecommendDto.setMom(diary.getMom());
+
+        diaryRecommendDto.setDiaryPhotos(diaryDataParser.getPhotos(diary.getId()));
+
+        Fixture fixture = diary.getFixture();
+        String homeTeam = teamNameConvertService.convertToKrName(fixture.getHomeTeam());
+        String awayTeam = teamNameConvertService.convertToKrName(fixture.getAwayTeam());
+        Integer homeScore = fixture.getHomeTeamScore();
+        Integer awayScore = fixture.getAwayteamScore();
+        if(homeTeam == null){
+            homeTeam = "홈팀";
+        }
+        if (awayTeam == null) {
+            awayTeam = "어웨이팀";
+        }
+        if (homeScore == null) {
+            homeScore = 100;
+        }
+        if (awayScore == null) {
+            awayScore = 100;
+        }
+        diaryRecommendDto.setMatchDate(diaryDataParser.getMatchTime(fixture.getDate()));
+        diaryRecommendDto.setHomeTeamName(homeTeam);
+        diaryRecommendDto.setHomeTeamScore(homeScore);
+        diaryRecommendDto.setAwayTeamName(awayTeam);
+        diaryRecommendDto.setAwayTeamScore(awayScore);
+
+        diaryRecommendDto.setHighHeartRate(diaryDataParser.getHeartRate(email, fixture.getId()));
+
+        diaryRecommendDto.setIsLiked(diaryDataParser.getIsLiked(email, diary.getId()));
+
+        return diaryRecommendDto;
+    }
 }

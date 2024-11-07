@@ -202,7 +202,6 @@ public class DiaryController {
     }
 
 
-    /*
     // 추천 축구 일기
     @GetMapping("/recommend")
     public ResponseEntity<Map<String, Object>> getRecommendDiary(@RequestHeader(value = "xAuthToken") String xAuthToken) {
@@ -211,8 +210,12 @@ public class DiaryController {
         Map<String, Object> responseBody = new HashMap<>();
 
         if (jwtTokenUtil.validateToken(xAuthToken, email)) {
-            List<DiaryRecommendDto> response = (email);
+            List<DiaryRecommendDto> response = diaryRecommendService.getRecommendDiary(email);
 
+            for (DiaryRecommendDto diaryRecommendDto : response) {
+                System.out.println("controller!!!!");
+                System.out.println(diaryRecommendDto.getDiaryId());
+            }
             responseBody.put("status", HttpStatus.OK.value());
             responseBody.put("message", "success");
             responseBody.put("data", response);
@@ -230,5 +233,5 @@ public class DiaryController {
         }
     }
 
-     */
+
 }

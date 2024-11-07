@@ -37,17 +37,18 @@ public class Diary extends BaseEntity {
     private String diaryContent;
     private int likeCount;
 
+    private String mom;
+    private Boolean isPublic;
+
     @OneToMany(mappedBy = "diary", cascade = CascadeType.ALL, orphanRemoval = true)
     @Builder.Default
     private List<DiaryPhoto> diaryPhotos = new ArrayList<>();
 
-    private String mom;
-    private boolean isPublic;
-
-    @OneToMany(mappedBy = "diary", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "diary", cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true)
     private List<DiaryLiked> likedBy;
 
-    @OneToMany(mappedBy = "diary", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "diary", cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true)
+    @Builder.Default
     private List<DiaryReport> diaryReports = new ArrayList<>();
 
 }

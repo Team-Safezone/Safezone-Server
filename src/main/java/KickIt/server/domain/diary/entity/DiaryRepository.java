@@ -35,7 +35,15 @@ public interface DiaryRepository extends JpaRepository<Diary, Long> {
             "AND d.createdAt >= :sevenDaysAgo " +
             "AND (d.teamName = m.team1 OR d.teamName = m.team2 OR d.teamName = m.team3) " +
             "ORDER BY d.likeCount DESC")
-    List<Diary> getRecommendDiary(@Param("memberId") Long memberId, @Param("sevenDaysAgo") LocalDateTime sevenDaysAgo);
+    Page<Diary> getRecommendDiary(@Param("memberId") Long memberId, @Param("sevenDaysAgo") LocalDateTime sevenDaysAgo, Pageable pageable);
 
+
+    // 추천 해 줄 일기가 없을 때
+    // 1. isPublic = true
+    // 2. 일주일 이내 작성된 일기
+    // 3. 좋아요 순
+    @Query("SELECT d FROM Diary d WHERE d.isPublic = true " +
+           "AND d.createdAt >= :sevenDaysAgo ORDER BY d.likeCount DESC")
+    Page<Diary> getDiary(@Param("sevenDaysAgo") LocalDateTime sevenDaysAgo, Pageable pageable);
 
 }

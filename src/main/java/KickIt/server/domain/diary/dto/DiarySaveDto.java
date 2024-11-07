@@ -17,6 +17,6 @@ public class DiarySaveDto {
     private String diaryContext;
     private List<String> diaryPhotos;
     private String mom;
-    private boolean isPublic;
+    private Boolean isPublic;
 
 }

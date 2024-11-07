@@ -31,7 +31,6 @@ public class DiaryRecommendDto {
     private String awayTeamName;
     private Integer awayTeamScore;
 
-
     // heartRateStatistics table
     private int highHeartRate;
 

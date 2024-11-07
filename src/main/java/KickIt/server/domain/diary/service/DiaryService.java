@@ -54,7 +54,7 @@ public class DiaryService {
                 .emotion(diarySaveDto.getEmotion())
                 .diaryContent(diarySaveDto.getDiaryContext())
                 .mom(diarySaveDto.getMom())
-                .isPublic(diarySaveDto.isPublic())
+                .isPublic(diarySaveDto.getIsPublic())
                 .likeCount(0)
                 .build();
 
