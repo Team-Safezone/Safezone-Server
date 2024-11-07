@@ -18,4 +18,7 @@ public interface SquadRepository extends JpaRepository<Squad, Long>{
             "FROM Squad s " +
             "WHERE team =:team")
     List<MypageDto.FavoriteTeamsUrl> getTeamInfo(@Param("team") String team);
+
+    @Query("SELECT logoImg FROM Squad WHERE team = :team")
+    String getUrl(@Param("team") String team);
 }

@@ -51,6 +51,18 @@ public class HeartRateStatisticsService {
         return avgHeartRate;
     }
 
+    public int getMax(String email, Long fixtureId) {
+        int max = 0;
+        Long memberId = getMemberId(email);
+
+        List<HeartRateStatistics> heartRateStatistics = heartRateStatisticsRepository.findByMemberIdAndFixtureId(memberId, fixtureId);
+
+        if(!heartRateStatistics.isEmpty()){
+            max = heartRateStatisticsRepository.getMaxHeartRate(memberId, fixtureId);
+        }
+        return max;
+    }
+
     // 통계 저장
     public void saveStatistics(String email, HeartRateDto heartRateDTO) {
         Long memberId = getMemberId(email);

@@ -1,9 +1,13 @@
 package KickIt.server.domain.member.entity;
 
+import KickIt.server.domain.diary.entity.Diary;
+import KickIt.server.domain.diary.entity.DiaryLiked;
+import KickIt.server.domain.diary.entity.DiaryReport;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Getter
@@ -48,5 +52,14 @@ public class Member {
         this.marketingConsent = marketingConsent;
         this.authProvider = authProvider;
     }
+
+    @OneToMany(mappedBy = "member", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private List<Diary> diaries;
+
+    @OneToMany(mappedBy = "member", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private List<DiaryLiked> likedDiaries;
+
+    @OneToMany(mappedBy = "member", fetch = FetchType.LAZY)
+    private List<DiaryReport> diaryReports = new ArrayList<>();
 
 }

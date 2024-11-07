@@ -42,7 +42,7 @@ public class JwtTokenUtil {
     }
 
     // 토큰이 유효한지 확인 (사용자 이메일과 토큰의 만료 여부 확인)
-    public Boolean validateToken(String token, String email) {
+    public boolean validateToken(String token, String email) {
         final String extractedEmail = getEmailFromToken(token);
         return (extractedEmail.equals(email) && !isTokenExpired(token));
     }

@@ -35,7 +35,7 @@ public class HeartRateController {
     }
 
     @PostMapping("/save")
-    public ResponseEntity<Map<String, Object>> saveHeartRate(@RequestParam(value = "xAuthToken") String xAuthToken, @RequestBody HeartRateDto heartRateDto) {
+    public ResponseEntity<Map<String, Object>> saveHeartRate(@RequestHeader(value = "xAuthToken") String xAuthToken, @RequestBody HeartRateDto heartRateDto) {
         String email = jwtTokenUtil.getEmailFromToken(xAuthToken);
 
         Map<String, Object> responseBody = new HashMap<>();
@@ -44,6 +44,8 @@ public class HeartRateController {
             heartRateService.save(email, heartRateDto);
 
             // 데이터 저장과 동시에 통계 객체 생성
+            heartRateStatisticsService.saveStatistics(email, heartRateDto);
+
             heartRateStatisticsService.saveStatistics(email, heartRateDto);
 
             responseBody.put("status", HttpStatus.OK.value());
