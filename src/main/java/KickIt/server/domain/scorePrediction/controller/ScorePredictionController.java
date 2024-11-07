@@ -32,7 +32,7 @@ public class ScorePredictionController {
     ScorePredictionService scorePredictionService;
 
     @PostMapping("/save")
-    public ResponseEntity<Map<String, Object>> saveScorePrediction(@RequestParam("xAuthToken") String xAuthToken, @RequestParam("matchId") Long matchId, @RequestBody ScorePredictionDto.ScorePredictionSaveRequest scorePredictionSaveRequest){
+    public ResponseEntity<Map<String, Object>> saveScorePrediction(@RequestHeader("xAuthToken") String xAuthToken, @RequestParam("matchId") Long matchId, @RequestBody ScorePredictionDto.ScorePredictionSaveRequest scorePredictionSaveRequest){
         // 반환할 responseBody
         Map<String, Object> responseBody = new HashMap<>();
         // member를 찾기 위해 token으로 email 조회
@@ -92,7 +92,7 @@ public class ScorePredictionController {
     }
 
     @PatchMapping("/edit")
-    public ResponseEntity<Map<String, Object>> editScorePrediction(@RequestParam("xAuthToken") String xAuthToken, @RequestParam("matchId") Long matchId, @RequestBody ScorePredictionDto.ScorePredictionSaveRequest scorePredictionSaveRequest){
+    public ResponseEntity<Map<String, Object>> editScorePrediction(@RequestHeader("xAuthToken") String xAuthToken, @RequestParam("matchId") Long matchId, @RequestBody ScorePredictionDto.ScorePredictionSaveRequest scorePredictionSaveRequest){
         // 반환할 responseBody
         Map<String, Object> responseBody = new HashMap<>();
         // member를 찾기 위해 token으로 email 조회
@@ -137,7 +137,7 @@ public class ScorePredictionController {
     }
 
     @GetMapping()
-    public ResponseEntity<Map<String, Object>> inquireScorePrediction(@RequestParam("xAuthToken") String xAuthToken, @RequestParam("matchId") Long matchId){
+    public ResponseEntity<Map<String, Object>> inquireScorePrediction(@RequestHeader("xAuthToken") String xAuthToken, @RequestParam("matchId") Long matchId){
         // 반환할 responseBody
         Map<String, Object> responseBody = new HashMap<>();
         // member를 찾기 위해 token으로 email 조회
@@ -187,7 +187,7 @@ public class ScorePredictionController {
     }
 
     @GetMapping("/result")
-    public ResponseEntity<Map<String, Object>> inquireScorePredictionResult(@RequestParam("xAuthToken") String xAuthToken, @RequestParam("matchId") Long matchId){
+    public ResponseEntity<Map<String, Object>> inquireScorePredictionResult(@RequestHeader("xAuthToken") String xAuthToken, @RequestParam("matchId") Long matchId){
         // 반환할 responseBody
         Map<String, Object> responseBody = new HashMap<>();
         // member를 찾기 위해 token으로 email 조회
