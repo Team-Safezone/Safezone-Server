@@ -35,14 +35,13 @@ public class DiaryRecommendService {
         this.diaryRepository = diaryRepository;
     }
 
-    public List<DiaryRecommendDto> getRecommendDiary(String email) {
+    public List<DiaryRecommendDto> getRecommendDiary(String email, int requestNum) {
         Member member = memberRepository.findByEmail(email)
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 사용자입니다."));
 
         LocalDateTime sevenDaysAgo = LocalDateTime.now().minus(7, ChronoUnit.DAYS);
 
-        int page = 0;
-        Pageable pageable = PageRequest.of(page, 10);
+        Pageable pageable = PageRequest.of(requestNum, 10);
 
         List<DiaryRecommendDto> diaryRecommendDtos = new ArrayList<>();
 
