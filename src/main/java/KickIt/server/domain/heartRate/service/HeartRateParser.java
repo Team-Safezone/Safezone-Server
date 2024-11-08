@@ -134,22 +134,21 @@ public class HeartRateParser {
     }
 
 
-
-
     public String getTeamType(Long memberId, Long fixtureId) {
         String home;
         String away;
 
+        System.out.println("여기 들어오긴 하니?????");
         // 경기 아이디로 홈팀 어웨이팀 파악
-        List<Object[]> homeawayTeam = fixtureRepository.findHomeAwayTeam(fixtureId);
+        Object[] homeawayTeam = fixtureRepository.findHomeAwayTeam(fixtureId);
 
-        if (homeawayTeam.isEmpty()) {
+        if (homeawayTeam == null) {
             // homeawayTeam이 비어 있을 경우 처리
             throw new IllegalArgumentException("해당 fixture에 대한 팀 정보가 없습니다.");
         } else {
-            Object[] teams = homeawayTeam.get(0);
-            home = teamNameConvertService.convertToKrName((String) teams[0]);
-            away = teamNameConvertService.convertToKrName((String) teams[1]);
+            Object[] teams = fixtureRepository.findHomeAwayTeam(fixtureId);
+            home = teamNameConvertService.convertToKrName((String)teams[0]);
+            away = teamNameConvertService.convertToKrName((String)teams[1]);
         }
 
         List<Object[]> memberFavoriteTeams = memberRepository.getFavoriteTeam(memberId);
@@ -172,6 +171,7 @@ public class HeartRateParser {
         return "others";
     }
 
+    /*
     public List<Integer> teamAll(Long fixtureId) {
         String home;
         String away;
@@ -180,13 +180,13 @@ public class HeartRateParser {
         int awayTeamCount = 0;
         int otherCount = 0;
 
-        List<Object[]> homeawayTeam = fixtureRepository.findHomeAwayTeam(fixtureId);
+        List<String> homeawayTeam = fixtureRepository.findHomeAwayTeam(fixtureId);
 
         if (homeawayTeam.isEmpty()) {
             // homeawayTeam이 비어 있을 경우 처리
             throw new IllegalArgumentException("해당 fixture에 대한 팀 정보가 없습니다.");
         } else {
-            Object[] teams = homeawayTeam.get(0);
+            String teams = homeawayTeam.get(0);
             home = teamNameConvertService.convertToKrName((String) teams[0]);
             away = teamNameConvertService.convertToKrName((String) teams[1]);
         }
@@ -220,5 +220,7 @@ public class HeartRateParser {
 
         return count;
     }
+
+     */
 
 }

@@ -133,6 +133,6 @@ public class RealTimeDataParser {
             doneTime = 90 + parseInt(extraTime);
             return Integer.toString(doneTime);
         }
-        return " ";
+        return "0";
     }
 }

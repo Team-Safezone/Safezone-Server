@@ -1,6 +1,8 @@
 package KickIt.server.domain.fixture.entity;
 
+import jakarta.transaction.Transactional;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
@@ -30,5 +32,11 @@ public interface FixtureRepository extends JpaRepository<Fixture, Long>{
 
     // 심박수 통계
     @Query("SELECT f.homeTeam, f.awayTeam FROM Fixture f WHERE id = :id")
-    List<Object[]> findHomeAwayTeam(@Param("id") Long id);
+    Object[] findHomeAwayTeam(@Param("id") Long id);
+
+    // 경기 상태 정보 업데이트
+    @Modifying
+    @Transactional
+    @Query("UPDATE Fixture f SET f.status =:status WHERE f.id = :id")
+    void updateStatus(@Param("id") Long id, @Param("status") int status);
 }

@@ -46,8 +46,6 @@ public class HeartRateController {
             // 데이터 저장과 동시에 통계 객체 생성
             heartRateStatisticsService.saveStatistics(email, heartRateDto);
 
-            heartRateStatisticsService.saveStatistics(email, heartRateDto);
-
             responseBody.put("status", HttpStatus.OK.value());
             responseBody.put("message", "success");
             responseBody.put("isSuccess", true);

@@ -1,5 +1,6 @@
 package KickIt.server.domain.fixture.entity;
 
+import KickIt.server.domain.realtime.entity.RealTime;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -7,6 +8,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import java.sql.Timestamp;
+import java.util.List;
 
 // 한 경기의 정보를 담을 class Fixture
 @Entity
@@ -54,6 +56,10 @@ public class Fixture {
 
     @Column(name = "lineupUrl")
     private String lineupUrl; // 선발 라인업 크롤링해 올 경기 상세 페이지 Url 정보
+
+    @OneToMany(mappedBy = "fixture", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private List<RealTime> realTimeList;
+
 }
 
 

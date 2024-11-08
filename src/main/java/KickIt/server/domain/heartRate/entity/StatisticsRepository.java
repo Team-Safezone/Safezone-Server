@@ -23,8 +23,8 @@ public interface StatisticsRepository extends JpaRepository<HeartRateStatistics,
 
     // 통계 이벤트 리스트 API
     @Query("SELECT new KickIt.server.domain.heartRate.dto.RealTimeStatisticsDto(r.teamUrl, r.eventName, r.time, r.player1) "+
-            "FROM RealTime r WHERE r.matchId =:matchId")
-    List<RealTimeStatisticsDto> getRealTimeStatistics(@Param("matchId") Long matchId);
+            "FROM RealTime r WHERE r.fixture.id =:fixtureId")
+    List<RealTimeStatisticsDto> getRealTimeStatistics(@Param("fixtureId") Long fixtureId);
 
     // 통계 homeTeam 심박수 리스트 API
     @Query("SELECT new KickIt.server.domain.heartRate.dto.HeartRateDto$MatchHeartRateRecords(hh.heartRate, hh.heartRateDate) " +
