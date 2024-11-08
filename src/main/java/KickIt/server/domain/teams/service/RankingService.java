@@ -14,6 +14,8 @@ import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 @Service
 public class RankingService {
@@ -54,9 +56,10 @@ public class RankingService {
             return response;
         }
         // 가장 최근 데이터 1 개와 현재 시간 비교
-        long duration = Duration.between(ZonedDateTime.ofInstant(LocalDateTime.now().atZone(ZoneId.of("Asia/Seoul")).toInstant(), ZoneId.of("Asia/Seoul")), ZonedDateTime.ofInstant(rankingRepository.findNewestRank().get().getLastUpdated().atZone(ZoneId.of("Asia/Seoul")).toInstant(), ZoneId.of("Asia/Seoul"))).toMinutes();
+        long duration = Duration.between(ZonedDateTime.ofInstant(rankingRepository.findNewestRank().get().getLastUpdated().atZone(ZoneId.of("Asia/Seoul")).toInstant(), ZoneId.of("Asia/Seoul")), ZonedDateTime.ofInstant(LocalDateTime.now().atZone(ZoneId.of("Asia/Seoul")).toInstant(), ZoneId.of("Asia/Seoul"))).toMinutes();
+        Logger.getGlobal().log(Level.INFO, String.format("현재 시간: %s, 업데이트 시간: %s, 차이: %s", ZonedDateTime.ofInstant(LocalDateTime.now().atZone(ZoneId.of("Asia/Seoul")).toInstant(), ZoneId.of("Asia/Seoul")), ZonedDateTime.ofInstant(rankingRepository.findNewestRank().get().getLastUpdated().atZone(ZoneId.of("Asia/Seoul")).toInstant(), ZoneId.of("Asia/Seoul")), duration));
         // 가장 최근에 저장된 데이터가 1분 이상 차이 나지 않으면 DB에 있는 값 그대로 반환
-        if (duration <= 1){
+        if (duration < 1){
             // 가장 최근 시즌 정보
             String season = newestRank.getSquad().getSeason();
             // 해당 시즌 정보 가져옴
@@ -114,7 +117,11 @@ public class RankingService {
         if(rankingList == null){
             return null;
         }
-        for(Ranking ranking : rankingList){ rankingRepository.save(ranking); }
+        for(Ranking ranking : rankingList){
+            // 전체 데이터 삭제 후 저장
+            rankingRepository.deleteAll();
+            rankingRepository.save(ranking);
+        }
         return rankingList;
     }
 
