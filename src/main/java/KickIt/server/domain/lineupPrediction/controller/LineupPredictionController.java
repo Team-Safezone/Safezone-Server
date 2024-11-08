@@ -39,7 +39,7 @@ public class LineupPredictionController {
     // 입력 받은 정보 바탕으로 사용자의 경기 선발 라인업 예측을 DB에 POST
     // JWT 될 때까지 일단 member id로 처리 -> 차후 변경 예정
     @PostMapping("/save")
-    public ResponseEntity<Map<String, Object>> saveLineupPrediction(@RequestParam("xAuthToken") String xAuthToken, @RequestParam("matchId") long matchId, @RequestBody LineupPredictionDto.LineUpPredictionRequest lineUpPredictionRequest){
+    public ResponseEntity<Map<String, Object>> saveLineupPrediction(@RequestHeader(value = "xAuthToken") String xAuthToken, @RequestParam("matchId") long matchId, @RequestBody LineupPredictionDto.LineUpPredictionRequest lineUpPredictionRequest){
         String memberEmail = jwtTokenUtil.getEmailFromToken(xAuthToken);
         Member member = memberRepository.findByEmailAndAuthProvider(memberEmail, memberService.transAuth("kakao")).orElse(null);
         Map<String, Object> responseBody = new HashMap<>();
@@ -167,7 +167,7 @@ public class LineupPredictionController {
     // 입력 받은 정보 바탕으로 사용자의 기존 경기 선발 라인업 예측을 수정
     // JWT 될 때까지 일단 member id로 처리 -> 차후 변경 예정
     @PatchMapping("/edit")
-    public ResponseEntity<Map<String, Object>> editLineupPrediction(@RequestParam("xAuthToken") String xAuthToken, @RequestParam("matchId") long matchId, @RequestBody LineupPredictionDto.LineUpPredictionRequest lineUpPredictionRequest){
+    public ResponseEntity<Map<String, Object>> editLineupPrediction(@RequestHeader(value = "xAuthToken") String xAuthToken, @RequestParam("matchId") long matchId, @RequestBody LineupPredictionDto.LineUpPredictionRequest lineUpPredictionRequest){
         String memberEmail = jwtTokenUtil.getEmailFromToken(xAuthToken);
         Member member = memberRepository.findByEmailAndAuthProvider(memberEmail, memberService.transAuth("kakao")).orElse(null);
         Map<String, Object> responseBody = new HashMap<>();
@@ -281,7 +281,7 @@ public class LineupPredictionController {
     // 사용자의 선발 라인업 예측 정보 조회
     // JWT 될 때까지 일단 member id로 처리 -> 차후 변경 예정
     @GetMapping()
-    public ResponseEntity<Map<String, Object>> getUserLineupPrediction(@RequestParam("xAuthToken") String xAuthToken, @RequestParam("matchId") Long matchId){
+    public ResponseEntity<Map<String, Object>> getUserLineupPrediction(@RequestHeader(value = "xAuthToken") String xAuthToken, @RequestParam("matchId") Long matchId){
         String memberEmail = jwtTokenUtil.getEmailFromToken(xAuthToken);
         Member member = memberRepository.findByEmailAndAuthProvider(memberEmail, memberService.transAuth("kakao")).orElse(null);
         Map<String, Object> responseBody = new HashMap<>();
@@ -330,7 +330,7 @@ public class LineupPredictionController {
     // 선발 라인업 예측 결과 정보 조회 (전체)
     // JWT 될 때까지 일단 member id로 처리 -> 차후 변경 예정
     @GetMapping("/result")
-    public ResponseEntity<Map<String, Object>> getLineupPrediction(@RequestParam("xAuthToken") String xAuthToken, @RequestParam("matchId") Long matchId) {
+    public ResponseEntity<Map<String, Object>> getLineupPrediction(@RequestHeader(value = "xAuthToken") String xAuthToken, @RequestParam("matchId") Long matchId) {
         String memberEmail = jwtTokenUtil.getEmailFromToken(xAuthToken);
         Member member = memberRepository.findByEmailAndAuthProvider(memberEmail, memberService.transAuth("kakao")).orElse(null);
         Map<String, Object> responseBody = new HashMap<>();
