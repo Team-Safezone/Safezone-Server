@@ -1,5 +1,6 @@
 package KickIt.server.domain.teams.controller;
 
+import KickIt.server.domain.teams.dto.SquadDto;
 import KickIt.server.domain.teams.entity.Squad;
 import KickIt.server.domain.teams.service.SquadService;
 import KickIt.server.global.common.crawler.FixtureCrawler;
@@ -33,6 +34,30 @@ public class SquadController {
         responseBody.put("status", HttpStatus.OK.value());
         responseBody.put("message", "success");
         responseBody.put("data", squadList);
+        responseBody.put("isSuccess", true);
         return new ResponseEntity<>(responseBody, HttpStatus.OK);
+    }
+
+    @GetMapping("name-url")
+    // 현재 시즌 프리미어리그 팀 전체의 이름과 로고 이미지 조회 API
+    public ResponseEntity<Map<String, Object>> inquireEplTeamNameAndUrl(){
+        // 반환할 response
+        Map<String, Object> responseBody = new HashMap<>();
+        List<SquadDto.EplNameUrlResponse> data = squadService.getEplTeamNameAndUrl();
+        // 등록된 것 중 가장 최근 시즌의 Squad 데이터 조회 완료
+        if(data != null){
+            responseBody.put("status", HttpStatus.OK.value());
+            responseBody.put("message", "success");
+            responseBody.put("data", data);
+            responseBody.put("isSuccess", true);
+            return new ResponseEntity<>(responseBody, HttpStatus.OK);
+        }
+        // 조회한 squad 데이터가 없는 경우
+        else{
+            responseBody.put("status", HttpStatus.NOT_FOUND.value());
+            responseBody.put("message", "현재 시즌 팀 데이터 조회 실패");
+            responseBody.put("isSuccess", false);
+            return new ResponseEntity<>(responseBody, HttpStatus.NOT_FOUND);
+        }
     }
 }
