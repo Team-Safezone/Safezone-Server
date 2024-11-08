@@ -64,6 +64,7 @@ public class RankingService {
             String season = newestRank.getSquad().getSeason();
             // 해당 시즌 정보 가져옴
             List<Ranking> rankingList = rankingRepository.findBySeason(season);
+            Logger.getGlobal().log(Level.INFO, rankingList.size() + "");
             // dto class 대로 변환해 반환
             List<RankingDto.RankInfo> rankings = new ArrayList<>();
             for(Ranking ranking : rankingList){
@@ -117,9 +118,10 @@ public class RankingService {
         if(rankingList == null){
             return null;
         }
+        // 전체 데이터 삭제 후 저장
+        rankingRepository.deleteAll();
+
         for(Ranking ranking : rankingList){
-            // 전체 데이터 삭제 후 저장
-            rankingRepository.deleteAll();
             rankingRepository.save(ranking);
         }
         return rankingList;

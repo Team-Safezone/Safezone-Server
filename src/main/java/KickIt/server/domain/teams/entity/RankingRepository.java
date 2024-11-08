@@ -13,6 +13,6 @@ public interface RankingRepository extends JpaRepository<Ranking, Long> {
     @Query(value = "SELECT r FROM Ranking r ORDER BY r.lastUpdated LIMIT 1")
     Optional<Ranking> findNewestRank();
 
-    @Query(value = "SELECT r FROM Ranking r WHERE r.squad.season = :season")
+    @Query(value = "SELECT r FROM Ranking r WHERE r.squad.season = :season ORDER BY r.teamRank ASC")
     List<Ranking> findBySeason(@Param("season") String season);
 }
