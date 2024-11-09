@@ -61,10 +61,10 @@ public class RealTimeStart {
 
 
     // 매 자정 마다 오늘 경기 여부 파악
-    @Scheduled(cron = "0 45 04 * * ?")
+    @Scheduled(cron = "0 0 0 * * ?")
     public void getTodayFixture() {
-        LocalDate today = LocalDate.of(2024, 9, 16);
-        //LocalDate today = LocalDate.now(); //-> default
+        //LocalDate today = LocalDate.of(2024, 9, 16);
+        LocalDate today = LocalDate.now(); //-> default
 
         // LocalDate를 LocalDateTime으로 변환하고, Timestamp로 변환
         LocalDateTime startOfDay = today.atStartOfDay();
@@ -125,7 +125,7 @@ public class RealTimeStart {
                     case "isFirst":
                         System.out.println("경기 시작");
                         fixtureService.updateFixtureStatus(fixture.getId(), 1);
-                        Thread.sleep(1 * 60 * 1000);
+                        Thread.sleep(45 * 60 * 1000);
                         break;
                     case " ":
                         System.out.println("1분 대기");
@@ -134,7 +134,7 @@ public class RealTimeStart {
                     case "종료":
                         System.out.println("전반전 종료");
                         fixtureService.updateFixtureStatus(fixture.getId(), 2);
-                        Thread.sleep( 1 * 60 * 1000);
+                        Thread.sleep( 13 * 60 * 1000);
                         break;
                     case "경기종료":
                         System.out.println("경기 종료");
