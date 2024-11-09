@@ -28,7 +28,7 @@ public class Diary extends BaseEntity {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "fixture_id", nullable = false)
     private Fixture fixture;
-
+    
     private String teamName;
 
     private int emotion;

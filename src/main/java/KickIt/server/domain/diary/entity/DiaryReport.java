@@ -1,6 +1,7 @@
 package KickIt.server.domain.diary.entity;
 
 import KickIt.server.domain.member.entity.Member;
+import KickIt.server.global.util.CreatedAt;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -10,7 +11,7 @@ import lombok.*;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class DiaryReport {
+public class DiaryReport extends CreatedAt {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

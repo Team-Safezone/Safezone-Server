@@ -1,5 +1,6 @@
 package KickIt.server.domain.diary.entity;
 
+import KickIt.server.global.util.BaseEntity;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -9,7 +10,7 @@ import lombok.*;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class DiaryPhoto {
+public class DiaryPhoto extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
