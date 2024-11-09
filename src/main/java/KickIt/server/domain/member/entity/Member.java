@@ -3,6 +3,7 @@ package KickIt.server.domain.member.entity;
 import KickIt.server.domain.diary.entity.Diary;
 import KickIt.server.domain.diary.entity.DiaryLiked;
 import KickIt.server.domain.diary.entity.DiaryReport;
+import KickIt.server.global.util.BaseEntity;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -13,7 +14,7 @@ import java.util.List;
 @Getter
 @Entity
 @NoArgsConstructor
-public class Member {
+public class Member extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
