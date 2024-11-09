@@ -3,6 +3,7 @@ package KickIt.server.domain.member.entity;
 import KickIt.server.domain.diary.entity.Diary;
 import KickIt.server.domain.diary.entity.DiaryLiked;
 import KickIt.server.domain.diary.entity.DiaryReport;
+import KickIt.server.domain.heartRate.entity.HeartRate;
 import KickIt.server.global.util.BaseEntity;
 import jakarta.persistence.*;
 import lombok.Getter;
@@ -75,5 +76,8 @@ public class Member extends BaseEntity {
 
     @OneToMany(mappedBy = "member", fetch = FetchType.LAZY)
     private List<DiaryReport> diaryReports = new ArrayList<>();
+
+    @OneToMany(mappedBy = "member", fetch = FetchType.LAZY)
+    private List<HeartRate> heartRateArrayList = new ArrayList<>();
 
 }

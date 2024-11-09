@@ -1,5 +1,8 @@
 package KickIt.server.domain.fixture.entity;
 
+import KickIt.server.domain.diary.entity.DiaryReport;
+import KickIt.server.domain.heartRate.entity.HeartRate;
+import KickIt.server.domain.heartRate.entity.HeartRateStatistics;
 import KickIt.server.domain.realtime.entity.RealTime;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -8,6 +11,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import java.sql.Timestamp;
+import java.util.ArrayList;
 import java.util.List;
 
 // 한 경기의 정보를 담을 class Fixture
@@ -60,7 +64,14 @@ public class Fixture {
     @OneToMany(mappedBy = "fixture", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<RealTime> realTimeList;
 
+    @OneToMany(mappedBy = "fixture", fetch = FetchType.LAZY)
+    private List<HeartRate> heartRateArrayList = new ArrayList<>();
+
+    @OneToMany(mappedBy = "fixture", fetch = FetchType.LAZY)
+    private List<HeartRateStatistics> heartRateStatisticsArrayList = new ArrayList<>();
+
 }
+
 
 
 

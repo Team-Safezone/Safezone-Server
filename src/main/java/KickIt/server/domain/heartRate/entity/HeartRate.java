@@ -1,10 +1,9 @@
 package KickIt.server.domain.heartRate.entity;
 
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import KickIt.server.domain.fixture.entity.Fixture;
+import KickIt.server.domain.member.entity.Member;
+import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -21,16 +20,22 @@ public class HeartRate {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Column(nullable = false)
     private int heartRateDate;
+    @Column(nullable = false)
     private int heartRate;
 
-    private Long memberId;
-    private Long fixtureId;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "member_id", nullable = false)
+    private Member member;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "fixture_id", nullable = false)
+    private Fixture fixture;
 
-    public HeartRate(Long memberId, Long fixtureId, int heartRate, int heartRateDate) {
-        this.memberId = memberId;
-        this.fixtureId = fixtureId;
+    public HeartRate(Member member, Fixture fixture, int heartRate, int heartRateDate) {
+        this.member = member;
+        this.fixture = fixture;
         this.heartRate = heartRate;
         this.heartRateDate = heartRateDate;
     }

@@ -1,5 +1,6 @@
 package KickIt.server.domain.heartRate.entity;
 
+import KickIt.server.domain.fixture.entity.Fixture;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -13,7 +14,9 @@ public class TeamHeartRateStatistics {
     @GeneratedValue
     private Long id;
 
-    private Long fixtureId;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "fixture_id", nullable = false)
+    private Fixture fixture;
 
     private String teamType;
 
@@ -21,8 +24,8 @@ public class TeamHeartRateStatistics {
     private int avgBPM;
     private int maxBPM;
 
-    public TeamHeartRateStatistics(Long fixtureId, String teamType, int minBPM, int avgBPM, int maxBPM) {
-        this.fixtureId = fixtureId;
+    public TeamHeartRateStatistics(Fixture fixture, String teamType, int minBPM, int avgBPM, int maxBPM) {
+        this.fixture = fixture;
         this.teamType = teamType;
         this.minBPM = minBPM;
         this.avgBPM = avgBPM;
