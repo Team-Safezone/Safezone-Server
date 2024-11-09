@@ -106,14 +106,9 @@ public class RealTimeService {
         Map<Integer, Integer> heartRateMap = eventHeartRateList.stream()
                 .collect(Collectors.toMap(EventHeartRateDto::getHeartRateDate, EventHeartRateDto::getHeartRate));
 
-        System.out.println("heartRateMap = " + heartRateMap);
-
         List<RealTimeDto.RealTimeResponse> responseList = new ArrayList<>();
 
         for (RealTime realTime : realTimeList) {
-            System.out.println("realTime = " + realTime.getTime());
-            //Integer eventHeartRate = heartRateMap.get(realTime.getTime());
-
             Integer timeKey = null;
             try {
                 timeKey = Integer.parseInt(realTime.getTime());
@@ -123,9 +118,6 @@ public class RealTimeService {
 
             // heartRateMap에서 eventHeartRate를 가져옴
             Integer eventHeartRate = (timeKey != null) ? heartRateMap.get(timeKey) : null;
-
-            System.out.println("Converted Time Key: " + timeKey);
-            System.out.println("Event Heart Rate: " + eventHeartRate);
 
             responseList.add(new RealTimeDto.RealTimeResponse(
                     getFixtureId(realTime.getFixture().getId()),
