@@ -3,9 +3,8 @@ package KickIt.server.domain.heartRate.service;
 import KickIt.server.domain.fixture.entity.Fixture;
 import KickIt.server.domain.fixture.entity.FixtureRepository;
 import KickIt.server.domain.heartRate.dto.HeartRateDto;
-import KickIt.server.domain.heartRate.entity.HeartRateRepository;
-import KickIt.server.domain.heartRate.entity.HeartRateStatisticsRepository;
 import KickIt.server.domain.heartRate.entity.HeartRate;
+import KickIt.server.domain.heartRate.entity.HeartRateRepository;
 import KickIt.server.domain.member.entity.Member;
 import KickIt.server.domain.member.entity.MemberRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,16 +17,12 @@ public class HeartRateService {
 
     private final HeartRateRepository heartRateRepository;
     private final MemberRepository memberRepository;
-    private final HeartRateParser heartRateParser;
-    private final HeartRateStatisticsRepository heartRateStatisticsRepository;
     private final FixtureRepository fixtureRepository;
 
     @Autowired
-    public HeartRateService(HeartRateRepository heartRateRepository, MemberRepository memberRepository, HeartRateParser heartRateParser, HeartRateStatisticsRepository heartRateStatisticsRepository, FixtureRepository fixtureRepository) {
+    public HeartRateService(HeartRateRepository heartRateRepository, MemberRepository memberRepository, FixtureRepository fixtureRepository) {
         this.heartRateRepository = heartRateRepository;
         this.memberRepository = memberRepository;
-        this.heartRateParser = heartRateParser;
-        this.heartRateStatisticsRepository = heartRateStatisticsRepository;
         this.fixtureRepository = fixtureRepository;
     }
 

@@ -27,22 +27,22 @@ public class RealTime extends BaseEntity {
     @Column(nullable = false)
     private int eventCode;
 
-    @Column(nullable = false, length = 3)
+    @Column(nullable = false, length = 5)
     private String time;
 
-    @Column(nullable = false, length = 30)
+    @Column(nullable = false, length = 50)
     private String eventTime;
 
-    @Column(nullable = false, length = 15)
+    @Column(nullable = false, length = 50)
     private String eventName;
 
-    @Column(length = 20)
+    @Column(length = 50)
     private String player1;
 
-    @Column(length = 20)
+    @Column(length = 50)
     private String player2;
 
-    @Column(length = 10)
+    @Column(length = 50)
     private String teamName;
 
     private String teamUrl;

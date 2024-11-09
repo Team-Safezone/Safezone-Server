@@ -1,28 +1,28 @@
 package KickIt.server.domain.heartRate.service;
 
 import KickIt.server.domain.fixture.entity.FixtureRepository;
-import KickIt.server.domain.heartRate.entity.HeartRateRepository;
 import KickIt.server.domain.heartRate.dto.MinAvgMaxDto;
 import KickIt.server.domain.member.entity.MemberRepository;
 import KickIt.server.domain.teams.service.TeamNameConvertService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 // 사용자 심박수 최소, 최대 계산 클래스
 @Service
 public class HeartRateParser {
 
-    private final HeartRateRepository heartRateRepository;
     private final FixtureRepository fixtureRepository;
     private final MemberRepository memberRepository;
     private final TeamNameConvertService teamNameConvertService;
 
     @Autowired
-    public HeartRateParser(HeartRateRepository heartRateRepository, FixtureRepository fixtureRepository, MemberRepository memberRepository, TeamNameConvertService teamNameConvertService) {
-        this.heartRateRepository = heartRateRepository;
+    public HeartRateParser(FixtureRepository fixtureRepository, MemberRepository memberRepository, TeamNameConvertService teamNameConvertService) {
         this.fixtureRepository = fixtureRepository;
         this.memberRepository = memberRepository;
         this.teamNameConvertService = teamNameConvertService;
