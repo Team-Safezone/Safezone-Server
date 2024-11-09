@@ -69,10 +69,10 @@ public class Member extends BaseEntity {
     }
 
     @OneToMany(mappedBy = "member", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    private List<Diary> diaries;
+    private List<Diary> diaries = new ArrayList<>();
 
     @OneToMany(mappedBy = "member", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    private List<DiaryLiked> likedDiaries;
+    private List<DiaryLiked> likedDiaries = new ArrayList<>();
 
     @OneToMany(mappedBy = "member", fetch = FetchType.LAZY)
     private List<DiaryReport> diaryReports = new ArrayList<>();
