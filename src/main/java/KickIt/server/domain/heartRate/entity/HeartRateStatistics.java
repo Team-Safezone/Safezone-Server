@@ -2,6 +2,7 @@ package KickIt.server.domain.heartRate.entity;
 
 import KickIt.server.domain.fixture.entity.Fixture;
 import KickIt.server.domain.member.entity.Member;
+import KickIt.server.global.util.CreatedAt;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -9,7 +10,7 @@ import lombok.NoArgsConstructor;
 @Getter
 @Entity
 @NoArgsConstructor
-public class HeartRateStatistics {
+public class HeartRateStatistics extends CreatedAt {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

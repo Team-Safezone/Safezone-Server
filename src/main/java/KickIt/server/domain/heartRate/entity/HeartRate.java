@@ -3,6 +3,8 @@ package KickIt.server.domain.heartRate.entity;
 
 import KickIt.server.domain.fixture.entity.Fixture;
 import KickIt.server.domain.member.entity.Member;
+import KickIt.server.global.util.BaseEntity;
+import KickIt.server.global.util.CreatedAt;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -13,7 +15,7 @@ import java.util.List;
 @Entity
 @Getter
 @NoArgsConstructor
-public class HeartRate {
+public class HeartRate extends CreatedAt {
 
     // 심박수 데이터 저장
     @Id
