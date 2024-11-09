@@ -1,8 +1,7 @@
 package KickIt.server.domain.fixture.entity;
 
 import KickIt.server.domain.diary.entity.DiaryReport;
-import KickIt.server.domain.heartRate.entity.HeartRate;
-import KickIt.server.domain.heartRate.entity.HeartRateStatistics;
+import KickIt.server.domain.heartRate.entity.*;
 import KickIt.server.domain.realtime.entity.RealTime;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -62,13 +61,28 @@ public class Fixture {
     private String lineupUrl; // 선발 라인업 크롤링해 올 경기 상세 페이지 Url 정보
 
     @OneToMany(mappedBy = "fixture", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    private List<RealTime> realTimeList;
-
-    @OneToMany(mappedBy = "fixture", fetch = FetchType.LAZY)
+    @Builder. Default
     private List<HeartRate> heartRateArrayList = new ArrayList<>();
 
-    @OneToMany(mappedBy = "fixture", fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "fixture", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @Builder. Default
     private List<HeartRateStatistics> heartRateStatisticsArrayList = new ArrayList<>();
+
+    @OneToMany(mappedBy = "fixture", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @Builder. Default
+    private List<TeamHeartRate> teamHeartRateArrayList = new ArrayList<>();
+
+    @OneToMany(mappedBy = "fixture", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @Builder. Default
+    private List<TeamHeartRateStatistics> teamHeartRateStatisticsArrayList = new ArrayList<>();
+
+    @OneToMany(mappedBy = "fixture", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @Builder. Default
+    private List<FixtureHeartRateStatistics> fixtureHeartRateStatisticsArrayList = new ArrayList<>();
+
+    @OneToMany(mappedBy = "fixture", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @Builder. Default
+    private List<RealTime> realTimeArrayList = new ArrayList<>();
 
 }
 

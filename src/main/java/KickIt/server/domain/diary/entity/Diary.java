@@ -52,9 +52,11 @@ public class Diary extends BaseEntity {
     private boolean isPublic;
 
     @OneToMany(mappedBy = "diary", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    private List<DiaryLiked> likedBy;
+    @Builder. Default
+    private List<DiaryLiked> likedBy = new ArrayList<>();
 
     @OneToMany(mappedBy = "diary", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @Builder. Default
     private List<DiaryReport> diaryReports = new ArrayList<>();
 
 }
