@@ -1,6 +1,7 @@
 package KickIt.server.domain.realtime.entity;
 
 import KickIt.server.domain.fixture.entity.Fixture;
+import KickIt.server.global.util.BaseEntity;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -12,12 +13,13 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
-public class RealTime {
-    // 경기 고유 id
+public class RealTime extends BaseEntity {
+    // 타임라인 id(PK)
     @Id
     @GeneratedValue
     private Long id;
 
+    // 경기 id (FK)
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "fixture_id", nullable = false)
     private Fixture fixture;
@@ -43,7 +45,7 @@ public class RealTime {
     @Column(length = 10)
     private String teamName;
 
-    @Column(length = 50)
+    @Column(length = 100)
     private String teamUrl;
 
 }
