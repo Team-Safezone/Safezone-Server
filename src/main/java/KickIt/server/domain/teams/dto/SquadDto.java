@@ -45,4 +45,12 @@ public class SquadDto {
             this.players = squad.getPlayers();
         }
     }
+
+    @Data
+    @Builder
+    // 프리미어리그 팀, Url 조회 API 호출 시 반환할 Response class
+    public static class EplNameUrlResponse{
+        private String teamUrl;
+        private String teamName;
+    }
 }
