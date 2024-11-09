@@ -16,6 +16,7 @@ import java.util.List;
 @NoArgsConstructor
 public class HeartRate {
 
+    // 심박수 데이터 저장
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
