@@ -28,20 +28,27 @@ public class Diary extends BaseEntity {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "fixture_id", nullable = false)
     private Fixture fixture;
-    
+
+    @Column(nullable = false, length = 10)
     private String teamName;
 
+    @Column(nullable = false, length = 2)
     private int emotion;
 
-    @Column(nullable = true, length = 500)
+    @Column(nullable = false, length = 500)
     private String diaryContent;
+
+    @Column
     private int likeCount;
 
     @OneToMany(mappedBy = "diary", cascade = CascadeType.ALL, orphanRemoval = true)
     @Builder.Default
     private List<DiaryPhoto> diaryPhotos = new ArrayList<>();
 
+    @Column(length = 10)
     private String mom;
+
+    @Column(nullable = false)
     private boolean isPublic;
 
     @OneToMany(mappedBy = "diary", cascade = CascadeType.ALL, fetch = FetchType.LAZY)

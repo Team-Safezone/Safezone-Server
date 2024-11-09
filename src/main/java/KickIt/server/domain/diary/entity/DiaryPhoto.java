@@ -16,6 +16,7 @@ public class DiaryPhoto extends BaseEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Column(length = 200)
     private String photoUrl;
 
     @ManyToOne

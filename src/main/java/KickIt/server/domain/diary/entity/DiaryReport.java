@@ -25,5 +25,6 @@ public class DiaryReport extends CreatedAt {
     @JoinColumn(name = "diary_id", nullable = false)
     private Diary diary;
 
+    @Column(nullable = false)
     private int reasonCode;
 }
