@@ -15,7 +15,7 @@ import java.util.Optional;
 @Repository
 public interface HeartRateRepository extends JpaRepository<HeartRate, Long> {
 
-    List<HeartRate> findByMember_IdAndFixture_Id(Member member, Fixture fixture);
+    List<HeartRate> findByMember_IdAndFixture_Id(Long memberId, Long fixtureId);
 
     @Query("SELECT heartRate FROM HeartRate h WHERE h.fixture.id = :fixtureId")
     List<Integer> getAllHeartRate(@Param("fixtureId") Long fixtureId);

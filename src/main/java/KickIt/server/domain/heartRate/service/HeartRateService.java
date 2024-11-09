@@ -44,7 +44,7 @@ public class HeartRateService {
         Fixture fixture = getFixture(heartRateDto.getMatchId());
 
         // 중복 아닐 때만 저장
-        if(heartRateRepository.findByMember_IdAndFixture_Id(member,fixture).isEmpty()){
+        if(heartRateRepository.findByMember_IdAndFixture_Id(member.getId(),fixture.getId()).isEmpty()){
             for (HeartRateDto.MatchHeartRateRecords records : heartRateDto.getMatchHeartRateRecords()) {
                 HeartRate heartRate = new HeartRate(member, fixture, records.getHeartRate(), records.getDate());
                 heartRateRepository.save(heartRate);
@@ -57,7 +57,7 @@ public class HeartRateService {
         Member member = getMember(email);
         Fixture fixture = getFixture(matchId);
 
-        List<HeartRate> getHeartRate = heartRateRepository.findByMember_IdAndFixture_Id(member, fixture);
+        List<HeartRate> getHeartRate = heartRateRepository.findByMember_IdAndFixture_Id(member.getId(), fixture.getId());
 
         if (getHeartRate.isEmpty()) {
             return false;

@@ -32,7 +32,7 @@ public interface FixtureRepository extends JpaRepository<Fixture, Long>{
 
     // 심박수 통계
     @Query("SELECT f.homeTeam, f.awayTeam FROM Fixture f WHERE id = :id")
-    Object[] findHomeAwayTeam(@Param("id") Long id);
+    List<Object[]> findHomeAwayTeam(@Param("id") Long id);
 
     // 경기 상태 정보 업데이트
     @Modifying

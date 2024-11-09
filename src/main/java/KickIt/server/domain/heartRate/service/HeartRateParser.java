@@ -138,17 +138,16 @@ public class HeartRateParser {
         String home;
         String away;
 
-        System.out.println("여기 들어오긴 하니?????");
         // 경기 아이디로 홈팀 어웨이팀 파악
-        Object[] homeawayTeam = fixtureRepository.findHomeAwayTeam(fixtureId);
+        List<Object[]> homeawayTeam = fixtureRepository.findHomeAwayTeam(fixtureId);
 
-        if (homeawayTeam == null) {
+        if (homeawayTeam.isEmpty()) {
             // homeawayTeam이 비어 있을 경우 처리
             throw new IllegalArgumentException("해당 fixture에 대한 팀 정보가 없습니다.");
         } else {
-            Object[] teams = fixtureRepository.findHomeAwayTeam(fixtureId);
-            home = teamNameConvertService.convertToKrName((String)teams[0]);
-            away = teamNameConvertService.convertToKrName((String)teams[1]);
+            Object[] teams = homeawayTeam.get(0);
+            home = teamNameConvertService.convertToKrName((String) teams[0]);
+            away = teamNameConvertService.convertToKrName((String) teams[1]);
         }
 
         List<Object[]> memberFavoriteTeams = memberRepository.getFavoriteTeam(memberId);

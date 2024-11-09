@@ -45,7 +45,6 @@ public class RealTime extends BaseEntity {
     @Column(length = 10)
     private String teamName;
 
-    @Column(length = 100)
     private String teamUrl;
 
 }
