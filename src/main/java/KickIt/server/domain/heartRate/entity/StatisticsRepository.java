@@ -26,7 +26,7 @@ public interface StatisticsRepository extends JpaRepository<HeartRateStatistics,
             "FROM RealTime r WHERE r.fixture.id =:fixtureId")
     List<RealTimeStatisticsDto> getRealTimeStatistics(@Param("fixtureId") Long fixtureId);
 
-    // 통계 homeTeam 심박수 리스트 API
+    // 통계 homeawayTeam 심박수 리스트 API
     @Query("SELECT new KickIt.server.domain.heartRate.dto.HeartRateDto$MatchHeartRateRecords(hh.heartRate, hh.heartRateDate) " +
             "FROM HeartRateStatistics h " +
             "JOIN HeartRate hh ON h.member.id = hh.member.id " +

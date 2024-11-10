@@ -160,10 +160,12 @@ public class HeartRateParser {
         Object[] memberTeams = memberFavoriteTeams.get(0);
 
         for (Object memberTeam : memberTeams) {
-            if (memberTeam.equals(home)) {
-                return "home";
-            } else if (memberTeam.equals(away)) {
-                return "away";
+            if (memberTeam != null) {
+                if (memberTeam.equals(home)) {
+                    return "home";
+                } else if (memberTeam.equals(away)) {
+                    return "away";
+                }
             }
         }
 

@@ -23,7 +23,7 @@ public interface TeamHeartRateRepository extends JpaRepository<TeamHeartRate, Lo
     List<TeamHeartRate> findByFixtureIdAndTeamType(Long fixtureId, String teamType);
 
     // 팀 별 통계 심박수 리스트 API
-    @Query("SELECT new KickIt.server.domain.heartRate.dto.HeartRateDto$MatchHeartRateRecords(h.heartRateDate, h.heartRate) " +
+    @Query("SELECT new KickIt.server.domain.heartRate.dto.HeartRateDto$MatchHeartRateRecords(h.heartRate, h.heartRateDate) " +
             "FROM TeamHeartRate h " +
             "WHERE h.fixture.id = :fixtureId AND h.teamType = :teamType")
     List<HeartRateDto.MatchHeartRateRecords> getHomeAwayTeamHeartRate(@Param("fixtureId") Long fixtureId, @Param("teamType") String teamType);
