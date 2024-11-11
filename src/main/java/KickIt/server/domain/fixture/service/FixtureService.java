@@ -128,14 +128,18 @@ public class FixtureService {
     @Transactional
     public FixtureDto.DiaryFixtureResponse findDiaryFixturesByMonth(int year, int month){
         List<FixtureDto.DiaryFixture> diaryFixtures = new ArrayList<>();
+        // 가져온 경기 리스트
         List<Fixture> fixtureList = fixtureRepository.findByMonth(year, month);
 
-        Boolean isLeftExist;
-        Boolean isRightExist;
+        Boolean isLeftExist; // 이전 달에 경기 존재하는지 여부
+        Boolean isRightExist; // 다음 달에 경기 존재하는지 여부
+
+        // 1월인 경우 이전 달 작년 12월로 변경해 조회
         if(month == 1){
             isLeftExist = !fixtureRepository.findByMonth(year-1, 12).isEmpty();
             isRightExist = !fixtureRepository.findByMonth(year, month+1).isEmpty();
         }
+        // 12월인 경우 다음 달 내년 1월로 변경해 조회
         else if(month == 12){
             isLeftExist = !fixtureRepository.findByMonth(year, month-1).isEmpty();
             isRightExist = !fixtureRepository.findByMonth(year+1, 1).isEmpty();
@@ -144,7 +148,7 @@ public class FixtureService {
             isLeftExist = !fixtureRepository.findByMonth(year, month-1).isEmpty();
             isRightExist = !fixtureRepository.findByMonth(year, month+1).isEmpty();
         }
-
+        // 조회되는 경기 없는 경우
         if(fixtureList.isEmpty()){
             return FixtureDto.DiaryFixtureResponse.builder()
                     .soccerTeamNames(null)
@@ -153,6 +157,7 @@ public class FixtureService {
                     .isRightExist(isRightExist)
                     .build();
         }
+        // 조회된 경기 response class 형식대로 변경
         for(Fixture fixture : fixtureList){
             diaryFixtures.add(FixtureDto.DiaryFixture.builder()
                     .matchId(fixture.getId())
@@ -179,14 +184,18 @@ public class FixtureService {
     @Transactional
     public FixtureDto.DiaryFixtureResponse findDiaryFixturesByMonthAndTeam(int year, int month, String team){
         List<FixtureDto.DiaryFixture> diaryFixtures = new ArrayList<>();
+        // 가져온 경기 리스트
         List<Fixture> fixtureList = fixtureRepository.findByMonthAndTeam(year, month, team);
 
-        Boolean isLeftExist;
-        Boolean isRightExist;
+        Boolean isLeftExist; // 이전 달에 경기 존재하는지 여부
+        Boolean isRightExist; // 다음 달에 경기 존재하는지 여부
+
+        // 1월인 경우 이전 달 작년 12월로 변경해 조회
         if(month == 1){
             isLeftExist = !fixtureRepository.findByMonthAndTeam(year-1, 12, team).isEmpty();
             isRightExist = !fixtureRepository.findByMonthAndTeam(year, month+1, team).isEmpty();
         }
+        // 12월인 경우 다음 달 내년 1월로 변경해 조회
         else if(month == 12){
             isLeftExist = !fixtureRepository.findByMonthAndTeam(year, month-1, team).isEmpty();
             isRightExist = !fixtureRepository.findByMonthAndTeam(year+1, 1, team).isEmpty();
@@ -196,6 +205,7 @@ public class FixtureService {
             isRightExist = !fixtureRepository.findByMonthAndTeam(year, month+1, team).isEmpty();
         }
 
+        // 조회되는 경기 없는 경우
         if(fixtureList.isEmpty()){
             return FixtureDto.DiaryFixtureResponse.builder()
                     .soccerTeamNames(null)
@@ -204,6 +214,7 @@ public class FixtureService {
                     .isRightExist(isRightExist)
                     .build();
         }
+        // 조회된 경기 response class 형식대로 변경
         for(Fixture fixture : fixtureList){
             diaryFixtures.add(FixtureDto.DiaryFixture.builder()
                     .matchId(fixture.getId())
@@ -218,7 +229,7 @@ public class FixtureService {
                     .build());
         }
         return FixtureDto.DiaryFixtureResponse.builder()
-                .soccerTeamNames(null)
+                .soccerTeamNames(squadService.getSeasonSquads(fixtureList.get(0).getSeason()))
                 .matches(diaryFixtures)
                 .isLeftExist(isLeftExist)
                 .isRightExist(isRightExist)
