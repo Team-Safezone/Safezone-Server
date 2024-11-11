@@ -118,7 +118,7 @@ public class RealTimeDataParser {
     public static String isBeforeAfter() {
         if (!isMatch2 && isExtra || !isMatch2 && !isExtra) {
             return "45";
-        } else if (isMatch2 && isExtra || isMatch2 && isExtra) {
+        } else if (isMatch2 && isExtra || isMatch2 && !isExtra) {
             return "90";
         }
         return " ";
@@ -133,6 +133,6 @@ public class RealTimeDataParser {
             doneTime = 90 + parseInt(extraTime);
             return Integer.toString(doneTime);
         }
-        return " ";
+        return "0";
     }
 }

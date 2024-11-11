@@ -1,28 +1,28 @@
 package KickIt.server.domain.heartRate.service;
 
 import KickIt.server.domain.fixture.entity.FixtureRepository;
-import KickIt.server.domain.heartRate.entity.HeartRateRepository;
 import KickIt.server.domain.heartRate.dto.MinAvgMaxDto;
 import KickIt.server.domain.member.entity.MemberRepository;
 import KickIt.server.domain.teams.service.TeamNameConvertService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 // 사용자 심박수 최소, 최대 계산 클래스
 @Service
 public class HeartRateParser {
 
-    private final HeartRateRepository heartRateRepository;
     private final FixtureRepository fixtureRepository;
     private final MemberRepository memberRepository;
     private final TeamNameConvertService teamNameConvertService;
 
     @Autowired
-    public HeartRateParser(HeartRateRepository heartRateRepository, FixtureRepository fixtureRepository, MemberRepository memberRepository, TeamNameConvertService teamNameConvertService) {
-        this.heartRateRepository = heartRateRepository;
+    public HeartRateParser(FixtureRepository fixtureRepository, MemberRepository memberRepository, TeamNameConvertService teamNameConvertService) {
         this.fixtureRepository = fixtureRepository;
         this.memberRepository = memberRepository;
         this.teamNameConvertService = teamNameConvertService;
@@ -134,8 +134,6 @@ public class HeartRateParser {
     }
 
 
-
-
     public String getTeamType(Long memberId, Long fixtureId) {
         String home;
         String away;
@@ -162,16 +160,19 @@ public class HeartRateParser {
         Object[] memberTeams = memberFavoriteTeams.get(0);
 
         for (Object memberTeam : memberTeams) {
-            if (memberTeam.equals(home)) {
-                return "home";
-            } else if (memberTeam.equals(away)) {
-                return "away";
+            if (memberTeam != null) {
+                if (memberTeam.equals(home)) {
+                    return "home";
+                } else if (memberTeam.equals(away)) {
+                    return "away";
+                }
             }
         }
 
         return "others";
     }
 
+    /*
     public List<Integer> teamAll(Long fixtureId) {
         String home;
         String away;
@@ -180,13 +181,13 @@ public class HeartRateParser {
         int awayTeamCount = 0;
         int otherCount = 0;
 
-        List<Object[]> homeawayTeam = fixtureRepository.findHomeAwayTeam(fixtureId);
+        List<String> homeawayTeam = fixtureRepository.findHomeAwayTeam(fixtureId);
 
         if (homeawayTeam.isEmpty()) {
             // homeawayTeam이 비어 있을 경우 처리
             throw new IllegalArgumentException("해당 fixture에 대한 팀 정보가 없습니다.");
         } else {
-            Object[] teams = homeawayTeam.get(0);
+            String teams = homeawayTeam.get(0);
             home = teamNameConvertService.convertToKrName((String) teams[0]);
             away = teamNameConvertService.convertToKrName((String) teams[1]);
         }
@@ -220,5 +221,7 @@ public class HeartRateParser {
 
         return count;
     }
+
+     */
 
 }

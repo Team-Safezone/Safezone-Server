@@ -27,8 +27,10 @@ public class RealTimeController {
     @GetMapping()
     public ResponseEntity<Map<String, Object>> getRealTime(@RequestHeader(value = "xAuthToken") String xAuthToken, @RequestParam("matchId") Long matchId) {
         String email = jwtTokenUtil.getEmailFromToken(xAuthToken);
+
         Map<String, Object> responseBody = new HashMap<>();
-        List<RealTimeDto.RealTimeResponse> responseList = realTimeService.findRealTimeByMatchId(matchId);
+
+        List<RealTimeDto.RealTimeResponse> responseList = realTimeService.findRealTimeByMatchId(email, matchId);
 
         // 조회해 가져온 데이터가 존재하는 경우 성공, OK status로 반환
         if (jwtTokenUtil.validateToken(xAuthToken, email)) {

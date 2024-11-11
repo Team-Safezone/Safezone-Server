@@ -1,29 +1,31 @@
 package KickIt.server.domain.heartRate.entity;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.Id;
+import KickIt.server.domain.fixture.entity.Fixture;
+import KickIt.server.global.util.CreatedAt;
+import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 @Getter
 @Entity
 @NoArgsConstructor
-public class TeamHeartRate {
+public class TeamHeartRate extends CreatedAt {
 
     @Id
     @GeneratedValue
     private Long id;
 
-    private Long fixtureId;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "fixture_id", nullable = false)
+    private Fixture fixture;
 
     private String teamType;
 
     private int heartRateDate;
     private int heartRate;
 
-    public TeamHeartRate(Long fixtureId, String teamType, int heartRateDate, int heartRate) {
-        this.fixtureId = fixtureId;
+    public TeamHeartRate(Fixture fixture, String teamType, int heartRateDate, int heartRate) {
+        this.fixture = fixture;
         this.teamType = teamType;
         this.heartRateDate = heartRateDate;
         this.heartRate = heartRate;
