@@ -396,19 +396,11 @@ public class LineupPredictionService {
             }
             else{
                 // 실제 홈팀 선발라인업 정보 필요한 형식의 클래스 객체로 만들어 줌
-                LineupPredictionDto.ResponseLineup foundHomeLineup = LineupPredictionDto.ResponseLineup.builder()
-                        .goalkeeper(foundMatchLineup.getHomeLineups().getGoalkeeper().get(0))
-                        .defenders(foundMatchLineup.getHomeLineups().getDefenders())
-                        .midfielders(foundMatchLineup.getHomeLineups().getMidfielders())
-                        .strikers(foundMatchLineup.getHomeLineups().getStrikers())
-                        .build();
+                MatchLineupDto.MatchPosPlayersDto foundHomeLineup = new MatchLineupDto.MatchPosPlayersDto(foundMatchLineup.getHomeLineups().getGoalkeeper(), foundMatchLineup.getHomeLineups().getDefenders(), foundMatchLineup.getHomeLineups().getMidfielders(), foundMatchLineup.getHomeLineups().getSecondMidFielders(), foundMatchLineup.getHomeLineups().getStrikers());
+
                 // 실제 원정팀 선발라인업 정보 필요한 형식의 클래스 객체로 만들어 줌
-                LineupPredictionDto.ResponseLineup foundAwayLineup = LineupPredictionDto.ResponseLineup.builder()
-                        .goalkeeper(foundMatchLineup.getAwayLineups().getGoalkeeper().get(0))
-                        .defenders(foundMatchLineup.getAwayLineups().getDefenders())
-                        .midfielders(foundMatchLineup.getAwayLineups().getMidfielders())
-                        .strikers(foundMatchLineup.getAwayLineups().getStrikers())
-                        .build();
+                MatchLineupDto.MatchPosPlayersDto foundAwayLineup = new MatchLineupDto.MatchPosPlayersDto(foundMatchLineup.getAwayLineups().getGoalkeeper(), foundMatchLineup.getAwayLineups().getDefenders(), foundMatchLineup.getAwayLineups().getMidfielders(),foundMatchLineup.getAwayLineups().getSecondMidFielders(), foundMatchLineup.getAwayLineups().getStrikers());
+
                 response = LineupPredictionDto.LineupResultInquireResponse.builder()
                         .participant(lineupPredictionRepository.findByFixture(fixtureId).size())
                         .homeLineups(foundHomeLineup)
@@ -434,19 +426,10 @@ public class LineupPredictionService {
             // 사용자 예측 X / 선발 라인업 결과 O
             else{
                 // 실제 홈팀 선발라인업 정보 필요한 형식의 클래스 객체로 만들어 줌
-                LineupPredictionDto.ResponseLineup foundHomeLineup = LineupPredictionDto.ResponseLineup.builder()
-                        .goalkeeper(foundMatchLineup.getHomeLineups().getGoalkeeper().get(0))
-                        .defenders(foundMatchLineup.getHomeLineups().getDefenders())
-                        .midfielders(foundMatchLineup.getHomeLineups().getMidfielders())
-                        .strikers(foundMatchLineup.getHomeLineups().getStrikers())
-                        .build();
+                MatchLineupDto.MatchPosPlayersDto foundHomeLineup = new MatchLineupDto.MatchPosPlayersDto(foundMatchLineup.getHomeLineups().getGoalkeeper(), foundMatchLineup.getHomeLineups().getDefenders(), foundMatchLineup.getHomeLineups().getMidfielders(), foundMatchLineup.getHomeLineups().getSecondMidFielders(), foundMatchLineup.getHomeLineups().getStrikers());
+
                 // 실제 원정팀 선발라인업 정보 필요한 형식의 클래스 객체로 만들어 줌
-                LineupPredictionDto.ResponseLineup foundAwayLineup = LineupPredictionDto.ResponseLineup.builder()
-                        .goalkeeper(foundMatchLineup.getAwayLineups().getGoalkeeper().get(0))
-                        .defenders(foundMatchLineup.getAwayLineups().getDefenders())
-                        .midfielders(foundMatchLineup.getAwayLineups().getMidfielders())
-                        .strikers(foundMatchLineup.getAwayLineups().getStrikers())
-                        .build();
+                MatchLineupDto.MatchPosPlayersDto foundAwayLineup = new MatchLineupDto.MatchPosPlayersDto(foundMatchLineup.getAwayLineups().getGoalkeeper(), foundMatchLineup.getAwayLineups().getDefenders(), foundMatchLineup.getAwayLineups().getMidfielders(),foundMatchLineup.getAwayLineups().getSecondMidFielders(), foundMatchLineup.getAwayLineups().getStrikers());
 
                 response = LineupPredictionDto.LineupResultInquireResponse.builder()
                         .participant(lineupPredictionRepository.findByFixture(fixtureId).size())
@@ -494,19 +477,10 @@ public class LineupPredictionService {
             // 사용자 예측 O / 선발 라인업 결과 O
             else{
                 // 실제 홈팀 선발라인업 정보 필요한 형식의 클래스 객체로 만들어 줌
-                LineupPredictionDto.ResponseLineup foundHomeLineup = LineupPredictionDto.ResponseLineup.builder()
-                        .goalkeeper(foundMatchLineup.getHomeLineups().getGoalkeeper().get(0))
-                        .defenders(foundMatchLineup.getHomeLineups().getDefenders())
-                        .midfielders(foundMatchLineup.getHomeLineups().getMidfielders())
-                        .strikers(foundMatchLineup.getHomeLineups().getStrikers())
-                        .build();
+                MatchLineupDto.MatchPosPlayersDto foundHomeLineup = new MatchLineupDto.MatchPosPlayersDto(foundMatchLineup.getHomeLineups().getGoalkeeper(), foundMatchLineup.getHomeLineups().getDefenders(), foundMatchLineup.getHomeLineups().getMidfielders(), foundMatchLineup.getHomeLineups().getSecondMidFielders(), foundMatchLineup.getHomeLineups().getStrikers());
+
                 // 실제 원정팀 선발라인업 정보 필요한 형식의 클래스 객체로 만들어 줌
-                LineupPredictionDto.ResponseLineup foundAwayLineup = LineupPredictionDto.ResponseLineup.builder()
-                        .goalkeeper(foundMatchLineup.getAwayLineups().getGoalkeeper().get(0))
-                        .defenders(foundMatchLineup.getAwayLineups().getDefenders())
-                        .midfielders(foundMatchLineup.getAwayLineups().getMidfielders())
-                        .strikers(foundMatchLineup.getAwayLineups().getStrikers())
-                        .build();
+                MatchLineupDto.MatchPosPlayersDto foundAwayLineup = new MatchLineupDto.MatchPosPlayersDto(foundMatchLineup.getAwayLineups().getGoalkeeper(), foundMatchLineup.getAwayLineups().getDefenders(), foundMatchLineup.getAwayLineups().getMidfielders(),foundMatchLineup.getAwayLineups().getSecondMidFielders(), foundMatchLineup.getAwayLineups().getStrikers());
 
                 response = LineupPredictionDto.LineupResultInquireResponse.builder()
                         .participant(lineupPredictionRepository.findByFixture(fixtureId).size())
