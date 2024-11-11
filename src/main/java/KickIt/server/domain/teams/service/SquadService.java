@@ -84,6 +84,7 @@ public class SquadService {
         for(Squad squad : seasonSquads){
             squadNames.add(teamNameConvertService.convertToKrName(squad.getTeam()));
         }
+        Collections.sort(squadNames);
         return squadNames;
     }
 
