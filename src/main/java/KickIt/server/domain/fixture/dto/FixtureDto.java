@@ -119,4 +119,26 @@ public class FixtureDto {
         }
     }
 
+    @Data
+    @Builder
+    public static class DiaryFixtureResponse{
+        private List<String> soccerTeamNames; // 해당 년도/월에 따른 프리미어리그 내의 전체 팀 이름 리스트
+        private List<DiaryFixture> matches; // 경기 리스트
+        private Boolean isLeftExist; // 왼쪽 달 경기 조회 가능 여부 (이전 달에 경기 있는지 체크)
+        private Boolean isRightExist; // 오른쪽 달 경기 조회 가능 여부 (다음 달에 경기 있는지 체크)
+    }
+
+    @Data
+    @Builder
+    public static class DiaryFixture{
+        private Long matchId; // 축구 경기 고유 ID
+        private String matchDate; // 축구 경기 날짜
+        private String matchTime; // 축구 경기 시간
+        private String homeTeamEmblemURL; // 홈팀 로고 이미지 URL
+        private String awayTeamEmblemUrl; // 원정팀 로고 이미지 URL
+        private String homeTeamName; // 홈팀 이름
+        private String awayTeamName; // 원정팀 이름
+        private Integer homeTeamScore; // 홈팀 스코어
+        private Integer awayTeamScore; // 원정팀 스코어
+    }
 }

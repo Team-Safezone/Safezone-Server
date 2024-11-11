@@ -4,9 +4,13 @@ import KickIt.server.domain.fixture.dto.FixtureDto;
 import KickIt.server.domain.fixture.entity.Fixture;
 import KickIt.server.domain.fixture.entity.FixtureRepository;
 import KickIt.server.domain.fixture.service.FixtureService;
+import KickIt.server.domain.member.entity.Member;
+import KickIt.server.domain.member.entity.MemberRepository;
+import KickIt.server.domain.member.service.MemberService;
 import KickIt.server.domain.teams.service.TeamNameConvertService;
 import KickIt.server.global.common.crawler.FixtureCrawler;
 
+import KickIt.server.jwt.JwtTokenUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
@@ -24,6 +28,12 @@ public class FixtureController {
     private TeamNameConvertService teamNameConvertService;
     @Autowired
     private FixtureCrawler fixtureCrawler;
+    @Autowired
+    private JwtTokenUtil jwtTokenUtil;
+    @Autowired
+    private MemberRepository memberRepository;
+    @Autowired
+    private MemberService memberService;
 
     // 입력 받은 year과 month의 경기 일정을 크롤링해 중복하지 않은 fixture만 db에 save
     @PostMapping("/crawl")
@@ -37,6 +47,7 @@ public class FixtureController {
         responseBody.put("status", HttpStatus.OK.value());
         responseBody.put("message", "success");
         responseBody.put("data", fixtureList);
+        responseBody.put("isSuccess", true);
         return new ResponseEntity<>(responseBody, HttpStatus.OK);
     }
 
@@ -128,11 +139,68 @@ public class FixtureController {
         if(isSuccess){
             responseBody.put("status", HttpStatus.OK.value());
             responseBody.put("message", "success");
+            responseBody.put("isSuccess", true);
             return new ResponseEntity<>(responseBody, HttpStatus.OK);
         }
         else{
             responseBody.put("status", HttpStatus.NOT_FOUND.value());
             responseBody.put("message", "찾는 경기 없음");
+            responseBody.put("isSuccess", false);
+            return new ResponseEntity<>(responseBody, HttpStatus.NOT_FOUND);
+        }
+    }
+
+    // 입력받은 yyyy-MM으로 축구 일기를 기록하고 싶은 경기를 선택하기 위한 경기 일정 반환
+    @GetMapping("/diary-select")
+    public ResponseEntity<Map<String, Object>> getDiaryFixturesByMonth(@RequestHeader(value = "xAuthToken") String xAuthToken, @RequestParam("yearMonth") @DateTimeFormat(pattern = "yyyy/MM") Date yearMonth, @RequestParam(value="teamName", required = false) String teamName){
+        String memberEmail = jwtTokenUtil.getEmailFromToken(xAuthToken);
+        Member member = memberRepository.findByEmailAndAuthProvider(memberEmail, memberService.transAuth("kakao")).orElse(null);
+        Map<String, Object> responseBody = new HashMap<>();
+
+        // id에 해당하는 사용자 존재하는 경우
+        if(member != null){
+            Calendar calendar = Calendar.getInstance();
+            calendar.setTime(yearMonth);
+            int year = calendar.get(Calendar.YEAR);
+            int month = calendar.get(Calendar.MONTH) + 1;
+
+            FixtureDto.DiaryFixtureResponse response;
+            // teamName이 입력되지 않은 경우 월만으로 경기 조회
+            if(teamName == null){
+                response = fixtureService.findDiaryFixturesByMonth(year, month);
+            }
+            // teamName이 입력된 경우 날짜와 팀으로 경기 조회
+            else{
+                String team = teamNameConvertService.convertFromKrName(teamName);
+                if(team == null){
+                    responseBody.put("status", HttpStatus.BAD_REQUEST.value());
+                    responseBody.put("message", "팀 이름 입력 오류");
+                    responseBody.put("isSuccess", false);
+                    return new ResponseEntity<>(responseBody, HttpStatus.BAD_REQUEST);
+                }
+                response = fixtureService.findDiaryFixturesByMonthAndTeam(year, month, team);
+            }
+            // 조회해 가져온 데이터가 존재하는 경우 성공, OK status로 반환
+            if(response != null){
+                responseBody.put("status", HttpStatus.OK.value());
+                responseBody.put("message", "success");
+                responseBody.put("data", response);
+                responseBody.put("isSuccess", true);
+                return new ResponseEntity<>(responseBody, HttpStatus.OK);
+            }
+            // 조회한 list가 비어있는 경우 데이터 없음 처리, NOT FOUND로 반환
+            else{
+                responseBody.put("status", HttpStatus.NOT_FOUND.value());
+                responseBody.put("message", "데이터 없음");
+                responseBody.put("isSuccess", false);
+                return new ResponseEntity<>(responseBody, HttpStatus.NOT_FOUND);
+            }
+        }
+        // id에 해당하는 사용자 존재하지 않는 경우
+        else{
+            responseBody.put("status", HttpStatus.NOT_FOUND.value());
+            responseBody.put("message", "해당 사용자 없음");
+            responseBody.put("isSuccess", false);
             return new ResponseEntity<>(responseBody, HttpStatus.NOT_FOUND);
         }
     }
