@@ -1,8 +1,8 @@
 package KickIt.server.domain.realtime.entity;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.Id;
+import KickIt.server.domain.fixture.entity.Fixture;
+import KickIt.server.global.util.BaseEntity;
+import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -13,33 +13,38 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
-public class RealTime {
-    // 경기 고유 id
+public class RealTime extends BaseEntity {
+    // 타임라인 id(PK)
     @Id
     @GeneratedValue
-    private int sequence;
-    private Long matchId;
+    private Long id;
+
+    // 경기 id (FK)
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "fixture_id", nullable = false)
+    private Fixture fixture;
+
+    @Column(nullable = false)
     private int eventCode;
+
+    @Column(nullable = false, length = 5)
     private String time;
+
+    @Column(nullable = false, length = 50)
     private String eventTime;
+
+    @Column(nullable = false, length = 50)
     private String eventName;
+
+    @Column(length = 50)
     private String player1;
+
+    @Column(length = 50)
     private String player2;
+
+    @Column(length = 50)
     private String teamName;
+
     private String teamUrl;
 
-    @Override
-    public String toString() {
-        return "RealTime{" +
-                "sequence=" + sequence +
-                ", matchId=" + matchId +
-                ", eventCode=" + eventCode +
-                ", eventTime='" + eventTime + '\'' +
-                ", eventName='" + eventName + '\'' +
-                ", player1='" + player1 + '\'' +
-                ", player2='" + player2 + '\'' +
-                ", teamName='" + teamName + '\'' +
-                ", teamUrl='" + teamUrl + '\'' +
-                '}';
-    }
 }

@@ -29,25 +29,34 @@ public class Diary extends BaseEntity {
     @JoinColumn(name = "fixture_id", nullable = false)
     private Fixture fixture;
 
+    @Column(nullable = false, length = 10)
     private String teamName;
 
+    @Column(nullable = false, length = 2)
     private int emotion;
 
-    @Column(nullable = true, length = 500)
+    @Column(nullable = false, length = 500)
     private String diaryContent;
+
+    @Column
     private int likeCount;
 
     @OneToMany(mappedBy = "diary", cascade = CascadeType.ALL, orphanRemoval = true)
     @Builder.Default
     private List<DiaryPhoto> diaryPhotos = new ArrayList<>();
 
+    @Column(length = 10)
     private String mom;
+
+    @Column(nullable = false)
     private boolean isPublic;
 
     @OneToMany(mappedBy = "diary", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    private List<DiaryLiked> likedBy;
+    @Builder. Default
+    private List<DiaryLiked> likedBy = new ArrayList<>();
 
     @OneToMany(mappedBy = "diary", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @Builder. Default
     private List<DiaryReport> diaryReports = new ArrayList<>();
 
 }

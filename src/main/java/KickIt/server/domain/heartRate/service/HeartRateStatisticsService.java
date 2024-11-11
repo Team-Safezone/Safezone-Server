@@ -1,7 +1,9 @@
 package KickIt.server.domain.heartRate.service;
 
 import KickIt.server.domain.fixture.entity.Fixture;
+import KickIt.server.domain.fixture.entity.FixtureRepository;
 import KickIt.server.domain.heartRate.dto.HeartRateDto;
+import KickIt.server.domain.heartRate.entity.HeartRateRepository;
 import KickIt.server.domain.heartRate.entity.HeartRateStatisticsRepository;
 import KickIt.server.domain.heartRate.entity.HeartRateStatistics;
 import KickIt.server.domain.member.entity.Member;
@@ -19,14 +21,16 @@ public class HeartRateStatisticsService {
     private final HeartRateStatisticsRepository heartRateStatisticsRepository;
     private final HeartRateParser heartRateParser;
     private final MemberRepository memberRepository;
-    @PersistenceContext
-    private EntityManager entityManager;
+    private final HeartRateRepository heartRateRepository;
+    private final FixtureRepository fixtureRepository;
 
     @Autowired
-    public HeartRateStatisticsService(HeartRateStatisticsRepository heartRateStatisticsRepository, HeartRateParser heartRateParser, MemberRepository memberRepository) {
+    public HeartRateStatisticsService(HeartRateStatisticsRepository heartRateStatisticsRepository, HeartRateParser heartRateParser, MemberRepository memberRepository, HeartRateRepository heartRateRepository, FixtureRepository fixtureRepository) {
         this.heartRateStatisticsRepository = heartRateStatisticsRepository;
         this.heartRateParser = heartRateParser;
         this.memberRepository = memberRepository;
+        this.heartRateRepository = heartRateRepository;
+        this.fixtureRepository = fixtureRepository;
     }
 
     // 사용자 Id
@@ -38,7 +42,7 @@ public class HeartRateStatisticsService {
 
     // min, max 가져오기
     public List<Integer> getMinMax(Long memberId, Long fixtureId) {
-        List<Integer> heartRate = heartRateStatisticsRepository.getUserHeartRate(memberId, fixtureId);
+        List<Integer> heartRate = heartRateRepository.getUserHeartRate(memberId, fixtureId);
         List<Integer> minAvgMaxList = heartRateParser.minAvgMaxInt(heartRate);
 
         return minAvgMaxList;
@@ -55,7 +59,7 @@ public class HeartRateStatisticsService {
         int max = 0;
         Long memberId = getMemberId(email);
 
-        List<HeartRateStatistics> heartRateStatistics = heartRateStatisticsRepository.findByMemberIdAndFixtureId(memberId, fixtureId);
+        List<HeartRateStatistics> heartRateStatistics = heartRateStatisticsRepository.findByMember_IdAndFixture_Id(memberId, fixtureId);
 
         if(!heartRateStatistics.isEmpty()){
             max = heartRateStatisticsRepository.getMaxHeartRate(memberId, fixtureId);
@@ -64,14 +68,16 @@ public class HeartRateStatisticsService {
     }
 
     // 통계 저장
-    public void saveStatistics(String email, HeartRateDto heartRateDTO) {
-        Long memberId = getMemberId(email);
-        Long fixtureId = heartRateDTO.getMatchId();
+    public void saveStatistics(String email, HeartRateDto heartRateDto) {
+        Member member = getMember(email);
+        Fixture fixture = getFixture(heartRateDto.getMatchId());
+        Long memberId = member.getId();
+        Long fixtureId = fixture.getId();
 
         // 중복 처리
-        if (heartRateStatisticsRepository.findByMemberIdAndFixtureId(memberId, fixtureId).isEmpty()) {
+        if (heartRateStatisticsRepository.findByMember_IdAndFixture_Id(memberId, fixtureId).isEmpty()) {
             // 객체 생성
-            HeartRateStatistics heartRateStatistics = new HeartRateStatistics(memberId, fixtureId);
+            HeartRateStatistics heartRateStatistics = new HeartRateStatistics(member, fixture);
             heartRateStatisticsRepository.save(heartRateStatistics);
 
             // min, avg, max 업데이트
@@ -99,5 +105,20 @@ public class HeartRateStatisticsService {
 
     }
 
+    public Member getMember(String email) {
+        // 이메일로 회원 정보 조회
+        Member member = memberRepository.findByEmail(email)
+                .orElseThrow(() -> new IllegalArgumentException("회원이 존재하지 않습니다."));
+
+        return member;
+    }
+
+    public Fixture getFixture(Long matchId) {
+        // 경기 정보 조회
+        Fixture fixture = fixtureRepository.findById(matchId)
+                .orElseThrow(() -> new IllegalArgumentException("경기가 존재하지 않습니다."));
+
+        return fixture;
+    }
 
 }
