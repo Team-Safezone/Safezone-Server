@@ -318,14 +318,6 @@ public class LineupPredictionService {
     public LineupPredictionDto.LineupInquireResponse inquireLineupPrediction(Long fixtureId, Long memberId, String homeTeam, String awayTeam, String season){
         LineupPrediction lineupPrediction = lineupPredictionRepository.findByMemberAndFixture(memberId, fixtureId).orElse(null);
 
-        // memberId와 fixtureId로 조회한 선발 라인업 예측 data 존재하지 않는 경우
-        // null 반환 후 이후 controller 상에서 예외 처리
-        if(lineupPrediction == null){
-            return null;
-        }
-
-        // memberId와 fixtureId로 조회한 선발 라인업 예측 data 존재하는 경우
-
         // 시즌, 팀으로 찾아온 홈팀 / 원정팀 전체 선수 명단
         List<Player> homePlayers = squadRepository.findBySeasonAndTeam(season, homeTeam).get().getPlayers();
         List<Player> awayPlayers = squadRepository.findBySeasonAndTeam(season, awayTeam).get().getPlayers();
@@ -341,6 +333,16 @@ public class LineupPredictionService {
             awayPlayerInfos.add(new LineupPredictionDto.ResponsePlayerInfo2(player));
         }
 
+        // memberId와 fixtureId로 조회한 선발 라인업 예측 data 존재하지 않는 경우
+        if(lineupPrediction == null){
+            LineupPredictionDto.LineupInquireResponse response = LineupPredictionDto.LineupInquireResponse.builder()
+                    .homePlayers(homePlayerInfos)
+                    .awayPlayers(awayPlayerInfos)
+                    .build();
+            return response;
+        }
+
+        // memberId와 fixtureId로 조회한 선발 라인업 예측 data 존재하는 경우
         // 사용자가 예측한 기존 홈팀 선발 라인업 정보
         LineupPredictionDto.InquiredLineupPrediction homeLineup = LineupPredictionDto.InquiredLineupPrediction.builder()
                 .formation(lineupPrediction.getHomeTeamForm())

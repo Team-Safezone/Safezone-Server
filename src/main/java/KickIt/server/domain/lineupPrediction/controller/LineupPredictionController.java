@@ -296,13 +296,6 @@ public class LineupPredictionController {
                 String season = foundFixture.get().getSeason();
                 LineupPredictionDto.LineupInquireResponse response = lineupPredictionService.inquireLineupPrediction(matchId, member.getId(), homeTeam, awayTeam, season);
 
-                // 사용자 id와 경기 id로 조회된 선발 라인업 예측 데이터 없음
-                if(response == null){
-                    responseBody.put("status", HttpStatus.NOT_FOUND.value());
-                    responseBody.put("message", "해당 사용자의 선발 라인업 예측 데이터 없음");
-                    responseBody.put("isSuccess", false);
-                    return new ResponseEntity<>(responseBody, HttpStatus.NOT_FOUND);
-                }
                 // 정상적으로 가져온 response data에 넣어 반환
                 responseBody.put("status", HttpStatus.OK.value());
                 responseBody.put("message", "success");
