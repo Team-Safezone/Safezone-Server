@@ -14,8 +14,10 @@ import jakarta.transaction.Transactional;
 import org.joda.time.LocalDateTime;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.util.List;
 
 
 @Service
@@ -38,30 +40,29 @@ public class DiaryService {
     }
 
     @Transactional
-    public void save(DiarySaveDto diarySaveDto, String email) {
+    public void save(String email, Long matchId, String teamName, int emotion, String diaryContent, List<MultipartFile> diaryPhotos, String mom, Boolean isPublic) {
         // Member 및 Fixture 객체 가져오기
         Member member = memberRepository.findByEmail(email)
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 사용자입니다."));
-        Fixture fixture = fixtureRepository.findById(diarySaveDto.getFixtureId())
+        Fixture fixture = fixtureRepository.findById(matchId)
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 경기입니다."));
-
 
         // Diary 엔티티 생성 및 저장
         Diary diary = Diary.builder()
                 .member(member)
                 .fixture(fixture)
-                .teamName(diarySaveDto.getTeamName())
-                .emotion(diarySaveDto.getEmotion())
-                .diaryContent(diarySaveDto.getDiaryContext())
-                .mom(diarySaveDto.getMom())
-                .isPublic(diarySaveDto.isPublic())
+                .teamName(teamName)
+                .emotion(emotion)
+                .diaryContent(diaryContent)
+                .mom(mom)
+                .isPublic(isPublic)
                 .likeCount(0)
                 .build();
 
         diaryRepository.save(diary);
 
         // 사진 URL을 S3에 업로드하고 DiaryPhoto 엔티티 저장
-        for (String photoUrl : diarySaveDto.getDiaryPhotos()) {
+        for (MultipartFile photoUrl : diaryPhotos) {
             try {
                 String s3Url = s3Service.uploadFileFromUrl(photoUrl);
                 DiaryPhoto diaryPhoto = diaryPhotoService.photoSave(s3Url, diary);

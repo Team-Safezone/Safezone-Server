@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.HashMap;
 import java.util.List;
@@ -39,13 +40,21 @@ public class DiaryController {
 
     // 일기 업로드
     @PostMapping("/upload")
-    public ResponseEntity<Map<String, Object>> uploadDiary(@RequestHeader(value = "xAuthToken") String xAuthToken, @RequestBody DiarySaveDto diarySaveDto) {
+    public ResponseEntity<Map<String, Object>> uploadDiary(@RequestHeader(value = "xAuthToken") String xAuthToken,
+                                                           @RequestPart (value = "matchId") Long matchId,
+                                                           @RequestPart (value = "teamName") String teamName,
+                                                           @RequestPart (value = "emotion") int emotion,
+                                                           @RequestPart (value = "diaryContent") String diaryContent,
+                                                           @RequestPart(value = "diaryPhotos", required = false) List<MultipartFile> diaryPhotos,
+                                                           @RequestPart (value = "mom", required = false) String mom,
+                                                           @RequestPart (value = "isPublic") Boolean isPublic
+                                                           ){
         String email = jwtTokenUtil.getEmailFromToken(xAuthToken);
 
         Map<String, Object> responseBody = new HashMap<>();
 
         if (jwtTokenUtil.validateToken(xAuthToken, email)) {
-            diaryService.save(diarySaveDto, email);
+            diaryService.save(email, matchId, teamName, emotion, diaryContent, diaryPhotos, mom, isPublic);
 
             responseBody.put("status", HttpStatus.OK.value());
             responseBody.put("message", "success");
