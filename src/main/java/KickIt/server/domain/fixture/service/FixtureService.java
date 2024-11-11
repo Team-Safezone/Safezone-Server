@@ -123,10 +123,6 @@ public class FixtureService {
         }
     }
 
-    public void updateFixtureStatus(Long fixtureId, int status) {
-        fixtureRepository.updateStatus(fixtureId, status);
-    }
-
     // 일기 선택을 위한 경기 일정 조회에서 사용
     // findByMonth로 가져온 해당 달의 Fixture들 DTO의 Response 형태로 변환 후 반환
     @Transactional
@@ -238,6 +234,10 @@ public class FixtureService {
                 .isLeftExist(isLeftExist)
                 .isRightExist(isRightExist)
                 .build();
+    }
+
+    public void updateFixtureStatus(Long fixtureId, int status) {
+        fixtureRepository.updateStatus(fixtureId, status);
     }
 
 }
