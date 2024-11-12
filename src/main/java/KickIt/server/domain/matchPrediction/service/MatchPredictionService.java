@@ -49,7 +49,7 @@ public class MatchPredictionService {
         // 우승팀 예측 참여 사용자
         int scoreParticipant = scorePredictionRepository.findByFixture(fixture.getId()).size();
 
-        // 우승팀 예측 종료 전인 경우 (경기 시작 전) -> participant, isPredictionSuccessful 전송 X
+        // 우승팀 예측 종료 전인 경우 (경기 시작 전) -> isPredictionSuccessful 전송 X
         if(ZonedDateTime.ofInstant(LocalDateTime.now().atZone(ZoneId.of("Asia/Seoul")).toInstant(), ZoneId.of("Asia/Seoul")).isBefore(ZonedDateTime.ofInstant(fixture.getDate().toInstant(), ZoneId.of("Asia/Seoul")))){
             // 테스트 코드
             Logger.getGlobal().log(Level.INFO, String.format("우승팀 예측 종료 전: 현재 시간: %s, 경기 시간: %s", ZonedDateTime.ofInstant(LocalDateTime.now().atZone(ZoneId.of("Asia/Seoul")).toInstant(), ZoneId.of("Asia/Seoul")), ZonedDateTime.ofInstant(fixture.getDate().toInstant(), ZoneId.of("Asia/Seoul"))));
@@ -58,6 +58,7 @@ public class MatchPredictionService {
                 scorePrediction = MatchPredictionDto.InquiredScorePrediction.builder()
                         .homePercentage(figureHomeWinningPercent(fixture.getId(), scoreParticipant))
                         .isParticipated(false)
+                        .participant(scoreParticipant)
                         .build();
             }
             // 사용자가 기존에 우승팀 예측 진행한 경우
@@ -65,10 +66,11 @@ public class MatchPredictionService {
                 scorePrediction = MatchPredictionDto.InquiredScorePrediction.builder()
                         .homePercentage(figureHomeWinningPercent(fixture.getId(), scoreParticipant))
                         .isParticipated(true)
+                        .participant(scoreParticipant)
                         .build();
             }
         }
-        // 우승팀 예측 종료된 경우 (경기 시작 후) -> participant, isPredictionSuccessful 포함
+        // 우승팀 예측 종료된 경우 (경기 시작 후) -> isPredictionSuccessful 포함
         else{
             // 테스트 코드
             Logger.getGlobal().log(Level.INFO, String.format("우승팀 예측 종료 후: 현재 시간: %s, 경기 시간: %s", ZonedDateTime.ofInstant(LocalDateTime.now().atZone(ZoneId.of("Asia/Seoul")).toInstant(), ZoneId.of("Asia/Seoul")), ZonedDateTime.ofInstant(fixture.getDate().toInstant(), ZoneId.of("Asia/Seoul"))));
@@ -113,7 +115,7 @@ public class MatchPredictionService {
         Integer homeFormation = lineupPredictionRepository.findAvgHomeTeamForm(fixture.getId());
         Integer awayFormation = lineupPredictionRepository.findAvgAwayTeamForm(fixture.getId());
 
-        // 선발라인업 예측 종료 전인 경우 (경기 시작 1시간 30분 전) -> participant, isPredictionSuccessful 전송 X
+        // 선발라인업 예측 종료 전인 경우 (경기 시작 1시간 30분 전) -> isPredictionSuccessful 전송 X
         if(ZonedDateTime.ofInstant(LocalDateTime.now().atZone(ZoneId.of("Asia/Seoul")).toInstant(), ZoneId.of("Asia/Seoul")).isBefore(ZonedDateTime.ofInstant(fixture.getDate().toInstant().minus(1, ChronoUnit.HOURS).minus(30, ChronoUnit.MINUTES), ZoneId.of("Asia/Seoul")))){
             // 테스트 코드
             Logger.getGlobal().log(Level.INFO, String.format("선발라인업 예측 종료 전: 현재 시간: %s, 경기 시간 90분 전: %s", ZonedDateTime.ofInstant(LocalDateTime.now().atZone(ZoneId.of("Asia/Seoul")).toInstant(), ZoneId.of("Asia/Seoul")), ZonedDateTime.ofInstant(fixture.getDate().toInstant().minus(1, ChronoUnit.HOURS).minus(30, ChronoUnit.MINUTES), ZoneId.of("Asia/Seoul"))));
@@ -121,6 +123,7 @@ public class MatchPredictionService {
             if(lineupParticipant == 0){
                 lineupPrediction = MatchPredictionDto.InquiredLineupPrediction.builder()
                         .isParticipated(false)
+                        .participant(lineupParticipant)
                         .build();
             }
             // 사용자가 기존에 선발라인업 예측 진행하지 않은 경우
@@ -130,6 +133,7 @@ public class MatchPredictionService {
                         .awayPercentage(figureFormationPercent(fixture.getId(), lineupParticipant, awayFormation, false))
                         .homeFormation(homeFormation)
                         .awayFormation(awayFormation)
+                        .participant(lineupParticipant)
                         .isParticipated(false)
                         .build();
             }
@@ -140,11 +144,12 @@ public class MatchPredictionService {
                         .awayPercentage(figureFormationPercent(fixture.getId(), lineupParticipant, awayFormation, false))
                         .homeFormation(homeFormation)
                         .awayFormation(awayFormation)
+                        .participant(lineupParticipant)
                         .isParticipated(true)
                         .build();
             }
         }
-        // 선발라인업 예측 종료 후인 경우 (경기 시작 1시간 30분 전 후) -> participant, isPredictionSuccessful 전송
+        // 선발라인업 예측 종료 후인 경우 (경기 시작 1시간 30분 전 후) -> isPredictionSuccessful 전송
         else{
             // 테스트 코드
             Logger.getGlobal().log(Level.INFO, String.format("선발라인업 예측 종료 후: 현재 시간: %s, 경기 시간 90분 전: %s", ZonedDateTime.ofInstant(LocalDateTime.now().atZone(ZoneId.of("Asia/Seoul")).toInstant(), ZoneId.of("Asia/Seoul")), ZonedDateTime.ofInstant(fixture.getDate().toInstant().minus(1, ChronoUnit.HOURS).minus(30, ChronoUnit.MINUTES), ZoneId.of("Asia/Seoul"))));
