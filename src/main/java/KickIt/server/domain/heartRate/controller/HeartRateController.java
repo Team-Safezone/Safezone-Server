@@ -71,7 +71,7 @@ public class HeartRateController {
 
         Map<String, Object> responseBody = new HashMap<>();
 
-        List<StatisticsDto> response = statisticsService.getHeartRateStatistics(email, matchId);
+        StatisticsDto response = statisticsService.getHeartRateStatistics(email, matchId);
 
         if (jwtTokenUtil.validateToken(xAuthToken, email)) {
             responseBody.put("status", HttpStatus.OK.value());
