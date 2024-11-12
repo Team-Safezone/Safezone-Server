@@ -27,6 +27,9 @@ public class S3Service {
     @Value("${cloud.aws.s3.bucket}")
     private String bucketName;
 
+    @Value("${cloud.aws.credentials.secretKey}")
+    private String key;
+
     @Autowired
     public S3Service(AmazonS3 amazonS3) {
         this.amazonS3 = amazonS3;
@@ -55,7 +58,7 @@ public class S3Service {
     }
 
     // S3에서 이미지를 가져와 Base64로 변환
-    public String getImageAsBase64(String key) throws IOException {
+    public String getImageAsBase64() throws IOException {
         S3Object s3Object = amazonS3.getObject(bucketName, key);
         InputStream inputStream = s3Object.getObjectContent();
         ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
