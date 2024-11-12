@@ -234,9 +234,9 @@ public class FixtureService {
                 .isLeftExist(isLeftExist)
                 .isRightExist(isRightExist)
                 .build();
+    }
 
     public void updateFixtureStatus(Long fixtureId, int status) {
         fixtureRepository.updateStatus(fixtureId, status);
-
     }
 }
