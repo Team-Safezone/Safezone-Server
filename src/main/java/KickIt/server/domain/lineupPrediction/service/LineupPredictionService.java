@@ -405,6 +405,8 @@ public class LineupPredictionService {
 
                 response = LineupPredictionDto.LineupResultInquireResponse.builder()
                         .participant(lineupPredictionRepository.findByFixture(fixtureId).size())
+                        .homeFormation(foundMatchLineup.getHomeFormation())
+                        .awayFormation(foundMatchLineup.getAwayFormation())
                         .homeLineups(foundHomeLineup)
                         .awayLineups(foundAwayLineup)
                         .build();
