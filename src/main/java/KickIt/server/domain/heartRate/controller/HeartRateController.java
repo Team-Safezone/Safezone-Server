@@ -90,7 +90,7 @@ public class HeartRateController {
 
     // 유저의 개인 심박수 데이터가 존재하는지 확인
     @GetMapping("/check-dataExists/matchId/{matchId}")
-    public ResponseEntity<Map<String, Object>> getAllStatistics(@RequestParam(value = "xAuthToken") String xAuthToken, @PathVariable(value = "matchId") Long matchId) {
+    public ResponseEntity<Map<String, Object>> getAllStatistics(@RequestHeader(value = "xAuthToken") String xAuthToken, @PathVariable(value = "matchId") Long matchId) {
         String email = jwtTokenUtil.getEmailFromToken(xAuthToken);
 
         Map<String, Object> responseBody = new HashMap<>();
