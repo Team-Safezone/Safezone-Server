@@ -38,7 +38,7 @@ public class HomeDto {
     @Builder
     // 홈 화면 조회 시 보여지는 축구 일기 data class
     public static class homeDiaryInfo{
-        Long diaryId;
+        Long id;
         String matchDate;
         String matchTime;
         String homeTeamName;

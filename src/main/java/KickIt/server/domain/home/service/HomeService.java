@@ -80,9 +80,29 @@ public class HomeService {
                 .awayTeamEmblemURL(squadRepository.getUrl(favFixtureForPrediction.getAwayTeam()))
                 .build();
 
+        // 사용자 선호 팀으로 사용자가 관심 있을 지난 경기(일기 작성용) 확인
+        Fixture favFixtureForDiary = switch (favTeams.size()){
+            default -> fixtureRepository.findByFavTeamsAndPriorityPastWhen1(favTeams.get(0)).orElse(null);
+            case 2 -> fixtureRepository.findByFavTeamsAndPriorityPastWhen2(favTeams, favTeams.get(0), favTeams.get(1)).orElse(null);
+            case 3 -> fixtureRepository.findByFavTeamsAndPriorityPastWhen3(favTeams, favTeams.get(0), favTeams.get(1), favTeams.get(2)).orElse(null);
+        };
+
+        // 가져온 사용자 추천 일기 작성 경기 DTO class 객체로 생성
+        HomeDto.homeDiaryInfo homeDiaryInfo = (favFixtureForDiary == null) ? null
+                :HomeDto.homeDiaryInfo.builder()
+                .id(favFixtureForDiary.getId())
+                .matchDate(new SimpleDateFormat("yyyy-MM-dd").format(favFixtureForDiary.getDate()))
+                .matchTime(new SimpleDateFormat("HH:mm").format(favFixtureForDiary.getDate()))
+                .homeTeamName(teamNameConvertService.convertToKrName(favFixtureForDiary.getHomeTeam()))
+                .awayTeamName(teamNameConvertService.convertToKrName(favFixtureForDiary.getAwayTeam()))
+                .homeTeamEmblemURL(squadRepository.getUrl(favFixtureForDiary.getHomeTeam()))
+                .awayTeamEmblemURL(squadRepository.getUrl(favFixtureForDiary.getHomeTeam()))
+                .build();
+
         return HomeDto.homeResponse.builder()
                 .gradePoint(gradePoint)
                 .matchPredictions(homeMatchPredictionInfo)
+                .matchDiarys(homeDiaryInfo)
                 .favoriteImagesURL(favoriteImagesURL)
                 .matches(homeMatchInfos)
                 .build();
