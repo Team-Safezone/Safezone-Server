@@ -24,8 +24,8 @@ public class MatchPredictionDto {
     public static class InquiredLineupPrediction{
         int homePercentage; // 홈팀의 1순위 포메이션 예측 비율(백분율)
         int awayPercentage; // 원정팀의 1순위 포메이션 예측 비율(백분율)
-        int homeFormation; // 홈팀의 1순위 예상 포메이션
-        int awayFormation; // 원정팀의 1순위 예상 포메이션
+        Integer homeFormation; // 홈팀의 1순위 예상 포메이션
+        Integer awayFormation; // 원정팀의 1순위 예상 포메이션
         Boolean isParticipated; // 사용자가 우승팀 예측을 했는지 여부
         int participant; // 예측에 참여한 사람의 수
         Boolean isPredictionSuccessful; // 사용자가 예측을 성공했는지 여부 -> 예측 종료 시에만 전송
