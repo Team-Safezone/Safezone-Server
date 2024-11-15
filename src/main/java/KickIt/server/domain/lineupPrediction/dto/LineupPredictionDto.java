@@ -51,14 +51,14 @@ public class LineupPredictionDto {
     public static class LineUpPredictionEditResponse{
         private int participant;
 
-        private int userHomeFormation;
-        private int userAwayFormation;
+        private Integer userHomeFormation;
+        private Integer userAwayFormation;
         private ResponseLineup userHomePrediction;
         private ResponseLineup userAwayPrediction;
 
-        private int avgHomeFormation;
+        private Integer avgHomeFormation;
         private ResponseLineup avgHomePrediction;
-        private int avgAwayFormation;
+        private Integer avgAwayFormation;
         private ResponseLineup avgAwayPrediction;
 
         private List<Boolean> userPrediction;
@@ -147,7 +147,7 @@ public class LineupPredictionDto {
     @AllArgsConstructor
     @Builder
     public static class InquiredLineupPrediction{
-        private int formation;
+        private Integer formation;
         private ResponsePlayerInfo goalkeeper;
         private List<ResponsePlayerInfo> defenders;
         private List<ResponsePlayerInfo> midfielders;
@@ -168,14 +168,14 @@ public class LineupPredictionDto {
         private String awayFormation;
         private MatchLineupDto.MatchPosPlayersDto awayLineups;
 
-        private int userHomeFormation;
+        private Integer userHomeFormation;
         private ResponseLineup userHomePrediction;
-        private int userAwayFormation;
+        private Integer userAwayFormation;
         private ResponseLineup userAwayPrediction;
 
-        private int avgHomeFormation;
+        private Integer avgHomeFormation;
         private ResponseLineup avgHomePrediction;
-        private int avgAwayFormation;
+        private Integer avgAwayFormation;
         private ResponseLineup avgAwayPrediction;
 
         private List<Boolean> userPrediction;
