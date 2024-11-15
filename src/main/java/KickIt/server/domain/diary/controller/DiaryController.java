@@ -210,15 +210,15 @@ public class DiaryController {
         }
     }
 
-
+    // 일기 수정
     @PatchMapping("/edit/{diaryId}")
     public ResponseEntity<Map<String, Object>> editDiary(@RequestHeader(value = "xAuthToken") String xAuthToken, @PathVariable(value = "diaryId") Long diaryId,
-                                                         @RequestPart(value = "teamName") String teamName,
-                                                         @RequestPart(value = "emotion") int emotion,
-                                                         @RequestPart(value = "diaryContent") String diaryContent,
+                                                         @RequestPart(value = "teamName", required = false) String teamName,
+                                                         @RequestPart(value = "emotion", required = false) Integer emotion,
+                                                         @RequestPart(value = "diaryContent", required = false) String diaryContent,
                                                          @RequestPart(value = "diaryPhotos", required = false) List<MultipartFile> diaryPhotos,
                                                          @RequestPart(value = "mom", required = false) String mom,
-                                                         @RequestPart(value = "isPublic") Boolean isPublic) {
+                                                         @RequestPart(value = "isPublic", required = false) Boolean isPublic) {
         String email = jwtTokenUtil.getEmailFromToken(xAuthToken);
 
         Map<String, Object> responseBody = new HashMap<>();

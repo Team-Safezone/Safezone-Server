@@ -96,7 +96,7 @@ public class DiaryService {
         }
     }
 
-    public boolean updateDiary(Long diaryId, String email, String teamName, int emotion, String diaryContent, List<MultipartFile> diaryPhotos, String mom, Boolean isPublic) {
+    public boolean updateDiary(Long diaryId, String email, String teamName, Integer emotion, String diaryContent, List<MultipartFile> diaryPhotos, String mom, Boolean isPublic) {
         // 유저와 다이어리 존재 확인
         Diary diary = diaryRepository.findById(diaryId)
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 일기입니다."));
@@ -106,19 +106,19 @@ public class DiaryService {
         boolean isUpdated = false;
 
         // teamName
-        if (!diary.getTeamName().equals(teamName)) {
+        if (teamName != null && !diary.getTeamName().equals(teamName)) {
             diary.setTeamName(teamName);
             isUpdated = true;
         }
 
         // emotion
-        if (diary.getEmotion() != emotion) {
+        if (emotion != null && diary.getEmotion() != emotion) {
             diary.setEmotion(emotion);
             isUpdated = true;
         }
 
         // diaryContent
-        if (!diary.getDiaryContent().equals(diaryContent)) {
+        if (diaryContent != null && !diary.getDiaryContent().equals(diaryContent)) {
             diary.setDiaryContent(diaryContent);
             isUpdated = true;
         }
@@ -133,13 +133,13 @@ public class DiaryService {
          */
 
         // mom
-        if (!diary.getMom().equals(mom)) {
+        if (mom != null && !diary.getMom().equals(mom)) {
             diary.setMom(mom);
             isUpdated = true;
         }
 
         // isPublic
-        if (!diary.getIsPublic().equals(isPublic)) {
+        if (isPublic != null && !diary.getIsPublic().equals(isPublic)) {
             diary.setIsPublic(isPublic);
             isUpdated = true;
         }

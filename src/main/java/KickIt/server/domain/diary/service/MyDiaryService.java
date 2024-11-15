@@ -32,7 +32,7 @@ public class MyDiaryService {
             myDiaryDto.setDiaryId(diary.getId());
             myDiaryDto.setTeamName(diary.getTeamName());
             myDiaryDto.setTeamUrl(diaryDataParser.teamUrl(diary.getTeamName()));
-            myDiaryDto.setIsPublic(diary.isPublic());
+            myDiaryDto.setIsPublic(diary.getIsPublic());
             myDiaryDto.setDiaryDate(diaryDataParser.getDiaryDate(diary));
             myDiaryDto.setLikes(diary.getLikeCount());
             myDiaryDto.setEmotion(diary.getEmotion());
