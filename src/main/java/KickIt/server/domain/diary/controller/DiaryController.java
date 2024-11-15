@@ -225,7 +225,7 @@ public class DiaryController {
         Map<String, Object> responseBody = new HashMap<>();
 
         if (jwtTokenUtil.validateToken(xAuthToken, email)) {
-            boolean isEdit = diaryService.updateDiary(diaryId, email, teamName, emotion, diaryContent, diaryPhotos, mom, isPublic);
+            boolean isEdit = diaryService.updateDiary(diaryId, email, teamName, emotion, diaryContent, diaryPhotos, deletePhotos, mom, isPublic);
 
             if (isEdit) {
                 responseBody.put("status", HttpStatus.OK.value());

@@ -17,6 +17,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.Optional;
 
 
 @Service
@@ -96,7 +97,7 @@ public class DiaryService {
         }
     }
 
-    public boolean updateDiary(Long diaryId, String email, String teamName, Integer emotion, String diaryContent, List<MultipartFile> diaryPhotos, String mom, Boolean isPublic) {
+    public boolean updateDiary(Long diaryId, String email, String teamName, Integer emotion, String diaryContent, List<MultipartFile> diaryPhotos, List<String> deletePhotos, String mom, Boolean isPublic) {
         // 유저와 다이어리 존재 확인
         Diary diary = diaryRepository.findById(diaryId)
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 일기입니다."));
@@ -123,14 +124,37 @@ public class DiaryService {
             isUpdated = true;
         }
 
-        /*
-        // diaryPhotos
-        if (!diary.getDiaryPhotos().equals(diaryPhotos)) {
-            diary.setDiaryPhotos(diaryPhotos);
-            isUpdated = true;
+
+        // 사진 추가
+        if (diaryPhotos != null && !diaryPhotos.isEmpty()) {
+            for (MultipartFile photoUrl : diaryPhotos) {
+                try {
+                    if (photoUrl.isEmpty()) {
+                        //System.out.println("비어 있는 파일");
+                        continue;
+                    }
+
+                    String s3Url = s3Service.uploadFileFromUrl(photoUrl);
+                    DiaryPhoto diaryPhoto = diaryPhotoService.photoSave(s3Url, diary);
+                    diary.getDiaryPhotos().add(diaryPhoto);
+                    isUpdated = true;
+
+                } catch (IOException e) {
+                    throw new RuntimeException("파일 업로드 중 오류 발생: " + e.getMessage());
+                }
+            }
         }
 
-         */
+        // 사진 삭제
+        if(deletePhotos != null){
+            for (String deletePhoto : deletePhotos) {
+                DiaryPhoto diaryPhoto = diaryPhotoService.checkDiaryPhoto(diaryId,deletePhoto);
+                if (diaryPhoto != null) {
+                    diaryPhotoService.deleteDiaryPhoto(diaryPhoto);
+                    isUpdated = true;
+                }
+            }
+        }
 
         // mom
         if (mom != null && !diary.getMom().equals(mom)) {
@@ -153,5 +177,7 @@ public class DiaryService {
         }
 
     }
+
+
 
 }

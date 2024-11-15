@@ -91,27 +91,8 @@ public class S3Service {
             default:
                 return "application/octet-stream"; // 기본값
         }
-        }
-    /*
-    // S3에서 이미지를 가져와 Base64로 변환
-    public String getImageAsBase64() throws IOException {
-        S3Object s3Object = amazonS3.getObject(bucketName, key);
-        InputStream inputStream = s3Object.getObjectContent();
-        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-
-        byte[] buffer = new byte[1024];
-        int length;
-        while ((length = inputStream.read(buffer)) != -1) {
-            outputStream.write(buffer, 0, length);
-        }
-
-        byte[] imageBytes = outputStream.toByteArray();
-        String base64Image = Base64.getEncoder().encodeToString(imageBytes);
-
-        String contentType = s3Object.getObjectMetadata().getContentType();
-        return "data:" + contentType + ";base64," + base64Image;
     }
 
-     */
+
 
 }
