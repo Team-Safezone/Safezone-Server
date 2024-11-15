@@ -37,6 +37,7 @@ public class MyDiaryService {
             myDiaryDto.setLikes(diary.getLikeCount());
             myDiaryDto.setEmotion(diary.getEmotion());
             myDiaryDto.setMom(diary.getMom());
+            myDiaryDto.setDiaryContent(diary.getDiaryContent());
 
             myDiaryDto.setDiaryPhotos(diaryDataParser.getPhotos(diary.getId()));
 

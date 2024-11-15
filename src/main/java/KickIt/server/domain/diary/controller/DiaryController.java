@@ -217,6 +217,7 @@ public class DiaryController {
                                                          @RequestPart(value = "emotion", required = false) Integer emotion,
                                                          @RequestPart(value = "diaryContent", required = false) String diaryContent,
                                                          @RequestPart(value = "diaryPhotos", required = false) List<MultipartFile> diaryPhotos,
+                                                         @RequestPart(value = "deletePhotos", required = false) List<String> deletePhotos,
                                                          @RequestPart(value = "mom", required = false) String mom,
                                                          @RequestPart(value = "isPublic", required = false) Boolean isPublic) {
         String email = jwtTokenUtil.getEmailFromToken(xAuthToken);
