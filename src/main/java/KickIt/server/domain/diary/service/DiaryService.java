@@ -1,9 +1,9 @@
 package KickIt.server.domain.diary.service;
 
 import KickIt.server.aws.s3.service.S3Service;
+import KickIt.server.domain.diary.dto.DiaryEditDto;
 import KickIt.server.domain.diary.dto.DiarySaveDto;
 import KickIt.server.domain.diary.entity.Diary;
-import KickIt.server.domain.diary.entity.DiaryLiked;
 import KickIt.server.domain.diary.entity.DiaryPhoto;
 import KickIt.server.domain.diary.entity.DiaryRepository;
 import KickIt.server.domain.fixture.entity.Fixture;
@@ -11,7 +11,6 @@ import KickIt.server.domain.fixture.entity.FixtureRepository;
 import KickIt.server.domain.member.entity.Member;
 import KickIt.server.domain.member.entity.MemberRepository;
 import jakarta.transaction.Transactional;
-import org.joda.time.LocalDateTime;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -97,5 +96,62 @@ public class DiaryService {
         }
     }
 
+    public boolean updateDiary(Long diaryId, String email, String teamName, int emotion, String diaryContent, List<MultipartFile> diaryPhotos, String mom, Boolean isPublic) {
+        // 유저와 다이어리 존재 확인
+        Diary diary = diaryRepository.findById(diaryId)
+                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 일기입니다."));
+        Member member = memberRepository.findByEmail(email)
+                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 회원입니다."));
+
+        boolean isUpdated = false;
+
+        // teamName
+        if (!diary.getTeamName().equals(teamName)) {
+            diary.setTeamName(teamName);
+            isUpdated = true;
+        }
+
+        // emotion
+        if (diary.getEmotion() != emotion) {
+            diary.setEmotion(emotion);
+            isUpdated = true;
+        }
+
+        // diaryContent
+        if (!diary.getDiaryContent().equals(diaryContent)) {
+            diary.setDiaryContent(diaryContent);
+            isUpdated = true;
+        }
+
+        /*
+        // diaryPhotos
+        if (!diary.getDiaryPhotos().equals(diaryPhotos)) {
+            diary.setDiaryPhotos(diaryPhotos);
+            isUpdated = true;
+        }
+
+         */
+
+        // mom
+        if (!diary.getMom().equals(mom)) {
+            diary.setMom(mom);
+            isUpdated = true;
+        }
+
+        // isPublic
+        if (!diary.getIsPublic().equals(isPublic)) {
+            diary.setIsPublic(isPublic);
+            isUpdated = true;
+        }
+
+        // 변경된 내용이 있을 경우 업데이트
+        if (isUpdated) {
+            diaryRepository.save(diary);
+            return true;
+        } else {
+            return false;
+        }
+
+    }
 
 }

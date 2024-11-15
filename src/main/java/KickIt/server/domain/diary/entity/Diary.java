@@ -45,7 +45,7 @@ public class Diary extends BaseEntity {
     private String mom;
 
     @Column(nullable = false)
-    private boolean isPublic;
+    private Boolean isPublic;
 
     @OneToMany(mappedBy = "diary", cascade = CascadeType.ALL, orphanRemoval = true)
     @Builder.Default
