@@ -1,6 +1,7 @@
 package KickIt.server.domain.lineupPrediction.dto;
 
 import KickIt.server.domain.fixture.dto.ResponsePlayerInfo;
+import KickIt.server.domain.lineup.dto.MatchLineupDto;
 import KickIt.server.domain.member.entity.Member;
 import KickIt.server.domain.teams.PlayerPosition;
 import KickIt.server.domain.teams.entity.Player;
@@ -163,9 +164,9 @@ public class LineupPredictionDto {
         private int participant;
 
         private String homeFormation;
-        private ResponseLineup homeLineups;
+        private MatchLineupDto.MatchPosPlayersDto homeLineups;
         private String awayFormation;
-        private ResponseLineup awayLineups;
+        private MatchLineupDto.MatchPosPlayersDto awayLineups;
 
         private int userHomeFormation;
         private ResponseLineup userHomePrediction;
