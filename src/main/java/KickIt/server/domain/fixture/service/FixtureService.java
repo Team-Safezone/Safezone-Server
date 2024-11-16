@@ -239,5 +239,4 @@ public class FixtureService {
     public void updateFixtureStatus(Long fixtureId, int status) {
         fixtureRepository.updateStatus(fixtureId, status);
     }
-
 }

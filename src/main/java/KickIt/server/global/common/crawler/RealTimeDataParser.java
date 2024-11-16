@@ -54,7 +54,7 @@ public class RealTimeDataParser {
             return varResult.group(1);
         }
 
-        return "";
+        return null;
     }
 
     // 후반전

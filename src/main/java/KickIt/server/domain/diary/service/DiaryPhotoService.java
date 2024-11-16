@@ -9,6 +9,8 @@ import com.amazonaws.services.s3.model.DeleteObjectRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.Optional;
+
 @Service
 public class DiaryPhotoService {
 
@@ -33,10 +35,23 @@ public class DiaryPhotoService {
         String photoUrl = diaryPhoto.getPhotoUrl();
         String fileName = photoUrl.substring(photoUrl.lastIndexOf("/") + 1); // 파일 이름 추출
 
+        System.out.println("fileName = " + fileName);
+
         // S3에서 파일 삭제
         s3Service.deleteFile(fileName);
 
         // 데이터베이스에서 DiaryPhoto 삭제
         diaryPhotoRepository.delete(diaryPhoto);
     }
+
+
+    // 수정할 diaryPhoto 확인
+    public DiaryPhoto checkDiaryPhoto(Long diaryId, String deleteUrl) {
+        DiaryPhoto diaryPhoto = diaryPhotoRepository.findByDiaryIdAndPhotoUrl(diaryId, deleteUrl);
+
+        return diaryPhoto;
+    }
+
+
+
 }

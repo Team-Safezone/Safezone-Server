@@ -142,7 +142,7 @@ public class RealTimeCrawler {
                                             .eventTime(compareTime(startTime, elements[0]))
                                             .eventName("자책골")
                                             .player1(elements[2])
-                                            .player2(elements.length > 3 ? rmBracket(elements[3]) : "");
+                                            .player2(elements.length > 3 ? rmBracket(elements[3]) : null);
                                     realTime = realTimeBuilder.build();
                                     realTimeService.saveEvent(realTime);
                                 } else {
@@ -152,7 +152,7 @@ public class RealTimeCrawler {
                                             .eventTime(compareTime(startTime, elements[0]))
                                             .eventName(elements[1] + "!")
                                             .player1(elements[2])
-                                            .player2(elements.length > 3 ? rmBracket(elements[3]) : "");
+                                            .player2(elements.length > 3 ? rmBracket(elements[3]) : null);
                                     realTime = realTimeBuilder.build();
                                     realTimeService.saveEvent(realTime);
                                 }

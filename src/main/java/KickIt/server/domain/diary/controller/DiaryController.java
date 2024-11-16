@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.HashMap;
 import java.util.List;
@@ -39,13 +40,21 @@ public class DiaryController {
 
     // 일기 업로드
     @PostMapping("/upload")
-    public ResponseEntity<Map<String, Object>> uploadDiary(@RequestHeader(value = "xAuthToken") String xAuthToken, @RequestBody DiarySaveDto diarySaveDto) {
+    public ResponseEntity<Map<String, Object>> uploadDiary(@RequestHeader(value = "xAuthToken") String xAuthToken,
+                                                           @RequestPart(value = "matchId") Long matchId,
+                                                           @RequestPart(value = "teamName") String teamName,
+                                                           @RequestPart(value = "emotion") int emotion,
+                                                           @RequestPart(value = "diaryContent") String diaryContent,
+                                                           @RequestPart(value = "diaryPhotos", required = false) List<MultipartFile> diaryPhotos,
+                                                           @RequestPart(value = "mom", required = false) String mom,
+                                                           @RequestPart(value = "isPublic") Boolean isPublic
+    ) {
         String email = jwtTokenUtil.getEmailFromToken(xAuthToken);
 
         Map<String, Object> responseBody = new HashMap<>();
 
         if (jwtTokenUtil.validateToken(xAuthToken, email)) {
-            diaryService.save(diarySaveDto, email);
+            diaryService.save(email, matchId, teamName, emotion, diaryContent, diaryPhotos, mom, isPublic);
 
             responseBody.put("status", HttpStatus.OK.value());
             responseBody.put("message", "success");
@@ -179,7 +188,7 @@ public class DiaryController {
         if (jwtTokenUtil.validateToken(xAuthToken, email)) {
             boolean isReport = diaryReportService.saveReport(diaryReportDto, email, diaryId);
 
-            if(isReport) {
+            if (isReport) {
                 responseBody.put("status", HttpStatus.OK.value());
                 responseBody.put("message", "신고가 완료 되었습니다.");
                 responseBody.put("isSuccess", true);
@@ -196,6 +205,43 @@ public class DiaryController {
         } else {
             responseBody.put("status", HttpStatus.FORBIDDEN.value());
             responseBody.put("message", "유효하지 않은 사용자입니다.");
+            responseBody.put("isSuccess", false);
+            return new ResponseEntity<>(responseBody, HttpStatus.FORBIDDEN);
+        }
+    }
+
+    // 일기 수정
+    @PatchMapping("/edit/{diaryId}")
+    public ResponseEntity<Map<String, Object>> editDiary(@RequestHeader(value = "xAuthToken") String xAuthToken, @PathVariable(value = "diaryId") Long diaryId,
+                                                         @RequestPart(value = "teamName", required = false) String teamName,
+                                                         @RequestPart(value = "emotion", required = false) Integer emotion,
+                                                         @RequestPart(value = "diaryContent", required = false) String diaryContent,
+                                                         @RequestPart(value = "diaryPhotos", required = false) List<MultipartFile> diaryPhotos,
+                                                         @RequestPart(value = "deletePhotos", required = false) List<String> deletePhotos,
+                                                         @RequestPart(value = "mom", required = false) String mom,
+                                                         @RequestPart(value = "isPublic", required = false) Boolean isPublic) {
+        String email = jwtTokenUtil.getEmailFromToken(xAuthToken);
+
+        Map<String, Object> responseBody = new HashMap<>();
+
+        if (jwtTokenUtil.validateToken(xAuthToken, email)) {
+            boolean isEdit = diaryService.updateDiary(diaryId, email, teamName, emotion, diaryContent, diaryPhotos, deletePhotos, mom, isPublic);
+
+            if (isEdit) {
+                responseBody.put("status", HttpStatus.OK.value());
+                responseBody.put("message", "변경이 완료 되었습니다.");
+                responseBody.put("isSuccess", true);
+                return new ResponseEntity<>(responseBody, HttpStatus.OK);
+            } else {
+                responseBody.put("status", HttpStatus.OK.value());
+                responseBody.put("message", "변경된 내용이 없습니다.");
+                responseBody.put("isSuccess", true);
+                return new ResponseEntity<>(responseBody, HttpStatus.OK);
+            }
+
+        } else {
+            responseBody.put("status", HttpStatus.FORBIDDEN.value());
+            responseBody.put("message", "유효하지 않은 사용자 입니다.");
             responseBody.put("isSuccess", false);
             return new ResponseEntity<>(responseBody, HttpStatus.FORBIDDEN);
         }
