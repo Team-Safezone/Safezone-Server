@@ -55,16 +55,20 @@ public class MatchPredictionService {
             Logger.getGlobal().log(Level.INFO, String.format("우승팀 예측 종료 전: 현재 시간: %s, 경기 시간: %s", ZonedDateTime.ofInstant(LocalDateTime.now().atZone(ZoneId.of("Asia/Seoul")).toInstant(), ZoneId.of("Asia/Seoul")), ZonedDateTime.ofInstant(fixture.getDate().toInstant(), ZoneId.of("Asia/Seoul"))));
             // 사용자가 기존에 우승팀 예측 진행하지 않은 경우
             if(userScorePrediction == null){
+                int[] winningPercent = figureWinningPercent(fixture.getId(), scoreParticipant);
                 scorePrediction = MatchPredictionDto.InquiredScorePrediction.builder()
-                        .homePercentage(figureHomeWinningPercent(fixture.getId(), scoreParticipant))
+                        .homePercentage(winningPercent[0])
+                        .awayPercentage(winningPercent[1])
                         .isParticipated(false)
                         .participant(scoreParticipant)
                         .build();
             }
             // 사용자가 기존에 우승팀 예측 진행한 경우
             else{
+                int[] winningPercent = figureWinningPercent(fixture.getId(), scoreParticipant);
                 scorePrediction = MatchPredictionDto.InquiredScorePrediction.builder()
-                        .homePercentage(figureHomeWinningPercent(fixture.getId(), scoreParticipant))
+                        .homePercentage(winningPercent[0])
+                        .awayPercentage(winningPercent[1])
                         .isParticipated(true)
                         .participant(scoreParticipant)
                         .build();
@@ -76,8 +80,10 @@ public class MatchPredictionService {
             Logger.getGlobal().log(Level.INFO, String.format("우승팀 예측 종료 후: 현재 시간: %s, 경기 시간: %s", ZonedDateTime.ofInstant(LocalDateTime.now().atZone(ZoneId.of("Asia/Seoul")).toInstant(), ZoneId.of("Asia/Seoul")), ZonedDateTime.ofInstant(fixture.getDate().toInstant(), ZoneId.of("Asia/Seoul"))));
             // 사용자가 기존에 우승팀 예측 진행하지 않은 경우
             if(userScorePrediction == null){
+                int[] winningPercent = figureWinningPercent(fixture.getId(), scoreParticipant);
                 scorePrediction = MatchPredictionDto.InquiredScorePrediction.builder()
-                        .homePercentage(figureHomeWinningPercent(fixture.getId(), scoreParticipant))
+                        .homePercentage(winningPercent[0])
+                        .awayPercentage(winningPercent[1])
                         .isParticipated(false)
                         .participant(scoreParticipant)
                         .build();
@@ -86,16 +92,20 @@ public class MatchPredictionService {
             else{
                 // 아직 경기 결과 없는 경우 -> isPredictionSuccessful 제외
                 if(fixture.getHomeTeamScore() == null ){
+                    int[] winningPercent = figureWinningPercent(fixture.getId(), scoreParticipant);
                     scorePrediction = MatchPredictionDto.InquiredScorePrediction.builder()
-                            .homePercentage(figureHomeWinningPercent(fixture.getId(), scoreParticipant))
+                            .homePercentage(winningPercent[0])
+                            .awayPercentage(winningPercent[1])
                             .isParticipated(true)
                             .participant(scoreParticipant)
                             .build();
                 }
                 // 경기 결과 있는 경우
                 else{
+                    int[] winningPercent = figureWinningPercent(fixture.getId(), scoreParticipant);
                     scorePrediction = MatchPredictionDto.InquiredScorePrediction.builder()
-                            .homePercentage(figureHomeWinningPercent(fixture.getId(), scoreParticipant))
+                            .homePercentage(winningPercent[0])
+                            .awayPercentage(winningPercent[1])
                             .isParticipated(true)
                             .participant(scoreParticipant)
                             .isPredictionSuccessful((scorePredictionService.isScoreCorrect(userScorePrediction.getHomeTeamScore(), userScorePrediction.getAwayTeamScore(), fixture) == List.of(true, true) ? true : false))
@@ -222,13 +232,17 @@ public class MatchPredictionService {
     }
 
     // 홈팀과 원정팀 예상 점수로 홈팀 우승 예측 백분율 구하는 method
-    int figureHomeWinningPercent(Long fixtureId, Integer participant){
+    int[] figureWinningPercent(Long fixtureId, Integer participant){
         // 만약 예측 진행한 사람이 0 인 경우 0 반환
-        if(participant == 0) {return 0;}
+        if(participant == 0) {return new int[]{0, 0};}
 
         int homeWinningParticipants = scorePredictionRepository.findHomeWinningParticipants(fixtureId);
-        int percent = homeWinningParticipants / participant * 100;
-        return percent;
+        int homePercent = homeWinningParticipants / participant * 100;
+        int awayWinningParticipants = scorePredictionRepository.findAwayWinningParticipants(fixtureId);
+        int awayPercent = awayWinningParticipants / participant * 100;
+        if(homePercent == awayPercent){ return new int[]{50, 50}; }
+
+        return new int[]{homePercent, awayPercent};
     }
 
     // 홈팀과 원정팀 예측 1순위 포메이션의 참여자 예측 백분율 구하는 method
