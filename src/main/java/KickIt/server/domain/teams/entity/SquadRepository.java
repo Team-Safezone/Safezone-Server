@@ -21,4 +21,7 @@ public interface SquadRepository extends JpaRepository<Squad, Long>{
 
     @Query("SELECT logoImg FROM Squad WHERE team = :team")
     String getUrl(@Param("team") String team);
+
+    @Query(value = "SELECT s.season FROM Squad s ORDER BY s.season DESC LIMIT 1")
+    Optional<String> getNewestSeason();
 }

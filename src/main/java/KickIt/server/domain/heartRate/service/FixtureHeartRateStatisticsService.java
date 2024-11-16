@@ -1,5 +1,7 @@
 package KickIt.server.domain.heartRate.service;
 
+import KickIt.server.domain.fixture.entity.Fixture;
+import KickIt.server.domain.fixture.entity.FixtureRepository;
 import KickIt.server.domain.heartRate.entity.FixtureHeartRateStatisticsRepository;
 import KickIt.server.domain.heartRate.dto.HeartRateDto;
 import KickIt.server.domain.heartRate.entity.HeartRateRepository;
@@ -17,13 +19,15 @@ public class FixtureHeartRateStatisticsService {
     private final RealTimeRepository realTimeRepository;
     private final HeartRateParser heartRateParser;
     private final HeartRateRepository heartRateRepository;
+    private final FixtureRepository fixtureRepository;
 
     @Autowired
-    public FixtureHeartRateStatisticsService(FixtureHeartRateStatisticsRepository fixtureHeartRateStatisticsRepository, RealTimeRepository realTimeRepository, HeartRateParser heartRateParser, HeartRateRepository heartRateRepository) {
+    public FixtureHeartRateStatisticsService(FixtureHeartRateStatisticsRepository fixtureHeartRateStatisticsRepository, RealTimeRepository realTimeRepository, HeartRateParser heartRateParser, HeartRateRepository heartRateRepository, FixtureRepository fixtureRepository) {
         this.fixtureHeartRateStatisticsRepository = fixtureHeartRateStatisticsRepository;
         this.realTimeRepository = realTimeRepository;
         this.heartRateParser = heartRateParser;
         this.heartRateRepository = heartRateRepository;
+        this.fixtureRepository = fixtureRepository;
     }
 
     // 경기 시작 시간 가져오기
@@ -33,10 +37,12 @@ public class FixtureHeartRateStatisticsService {
     }
 
     public void calculateHeartRate(Long fixtureId) {
+        Fixture fixture = getFixture(fixtureId);
+
         // 중복처리
         if (fixtureHeartRateStatisticsRepository.findByFixtureId(fixtureId).isEmpty()) {
             // 객체 생성
-            FixtureHeartRateStatistics fixtureHeartRateStatistics = new FixtureHeartRateStatistics(fixtureId);
+            FixtureHeartRateStatistics fixtureHeartRateStatistics = new FixtureHeartRateStatistics(fixture);
             fixtureHeartRateStatisticsRepository.save(fixtureHeartRateStatistics);
 
             // 시간 업데이트
@@ -81,5 +87,13 @@ public class FixtureHeartRateStatisticsService {
         }
 
         return homePercentage;
+    }
+
+    public Fixture getFixture(Long matchId) {
+        // 경기 정보 조회
+        Fixture fixture = fixtureRepository.findById(matchId)
+                .orElseThrow(() -> new IllegalArgumentException("경기가 존재하지 않습니다."));
+
+        return fixture;
     }
 }

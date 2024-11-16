@@ -84,6 +84,7 @@ public class SquadService {
         for(Squad squad : seasonSquads){
             squadNames.add(teamNameConvertService.convertToKrName(squad.getTeam()));
         }
+        Collections.sort(squadNames);
         return squadNames;
     }
 
@@ -94,5 +95,23 @@ public class SquadService {
             return squad.get().getLogoImg();
         }
         return null;
+    }
+
+    // 현재(최근) 시즌 팀 이름과 Url 반환
+    @Transactional
+    public List<SquadDto.EplNameUrlResponse> getEplTeamNameAndUrl(){
+        String presentSeason = squadRepository.getNewestSeason().orElse(null);
+        if(presentSeason == null){
+            return null;
+        }
+        List<SquadDto.EplNameUrlResponse> response = new ArrayList<>();
+        List<Squad> squadList = squadRepository.findBySeason(presentSeason);
+        for(Squad squad : squadList){
+            response.add(SquadDto.EplNameUrlResponse.builder()
+                    .teamName(teamNameConvertService.convertToKrName(squad.getTeam()))
+                    .teamUrl(squad.getLogoImg())
+                    .build());
+        }
+        return response;
     }
 }

@@ -15,12 +15,12 @@ public interface FixtureHeartRateStatisticsRepository extends JpaRepository<Fixt
 
     @Modifying
     @Transactional
-    @Query("UPDATE FixtureHeartRateStatistics SET startDate = :startDate, endDate = :endDate WHERE fixtureId = :fixtureId")
+    @Query("UPDATE FixtureHeartRateStatistics fh SET fh.startDate = :startDate, fh.endDate = :endDate WHERE fh.fixture.id = :fixtureId")
     void updateTime(@Param("fixtureId") Long fixtureId, @Param("startDate") String startDate, @Param("endDate") String endDate);
 
     @Modifying
     @Transactional
-    @Query("UPDATE FixtureHeartRateStatistics SET minBPM = :minBPM, avgBPM = :avgBPM, maxBPM = :maxBPM WHERE fixtureId = :fixtureId")
+    @Query("UPDATE FixtureHeartRateStatistics fh SET fh.minBPM = :minBPM, fh.avgBPM = :avgBPM, fh.maxBPM = :maxBPM WHERE fh.fixture.id = :fixtureId")
     void updateBPM(@Param("fixtureId") Long fixtureId, @Param("minBPM") int minBPM, @Param("avgBPM") int avgBPM, @Param("maxBPM") int maxBPM);
 
     List<FixtureHeartRateStatistics> findByFixtureId(Long fixtureId);
@@ -28,12 +28,12 @@ public interface FixtureHeartRateStatisticsRepository extends JpaRepository<Fixt
     // 팀 중 심박수 기록 사용자 수
     @Query("SELECT count(hh) " +
             "FROM HeartRateStatistics hh " +
-            "WHERE hh.fixtureId = :fixtureId AND hh.teamType = :teamType")
+            "WHERE hh.fixture.id = :fixtureId AND hh.teamType = :teamType")
     int teamUser(@Param("fixtureId") Long fixtureId, @Param("teamType") String teamType);
 
     @Modifying
     @Transactional
-    @Query("UPDATE FixtureHeartRateStatistics SET homeTeamViewerPercentage = :homeTeamViewerPercentage WHERE fixtureId = :fixtureId")
+    @Query("UPDATE FixtureHeartRateStatistics fh SET fh.homeTeamViewerPercentage = :homeTeamViewerPercentage WHERE fh.fixture.id = :fixtureId")
     void updatePercent (@Param("fixtureId") Long fixtureId, @Param("homeTeamViewerPercentage") int homeTeamViewerPercentage);
 
 }

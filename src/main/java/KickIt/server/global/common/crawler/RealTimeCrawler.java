@@ -70,7 +70,7 @@ public class RealTimeCrawler {
             awayTeamlogoUrl = teaminfoRepository.findByTeamNameAndSeason(awayTeamName, season);
     }
 
-    public String crawling() {
+    public String crawling(Fixture fixture) {
         // 기본 설정
         RealTime realTime = RealTime.builder()
                 .build();
@@ -117,7 +117,7 @@ public class RealTimeCrawler {
 
                     String[] elements = eventText.split("\n");
                     RealTime.RealTimeBuilder realTimeBuilder = RealTime.builder()
-                            .matchId(matchId);
+                            .fixture(fixture);
 
                     if (isHomeEventPresent) {
                         realTimeBuilder
@@ -142,7 +142,7 @@ public class RealTimeCrawler {
                                             .eventTime(compareTime(startTime, elements[0]))
                                             .eventName("자책골")
                                             .player1(elements[2])
-                                            .player2(elements.length > 3 ? rmBracket(elements[3]) : "");
+                                            .player2(elements.length > 3 ? rmBracket(elements[3]) : null);
                                     realTime = realTimeBuilder.build();
                                     realTimeService.saveEvent(realTime);
                                 } else {
@@ -152,7 +152,7 @@ public class RealTimeCrawler {
                                             .eventTime(compareTime(startTime, elements[0]))
                                             .eventName(elements[1] + "!")
                                             .player1(elements[2])
-                                            .player2(elements.length > 3 ? rmBracket(elements[3]) : "");
+                                            .player2(elements.length > 3 ? rmBracket(elements[3]) : null);
                                     realTime = realTimeBuilder.build();
                                     realTimeService.saveEvent(realTime);
                                 }
@@ -186,7 +186,7 @@ public class RealTimeCrawler {
                                 .player1(rmBracket(elements[3]));
                         realTime = realTimeBuilder.build();
                         realTimeService.saveEvent(realTime);
-                    } else if (eventText.contains("추가시간전반") || eventText.contains("추가시간후반")) {
+                    } else if (eventText.contains("추가시간45") || eventText.contains("추가시간90")) {
                         isExtra();
                         realTimeBuilder
                                 .eventCode(4)
@@ -207,6 +207,7 @@ public class RealTimeCrawler {
                                 .player1(homeTeamScore)
                                 .player2(awayTeamScore);
                         start = false;
+                        fixtureService.updateFixtureScore(matchId, Integer.parseInt(homeTeamScore), Integer.parseInt(awayTeamScore));
                         realTime = realTimeBuilder.build();
                         realTimeService.saveEvent(realTime);
                         return "종료";

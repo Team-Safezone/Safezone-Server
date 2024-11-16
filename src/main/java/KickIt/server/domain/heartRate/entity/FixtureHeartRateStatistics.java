@@ -1,22 +1,23 @@
 package KickIt.server.domain.heartRate.entity;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import KickIt.server.domain.fixture.entity.Fixture;
+import KickIt.server.global.util.CreatedAt;
+import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 @Getter
 @Entity
 @NoArgsConstructor
-public class FixtureHeartRateStatistics {
+public class FixtureHeartRateStatistics extends CreatedAt {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private Long fixtureId;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "fixture_id", nullable = false)
+    private Fixture fixture;
 
     private String startDate;
     private String endDate;
@@ -27,8 +28,8 @@ public class FixtureHeartRateStatistics {
 
     private int homeTeamViewerPercentage;
 
-    public FixtureHeartRateStatistics(Long fixtureId) {
-        this.fixtureId = fixtureId;
+    public FixtureHeartRateStatistics(Fixture fixture) {
+        this.fixture =fixture;
     }
 
 }

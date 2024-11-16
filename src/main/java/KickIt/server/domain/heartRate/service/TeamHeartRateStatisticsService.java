@@ -1,5 +1,7 @@
 package KickIt.server.domain.heartRate.service;
 
+import KickIt.server.domain.fixture.entity.Fixture;
+import KickIt.server.domain.fixture.entity.FixtureRepository;
 import KickIt.server.domain.heartRate.dto.MinAvgMaxDto;
 import KickIt.server.domain.heartRate.entity.StatisticsRepository;
 import KickIt.server.domain.heartRate.entity.TeamHeartRateStatisticsRepository;
@@ -17,13 +19,15 @@ public class TeamHeartRateStatisticsService {
     private final MemberRepository memberRepository;
     private final HeartRateParser heartRateParser;
     private final StatisticsRepository statisticsRepository;
+    private final FixtureRepository fixtureRepository;
 
     @Autowired
-    public TeamHeartRateStatisticsService(TeamHeartRateStatisticsRepository teamHeartRateStatisticsRepository, MemberRepository memberRepository, HeartRateParser heartRateParser, StatisticsRepository statisticsRepository) {
+    public TeamHeartRateStatisticsService(TeamHeartRateStatisticsRepository teamHeartRateStatisticsRepository, MemberRepository memberRepository, HeartRateParser heartRateParser, StatisticsRepository statisticsRepository, FixtureRepository fixtureRepository) {
         this.teamHeartRateStatisticsRepository = teamHeartRateStatisticsRepository;
         this.memberRepository = memberRepository;
         this.heartRateParser = heartRateParser;
         this.statisticsRepository = statisticsRepository;
+        this.fixtureRepository = fixtureRepository;
     }
 
     // 사용자 Id
@@ -35,6 +39,8 @@ public class TeamHeartRateStatisticsService {
 
     public void calculateTeamHeartRate(Long fixtureId) {
 
+        Fixture fixture = getFixture(fixtureId);
+
         if (teamHeartRateStatisticsRepository.findByFixtureId(fixtureId).isEmpty()) {
             // 심박수 업데이트
             List<MinAvgMaxDto> homeHeartRateMinAvgMax = calculateHeartRate(fixtureId, "home");
@@ -42,9 +48,9 @@ public class TeamHeartRateStatisticsService {
 
 
             // 팀 심박수 별 통계 저장
-            TeamHeartRateStatistics homeHeartRateStatistics = new TeamHeartRateStatistics(fixtureId, "home",
+            TeamHeartRateStatistics homeHeartRateStatistics = new TeamHeartRateStatistics(fixture, "home",
                     homeHeartRateMinAvgMax.get(0).getMin(), homeHeartRateMinAvgMax.get(0).getAvg(), homeHeartRateMinAvgMax.get(0).getMax());
-            TeamHeartRateStatistics awayHeartRateStatistics = new TeamHeartRateStatistics(fixtureId, "away",
+            TeamHeartRateStatistics awayHeartRateStatistics = new TeamHeartRateStatistics(fixture, "away",
                     awayHeartRateMinAvgMax.get(0).getMin(), awayHeartRateMinAvgMax.get(0).getAvg(), awayHeartRateMinAvgMax.get(0).getMax());
             teamHeartRateStatisticsRepository.save(homeHeartRateStatistics);
             teamHeartRateStatisticsRepository.save(awayHeartRateStatistics);
@@ -64,6 +70,14 @@ public class TeamHeartRateStatisticsService {
 
     public List<MinAvgMaxDto> getTeamMinAvgMax(Long fixtureId, String teamType) {
         return teamHeartRateStatisticsRepository.getHeartRateMinAvgMax(fixtureId, teamType);
+    }
+
+    public Fixture getFixture(Long matchId) {
+        // 경기 정보 조회
+        Fixture fixture = fixtureRepository.findById(matchId)
+                .orElseThrow(() -> new IllegalArgumentException("경기가 존재하지 않습니다."));
+
+        return fixture;
     }
 
 }

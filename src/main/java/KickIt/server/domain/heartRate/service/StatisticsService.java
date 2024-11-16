@@ -8,6 +8,7 @@ import KickIt.server.domain.member.entity.MemberRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.Comparator;
 import java.util.List;
 
 @Service
@@ -34,40 +35,35 @@ public class StatisticsService {
     }
 
     // API에 전달할 리스트 get
-    public List<StatisticsDto> getHeartRateStatistics(String email, Long fixtureId) {
+    public StatisticsDto getHeartRateStatistics(String email, Long fixtureId) {
         Long memberId = getMemberId(email);
 
-        List<StatisticsDto> statistics = statisticsRepository.findJoinedData(memberId, fixtureId);
+        StatisticsDto statistics = statisticsRepository.findJoinedData(memberId, fixtureId);
+
 
         // 이벤트 리스트 추가
-        for (StatisticsDto stat : statistics) {
-            List<RealTimeStatisticsDto> events = getRealTimeStatistics(fixtureId);
-            stat.setEvent(events);
-        }
+        List<RealTimeStatisticsDto> events = getRealTimeStatistics(fixtureId);
+        statistics.setEvent(events);
 
         // 홈팀 심박수 리스트
-        for (StatisticsDto stat : statistics) {
-            List<HeartRateDto.MatchHeartRateRecords> heartRateRecordsList = getTeamHeartRate(fixtureId, "home");
-            stat.setHomeTeamHeartRateRecords(heartRateRecordsList);
-        }
+        List<HeartRateDto.MatchHeartRateRecords> heartRateRecordsList = getTeamHeartRate(fixtureId, "home");
+        heartRateRecordsList.sort(Comparator.comparingInt(record -> record.getDate()));
+        statistics.setHomeTeamHeartRateRecords(heartRateRecordsList);
 
         // 어웨이팀 심박수 리스트
-        for (StatisticsDto stat : statistics) {
-            List<HeartRateDto.MatchHeartRateRecords> heartRateRecordsList = getTeamHeartRate(fixtureId, "away");
-            stat.setAwayTeamHeartRateRecords(heartRateRecordsList);
-        }
+        List<HeartRateDto.MatchHeartRateRecords> heartRateList = getTeamHeartRate(fixtureId, "away");
+        heartRateList.sort(Comparator.comparingInt(record -> record.getDate()));
+        statistics.setAwayTeamHeartRateRecords(heartRateList);
+
 
         // 홈팀 심박수 통계
-        for (StatisticsDto stat : statistics) {
-            List<MinAvgMaxDto> minAvgMaxDtoList = getTeamMinAvgMax(fixtureId,"home");
-            stat.setHomeTeamHeartRate(minAvgMaxDtoList);
-        }
+        List<MinAvgMaxDto> minAvgMaxDtoList = getTeamMinAvgMax(fixtureId,"home");
+        statistics.setHomeTeamHeartRate(minAvgMaxDtoList);
+
 
         // 어웨이팀 심박수 통계
-        for (StatisticsDto stat : statistics) {
-            List<MinAvgMaxDto> minAvgMaxDtoList = getTeamMinAvgMax(fixtureId,"away");
-            stat.setAwayTeamHeartRate(minAvgMaxDtoList);
-        }
+        List<MinAvgMaxDto> minAvgMaxList = getTeamMinAvgMax(fixtureId,"away");
+        statistics.setAwayTeamHeartRate(minAvgMaxList);
 
         return statistics;
     }

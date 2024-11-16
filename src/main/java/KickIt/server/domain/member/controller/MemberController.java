@@ -223,13 +223,12 @@ public class MemberController {
         if (jwtTokenUtil.validateToken(xAuthToken, email)) {
             responseBody.put("status", HttpStatus.OK.value());
             responseBody.put("message", "success");
-            responseBody.put("data", response);
+            responseBody.put("avgHeartRate", response);
             responseBody.put("isSuccess", true);
             return new ResponseEntity<>(responseBody, HttpStatus.OK);
         } else {
             responseBody.put("status", HttpStatus.FORBIDDEN.value());
             responseBody.put("message", "유효한 토큰이 아닙니다.");
-            responseBody.put("data", response);
             responseBody.put("isSuccess", false);
             return new ResponseEntity<>(responseBody, HttpStatus.FORBIDDEN);
         }

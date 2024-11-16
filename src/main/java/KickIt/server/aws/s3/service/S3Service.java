@@ -1,18 +1,19 @@
 package KickIt.server.aws.s3.service;
 
+import KickIt.server.domain.diary.entity.DiaryPhoto;
 import com.amazonaws.services.s3.AmazonS3;
+import com.amazonaws.services.s3.model.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
-import com.amazonaws.services.s3.model.PutObjectRequest;
-import com.amazonaws.services.s3.model.DeleteObjectRequest;
+import org.springframework.web.multipart.MultipartFile;
 
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
+import java.io.*;
 import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.Base64;
 import java.util.UUID;
 
 // 클라이언트로 받은 이미지를 s3에 업로드
@@ -24,52 +25,74 @@ public class S3Service {
     @Value("${cloud.aws.s3.bucket}")
     private String bucketName;
 
+    @Value("${cloud.aws.credentials.secretKey}")
+    private String key;
+
     @Autowired
     public S3Service(AmazonS3 amazonS3) {
         this.amazonS3 = amazonS3;
     }
 
-    public String uploadFileFromUrl(String fileUrl) throws IOException {
-        // 파일 확장자 추출
-        String fileExtension = getFileExtension(fileUrl);
+    // 파일 업로드
+    public String  uploadFileFromUrl(MultipartFile file) throws IOException {
+        // 확장자 추출
+        String fileExtension = getFileExtension(file.getOriginalFilename());
+        System.out.println("fileExtension = " + fileExtension);
+        if (fileExtension.isEmpty()) {
+            fileExtension = ".jpg"; // 기본 확장자 설정
+        }
 
-        // URL로부터 파일 다운로드
-        File tempFile = downloadFileFromUrl(fileUrl, fileExtension); // 확장자 전달
-
-        // UUID와 확장자를 결합하여 파일 이름 생성
         String fileName = UUID.randomUUID() + fileExtension;
 
-        // S3에 업로드
-        amazonS3.putObject(new PutObjectRequest(bucketName, fileName, tempFile));
+        // 메타데이터 설정
+        ObjectMetadata metadata = new ObjectMetadata();
 
-        tempFile.delete(); // 임시 파일 삭제
+        // Content-Type 강제 설정 (확장자 기반)
+        String contentType = resolveContentType(fileExtension);
+        metadata.setContentType(contentType);
+        metadata.setContentLength(file.getSize());
+
+        System.out.println("Resolved contentType = " + contentType);
+
+        // Content-Disposition 설정
+        metadata.addUserMetadata("Content-Disposition", "inline");
+
+        // S3 업로드 요청
+        PutObjectRequest putObjectRequest = new PutObjectRequest(bucketName, fileName, file.getInputStream(), metadata);
+        amazonS3.putObject(putObjectRequest);
+
+        // 업로드된 파일의 URL 반환
         return amazonS3.getUrl(bucketName, fileName).toString();
     }
 
-    private File downloadFileFromUrl(String fileUrl, String extension) throws IOException {
-        URL url = new URL(fileUrl);
-        // 임시 파일 생성 시 확장자를 포함
-        Path tempFilePath = Files.createTempFile("temp_", extension);
-        File tempFile = tempFilePath.toFile();
-
-        try (FileOutputStream fos = new FileOutputStream(tempFile)) {
-            fos.write(url.openStream().readAllBytes());
-        }
-
-        return tempFile;
-    }
-
+    // s3 데이터 삭제
     public void deleteFile(String fileName) {
         amazonS3.deleteObject(new DeleteObjectRequest(bucketName, fileName));
     }
 
-    private String getFileExtension(String fileUrl) {
-        // URL의 마지막 부분에서 파일 이름과 확장자 추출
-        String fileName = fileUrl.substring(fileUrl.lastIndexOf("/") + 1);
+    // 확장자 설정
+    private String getFileExtension(String fileName) {
         int dotIndex = fileName.lastIndexOf(".");
         if (dotIndex > 0 && dotIndex < fileName.length() - 1) {
             return fileName.substring(dotIndex); // ".jpg" 또는 ".png"
         }
         return ""; // 확장자가 없는 경우
     }
+
+    private String resolveContentType(String fileExtension) {
+        switch (fileExtension.toLowerCase()) {
+            case ".jpg":
+            case ".jpeg":
+                return "image/jpeg";
+            case ".png":
+                return "image/png";
+            case ".gif":
+                return "image/gif";
+            default:
+                return "application/octet-stream"; // 기본값
+        }
+    }
+
+
+
 }

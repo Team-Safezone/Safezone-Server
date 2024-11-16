@@ -21,7 +21,7 @@ public interface TeamHeartRateStatisticsRepository extends JpaRepository<TeamHea
 
     @Query("SELECT new KickIt.server.domain.heartRate.dto.MinAvgMaxDto(t.minBPM, t.avgBPM, t.maxBPM) " +
             "FROM TeamHeartRateStatistics t " +
-            "WHERE t.fixtureId = :fixtureId AND t.teamType = :teamType")
+            "WHERE t.fixture.id = :fixtureId AND t.teamType = :teamType")
     List<MinAvgMaxDto> getHeartRateMinAvgMax(@Param("fixtureId") Long fixtureId, @Param("teamType") String teamType);
 
 

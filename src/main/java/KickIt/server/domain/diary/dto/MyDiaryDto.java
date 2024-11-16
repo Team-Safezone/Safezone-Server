@@ -22,6 +22,7 @@ public class MyDiaryDto {
     private int emotion;
     private String mom;
     private int likes;
+    private String diaryContent;
 
     // diaryPhoto table
     private List<String> diaryPhotos;

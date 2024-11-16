@@ -101,7 +101,7 @@ public class MatchLineupDto {
     }
 
     @Getter
-    public class MatchPosPlayersDto{
+    public static class MatchPosPlayersDto{
         private List<ResponsePlayerInfo> goalkeeper;
         private List<ResponsePlayerInfo> defenders;
         private List<ResponsePlayerInfo> midfielders;
@@ -122,6 +122,14 @@ public class MatchLineupDto {
                 midfielders = players.get(2);
                 strikers = players.get(3);
             }
+        }
+
+        public MatchPosPlayersDto(List<ResponsePlayerInfo> goalkeeper, List<ResponsePlayerInfo> defenders, List<ResponsePlayerInfo> midfielders, List<ResponsePlayerInfo> secondMidFielders, List<ResponsePlayerInfo> strikers) {
+            this.goalkeeper = goalkeeper;
+            this.defenders = defenders;
+            this.midfielders = midfielders;
+            this.secondMidFielders = secondMidFielders;
+            this.strikers = strikers;
         }
     }
 }
