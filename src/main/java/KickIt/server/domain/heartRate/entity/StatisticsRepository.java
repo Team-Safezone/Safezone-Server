@@ -19,7 +19,7 @@ public interface StatisticsRepository extends JpaRepository<HeartRateStatistics,
             "FROM HeartRateStatistics h " +
             "JOIN FixtureHeartRateStatistics f ON h.fixture.id = f.fixture.id " +
             "WHERE h.member.id = :memberId AND f.fixture.id = :fixtureId")
-    List<StatisticsDto> findJoinedData(@Param("memberId") Long memberId, @Param("fixtureId") Long fixtureId);
+    StatisticsDto findJoinedData(@Param("memberId") Long memberId, @Param("fixtureId") Long fixtureId);
 
     // 통계 이벤트 리스트 API
     @Query("SELECT new KickIt.server.domain.heartRate.dto.RealTimeStatisticsDto(r.teamUrl, r.eventName, r.time, r.player1) "+
