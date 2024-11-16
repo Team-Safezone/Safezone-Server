@@ -120,6 +120,7 @@ public class RankingService {
         }
         // 전체 데이터 삭제 후 저장
         rankingRepository.deleteAll();
+        rankingRepository.flush();
 
         for(Ranking ranking : rankingList){
             rankingRepository.save(ranking);
