@@ -44,7 +44,7 @@ public class DiaryService {
         // Member 및 Fixture 객체 가져오기
         Member member = memberRepository.findByEmail(email)
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 사용자입니다."));
-        Fixture fixture = fixtureRepository.findById(diarySaveDto.getFixtureId())
+        Fixture fixture = fixtureRepository.findById(matchId)
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 경기입니다."));
 
 
@@ -63,14 +63,21 @@ public class DiaryService {
         diaryRepository.save(diary);
 
         // 사진 URL을 S3에 업로드하고 DiaryPhoto 엔티티 저장
-        for (MultipartFile photoUrl : diaryPhotos) {
-            try {
-                String s3Url = s3Service.uploadFileFromUrl(photoUrl);
-                DiaryPhoto diaryPhoto = diaryPhotoService.photoSave(s3Url, diary);
-                diary.getDiaryPhotos().add(diaryPhoto);
+        // 사진 추가
+        if (diaryPhotos != null && !diaryPhotos.isEmpty()) {
+            for (MultipartFile photoUrl : diaryPhotos) {
+                try {
+                    if (photoUrl.isEmpty()) {
+                        continue;
+                    }
 
-            } catch (IOException e) {
-                throw new RuntimeException("파일 업로드 중 오류 발생: " + e.getMessage());
+                    String s3Url = s3Service.uploadFileFromUrl(photoUrl);
+                    DiaryPhoto diaryPhoto = diaryPhotoService.photoSave(s3Url, diary);
+                    diary.getDiaryPhotos().add(diaryPhoto);
+
+                } catch (IOException e) {
+                    throw new RuntimeException("파일 업로드 중 오류 발생: " + e.getMessage());
+                }
             }
         }
     }
