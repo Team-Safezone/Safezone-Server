@@ -16,6 +16,7 @@ public class DiaryRecommendDto {
     private int grade;
     private String teamUrl;
     private String teamName;
+    private String diaryContent;
     private String diaryDate;
     private int emotion;
     private String mom;

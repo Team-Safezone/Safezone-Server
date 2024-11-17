@@ -80,6 +80,7 @@ public class DiaryRecommendService {
         diaryRecommendDto.setLikes(diary.getLikeCount());
         diaryRecommendDto.setEmotion(diary.getEmotion());
         diaryRecommendDto.setMom(diary.getMom());
+        diaryRecommendDto.setDiaryContent(diary.getDiaryContent());
 
         diaryRecommendDto.setDiaryPhotos(diaryDataParser.getPhotos(diary.getId()));
 
