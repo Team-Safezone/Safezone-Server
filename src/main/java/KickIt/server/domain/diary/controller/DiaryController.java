@@ -152,14 +152,14 @@ public class DiaryController {
     }
 
     // 나의 축구 일기 조회
-    @GetMapping("/mine")
-    public ResponseEntity<Map<String, Object>> getMyDiary(@RequestHeader(value = "xAuthToken") String xAuthToken) {
+    @GetMapping("/mine/{requestNum}")
+    public ResponseEntity<Map<String, Object>> getMyDiary(@RequestHeader(value = "xAuthToken") String xAuthToken, @PathVariable(value = "requestNum") int requestNum) {
         String email = jwtTokenUtil.getEmailFromToken(xAuthToken);
 
         Map<String, Object> responseBody = new HashMap<>();
 
         if (jwtTokenUtil.validateToken(xAuthToken, email)) {
-            List<MyDiaryDto> response = myDiaryService.getMyDiary(email);
+            List<MyDiaryDto> response = myDiaryService.getMyDiary(email, requestNum);
 
             responseBody.put("status", HttpStatus.OK.value());
             responseBody.put("message", "success");

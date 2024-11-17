@@ -42,11 +42,11 @@ public class DiaryDataParser {
     }
 
     // 유저의 다이어리 가져오기
-    public List<Diary> getDiaryInfo(String email) {
+    public List<Diary> getDiaryInfo(String email, Pageable pageable) {
         Member member = memberRepository.findByEmail(email)
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 사용자입니다."));
 
-        List<Diary> myDiary = diaryRepository.findByMemberId(member.getId());
+        List<Diary> myDiary = diaryRepository.findByMemberId(member.getId(), pageable);
 
         return myDiary;
     }

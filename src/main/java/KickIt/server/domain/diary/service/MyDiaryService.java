@@ -5,8 +5,12 @@ import KickIt.server.domain.diary.entity.Diary;
 import KickIt.server.domain.fixture.entity.Fixture;
 import KickIt.server.domain.teams.service.TeamNameConvertService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -22,10 +26,12 @@ public class MyDiaryService {
         this.teamNameConvertService = teamNameConvertService;
     }
 
-    public List<MyDiaryDto> getMyDiary(String email) {
+    public List<MyDiaryDto> getMyDiary(String email, int requestNum) {
         List<MyDiaryDto> myDiaryDtos = new ArrayList<>();
 
-        List<Diary> myDiary = diaryDataParser.getDiaryInfo(email);
+        Pageable pageable = PageRequest.of(requestNum, 10);
+
+        List<Diary> myDiary = diaryDataParser.getDiaryInfo(email, pageable);
 
         for (Diary diary : myDiary) {
             MyDiaryDto myDiaryDto = new MyDiaryDto();

@@ -21,7 +21,7 @@ public interface DiaryRepository extends JpaRepository<Diary, Long> {
     @Query("UPDATE Diary d SET d.likeCount = CASE WHEN d.likeCount + :likeCount < 0 THEN 0 ELSE d.likeCount + :likeCount END WHERE d.id = :id")
     void editLike(@Param("id") Long id, @Param("likeCount") int likeCount);
 
-    List<Diary> findByMemberId(Long memberId);
+    List<Diary> findByMemberId(Long memberId, Pageable pageable);
 
     // 추천 축구 일기
     // 1. isPublic = true
