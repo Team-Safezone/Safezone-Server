@@ -18,10 +18,16 @@ public interface DiaryRepository extends JpaRepository<Diary, Long> {
 
     @Modifying
     @Transactional
-    @Query("UPDATE Diary d SET d.likeCount = CASE WHEN d.likeCount + :likeCount < 0 THEN 0 ELSE d.likeCount + :likeCount END WHERE d.id = :id")
+    @Query("UPDATE Diary d SET d.likeCount = " +
+            "CASE " +
+            "WHEN d.likeCount + :likeCount < 0 THEN 0 " +
+            "ELSE d.likeCount + :likeCount " +
+            "END " +
+            "WHERE d.id = :id")
     void editLike(@Param("id") Long id, @Param("likeCount") int likeCount);
 
-    List<Diary> findByMemberId(Long memberId, Pageable pageable);
+    @Query("SELECT d FROM Diary d WHERE d.member.id = :memberId ORDER BY d.updatedAt DESC")
+    Page<Diary> findByMemberId(@Param("memberId") Long memberId, Pageable pageable);
 
     // 추천 축구 일기
     // 1. isPublic = true
@@ -29,13 +35,13 @@ public interface DiaryRepository extends JpaRepository<Diary, Long> {
     // 3. 사용자의 선호 팀 일기
     // 4. 좋아요 순
     @Query("SELECT d FROM Diary d " +
-            "JOIN d.member m " +
-            "WHERE m.id =:memberId " +
-            "AND d.isPublic = true " +
+            "WHERE d.isPublic = true " +
             "AND d.createdAt >= :sevenDaysAgo " +
-            "AND (d.teamName = m.team1 OR d.teamName = m.team2 OR d.teamName = m.team3) " +
-            "ORDER BY d.likeCount DESC")
-    Page<Diary> getRecommendDiary(@Param("memberId") Long memberId, @Param("sevenDaysAgo") LocalDateTime sevenDaysAgo, Pageable pageable);
+            "AND d.teamName IN :preferredTeams " +
+            "ORDER BY d.likeCount DESC, d.updatedAt DESC")
+    Page<Diary> getRecommendDiary(@Param("preferredTeams") List<String> preferredTeams,
+                                  @Param("sevenDaysAgo") LocalDateTime sevenDaysAgo,
+                                  Pageable pageable);
 
 
     // 추천 해 줄 일기가 없을 때
@@ -43,7 +49,7 @@ public interface DiaryRepository extends JpaRepository<Diary, Long> {
     // 2. 일주일 이내 작성된 일기
     // 3. 좋아요 순
     @Query("SELECT d FROM Diary d WHERE d.isPublic = true " +
-           "AND d.createdAt >= :sevenDaysAgo ORDER BY d.likeCount DESC")
+           "AND d.createdAt >= :sevenDaysAgo ORDER BY d.likeCount DESC, d.updatedAt DESC")
     Page<Diary> getDiary(@Param("sevenDaysAgo") LocalDateTime sevenDaysAgo, Pageable pageable);
 
 }

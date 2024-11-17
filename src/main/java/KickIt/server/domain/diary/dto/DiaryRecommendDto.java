@@ -21,6 +21,7 @@ public class DiaryRecommendDto {
     private int emotion;
     private String mom;
     private Boolean isLiked;
+    private Boolean isMine;
 
     // member table
     private String nickname;

@@ -98,7 +98,9 @@ public class DiaryService {
     }
 
     public void updateLike(Long diaryId,boolean islike) {
+        System.out.println("updateLike안");
         if (islike) {
+            System.out.println("좋아요 누름");
             diaryRepository.editLike(diaryId, 1);
         } else {
             diaryRepository.editLike(diaryId, -1);

@@ -45,10 +45,20 @@ public class DiaryRecommendService {
 
         List<DiaryRecommendDto> diaryRecommendDtos = new ArrayList<>();
 
-        Page<Diary> recommendDiary = diaryRepository.getRecommendDiary(member.getId(), sevenDaysAgo, pageable);
+        List<String> preferredTeams = new ArrayList<>();
+        preferredTeams.add(member.getTeam1());
+        if(member.getTeam2() != null && !member.getTeam2().isEmpty()) {
+            preferredTeams.add(member.getTeam2());
+        }
+        if(member.getTeam3() != null && !member.getTeam3().isEmpty()) {
+            preferredTeams.add(member.getTeam3());
+        }
+
+        Page<Diary> recommendDiary = diaryRepository.getRecommendDiary(preferredTeams, sevenDaysAgo, pageable);
 
         // 추천 축구 일기 존재
         if (recommendDiary.hasContent()) {
+            System.out.println("추천 축구 일기 존재");
             for (Diary diary : recommendDiary) {
                 DiaryRecommendDto diaryRecommendDto = recommendDto(email, diary);
                 diaryRecommendDtos.add(diaryRecommendDto);
@@ -57,6 +67,7 @@ public class DiaryRecommendService {
             return diaryRecommendDtos;
 
         }  else {
+            System.out.println("추천 축구 일기 존재X");
             // 추천 축구 일기 존재 X
             Page<Diary> generalDiary = diaryRepository.getDiary(sevenDaysAgo, pageable);
 
@@ -71,6 +82,7 @@ public class DiaryRecommendService {
     }
 
     public DiaryRecommendDto recommendDto(String email, Diary diary) {
+        Long memberId = getMemberId(email);
         DiaryRecommendDto diaryRecommendDto = new DiaryRecommendDto();
         diaryRecommendDto.setDiaryId(diary.getId());
         diaryRecommendDto.setTeamName(diary.getTeamName());
@@ -81,6 +93,11 @@ public class DiaryRecommendService {
         diaryRecommendDto.setEmotion(diary.getEmotion());
         diaryRecommendDto.setMom(diary.getMom());
         diaryRecommendDto.setDiaryContent(diary.getDiaryContent());
+        if (diary.getMember().getId().equals(memberId)) {
+            diaryRecommendDto.setIsMine(true);
+        } else {
+            diaryRecommendDto.setIsMine(false);
+        }
 
         diaryRecommendDto.setDiaryPhotos(diaryDataParser.getPhotos(diary.getId()));
 
@@ -116,5 +133,11 @@ public class DiaryRecommendService {
 
     public String getNickName(Long memberId) {
         return memberRepository.getNickname(memberId);
+    }
+
+    public Long getMemberId(String email) {
+        return memberRepository.findByEmail(email)
+                .orElseThrow(() -> new IllegalArgumentException("해당 이메일을 가진 사용자가 없습니다."))
+                .getId();
     }
 }
