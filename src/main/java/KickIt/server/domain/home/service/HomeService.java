@@ -96,7 +96,7 @@ public class HomeService {
                 .homeTeamName(teamNameConvertService.convertToKrName(favFixtureForDiary.getHomeTeam()))
                 .awayTeamName(teamNameConvertService.convertToKrName(favFixtureForDiary.getAwayTeam()))
                 .homeTeamEmblemURL(squadRepository.getUrl(favFixtureForDiary.getHomeTeam()))
-                .awayTeamEmblemURL(squadRepository.getUrl(favFixtureForDiary.getHomeTeam()))
+                .awayTeamEmblemURL(squadRepository.getUrl(favFixtureForDiary.getAwayTeam()))
                 .build();
 
         return HomeDto.homeResponse.builder()
