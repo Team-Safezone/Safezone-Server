@@ -44,11 +44,11 @@ public class ScorePredictionDto {
     // 우승팀 예측 수정 / 결과 조회 Response
     public static class ScorePredictionEditResponse{
         int participant; // 예측에 참여한 사람 수
-        int homeTeamScore; // 나의 홈팀 예상 스코어
-        int awayTeamScore;  // 나의 원정팀 예상 스코어
+        Integer homeTeamScore; // 나의 홈팀 예상 스코어
+        Integer awayTeamScore;  // 나의 원정팀 예상 스코어
 
-        int avgHomeTeamScore; // 평균 홈팀 예상 스코어
-        int avgAwayTeamScore; // 평균 원정팀 예상 스코어
+        Integer avgHomeTeamScore; // 평균 홈팀 예상 스코어
+        Integer avgAwayTeamScore; // 평균 원정팀 예상 스코어
         // 사용자의 예측 성공 & 실패 여부
         // 홈팀 예측 성공 여부 + 원정팀 예측 성공 여부
         List<Boolean> userPrediction;
