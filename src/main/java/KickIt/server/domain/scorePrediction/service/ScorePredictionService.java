@@ -3,6 +3,8 @@ package KickIt.server.domain.scorePrediction.service;
 import KickIt.server.domain.fixture.entity.Fixture;
 import KickIt.server.domain.fixture.entity.FixtureRepository;
 import KickIt.server.domain.member.entity.Member;
+import KickIt.server.domain.member.entity.MemberRepository;
+import KickIt.server.domain.member.service.MemberService;
 import KickIt.server.domain.scorePrediction.dto.ScorePredictionDto;
 import KickIt.server.domain.scorePrediction.entity.ScorePrediction;
 import KickIt.server.domain.scorePrediction.entity.ScorePredictionRepository;
@@ -20,6 +22,8 @@ public class ScorePredictionService {
     ScorePredictionRepository scorePredictionRepository;
     @Autowired
     FixtureRepository fixtureRepository;
+    @Autowired
+    MemberService memberService;
 
     @Transactional
     // 우승팀 예측 저장
@@ -36,7 +40,10 @@ public class ScorePredictionService {
             // 실패 시 false 반환
             catch (Exception e) { return HttpStatus.INTERNAL_SERVER_ERROR; }
             // 성공 시 true 반환
-            finally { return HttpStatus.OK; }
+            finally {
+                memberService.gainPoint(scorePrediction.getMember(), 1);
+                return HttpStatus.OK;
+            }
         }
         // 이미 저장된 데이터가 있는 경우 -> 저장 과정 없이 false 반환
         else{ return HttpStatus.CONFLICT; }

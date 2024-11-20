@@ -7,8 +7,11 @@ import KickIt.server.domain.lineup.dto.MatchLineupDto;
 import KickIt.server.domain.lineupPrediction.entity.LineupPrediction;
 import KickIt.server.domain.lineupPrediction.entity.LineupPredictionRepository;
 import KickIt.server.domain.lineupPrediction.entity.PredictionPlayer;
+import KickIt.server.domain.member.entity.MemberRepository;
+import KickIt.server.domain.member.service.MemberService;
 import KickIt.server.domain.teams.entity.Player;
 import KickIt.server.domain.teams.entity.SquadRepository;
+import jakarta.persistence.EntityManager;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -25,6 +28,8 @@ public class LineupPredictionService {
     private SquadRepository squadRepository;
     @Autowired
     private MatchLineupService matchLineupService;
+    @Autowired
+    private MemberService memberService;
 
     @Transactional
     public HttpStatus saveLineupPredictions(LineupPrediction lineupPrediction){
@@ -42,6 +47,7 @@ public class LineupPredictionService {
                 return HttpStatus.INTERNAL_SERVER_ERROR;
             }
             finally {
+                memberService.gainPoint(lineupPrediction.getMember(), 1);
                 return HttpStatus.OK;
             }
         }

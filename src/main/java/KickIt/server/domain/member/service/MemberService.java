@@ -6,11 +6,13 @@ import KickIt.server.domain.member.entity.Member;
 import KickIt.server.domain.member.entity.AuthProvider;
 import KickIt.server.domain.teams.entity.SquadRepository;
 import KickIt.server.domain.teams.service.TeamNameConvertService;
+import jakarta.persistence.EntityManager;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 
@@ -155,4 +157,11 @@ public class MemberService {
         return memberRepository.getMemberAvgHeartRate(memberId);
     }
 
+    // 사용자 포인트 즉시 업데이트
+    @Transactional
+    public void gainPoint(Member member, int point){
+        member.setPoint(member.getPoint() + point);
+        memberRepository.save(member);
+        memberRepository.flush();
+    }
 }

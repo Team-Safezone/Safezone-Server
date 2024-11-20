@@ -80,4 +80,7 @@ public class Member extends BaseEntity {
     @OneToMany(mappedBy = "member", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<HeartRate> heartRateArrayList = new ArrayList<>();
 
+    public void setPoint(int newPoint){
+        this.point = newPoint;
+    }
 }
