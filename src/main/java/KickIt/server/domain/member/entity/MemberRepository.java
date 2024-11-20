@@ -40,4 +40,8 @@ public interface MemberRepository extends JpaRepository<Member, Long> {
     @Query("SELECT m.team1, m.team2, m.team3 FROM Member m")
     List<Object[]> getFavoriteTeamAll();
 
+
+    @Query("SELECT m.nickname FROM Member m WHERE id =:id")
+    String getNickname(@Param("id") Long id);
+
 }

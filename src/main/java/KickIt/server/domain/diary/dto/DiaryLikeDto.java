@@ -7,6 +7,6 @@ import lombok.Getter;
 public class DiaryLikeDto {
 
     @JsonProperty("isLiked")
-    private boolean isLiked;
+    private Boolean isLiked;
 
 }

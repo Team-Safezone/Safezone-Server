@@ -16,10 +16,12 @@ public class DiaryRecommendDto {
     private int grade;
     private String teamUrl;
     private String teamName;
+    private String diaryContent;
     private String diaryDate;
     private int emotion;
     private String mom;
     private Boolean isLiked;
+    private Boolean isMine;
 
     // member table
     private String nickname;
@@ -30,7 +32,6 @@ public class DiaryRecommendDto {
     private Integer homeTeamScore;
     private String awayTeamName;
     private Integer awayTeamScore;
-
 
     // heartRateStatistics table
     private int highHeartRate;

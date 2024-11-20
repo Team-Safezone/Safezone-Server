@@ -16,7 +16,7 @@ public class DiarySaveDto {
     private int emotion;
     private String diaryContent;
     private String mom;
-    private boolean isPublic;
+    private Boolean isPublic;
 
     private List<MultipartFile> diaryPhotos;
 

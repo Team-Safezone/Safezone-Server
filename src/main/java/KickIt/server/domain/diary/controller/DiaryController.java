@@ -70,10 +70,9 @@ public class DiaryController {
 
 
     // 일기 삭제
-    @DeleteMapping("/delete")
-    public ResponseEntity<Map<String, Object>> deleteDiary(@RequestHeader(value = "xAuthToken") String xAuthToken, @RequestBody DiaryIdRequest diaryIdRequest) {
+    @DeleteMapping("/delete/{diaryId}")
+    public ResponseEntity<Map<String, Object>> deleteDiary(@RequestHeader(value = "xAuthToken") String xAuthToken, @PathVariable Long diaryId) {
         String email = jwtTokenUtil.getEmailFromToken(xAuthToken);
-        Long diaryId = diaryIdRequest.getDiaryId();
 
         Map<String, Object> responseBody = new HashMap<>();
 
@@ -130,7 +129,9 @@ public class DiaryController {
     public ResponseEntity<Map<String, Object>> editLiked(@RequestHeader(value = "xAuthToken") String xAuthToken, @PathVariable(value = "diaryId") Long diaryId, @RequestBody DiaryLikeDto diaryLikeDto) {
         String email = jwtTokenUtil.getEmailFromToken(xAuthToken);
 
-        boolean isLiked = diaryLikeDto.isLiked();
+        Boolean isLiked = diaryLikeDto.getIsLiked();
+
+        System.out.println("isLiked = " + isLiked);
 
         Map<String, Object> responseBody = new HashMap<>();
 
@@ -152,14 +153,15 @@ public class DiaryController {
     }
 
     // 나의 축구 일기 조회
-    @GetMapping("/mine")
-    public ResponseEntity<Map<String, Object>> getMyDiary(@RequestHeader(value = "xAuthToken") String xAuthToken) {
+    @GetMapping("/mine/{requestNum}")
+    public ResponseEntity<Map<String, Object>> getMyDiary(@RequestHeader(value = "xAuthToken") String xAuthToken, @PathVariable(value = "requestNum") int requestNum) {
         String email = jwtTokenUtil.getEmailFromToken(xAuthToken);
 
         Map<String, Object> responseBody = new HashMap<>();
 
         if (jwtTokenUtil.validateToken(xAuthToken, email)) {
-            List<MyDiaryDto> response = myDiaryService.getMyDiary(email);
+            System.out.println("내 일기 조회");
+            List<MyDiaryDto> response = myDiaryService.getMyDiary(email, requestNum);
 
             responseBody.put("status", HttpStatus.OK.value());
             responseBody.put("message", "success");
@@ -248,16 +250,17 @@ public class DiaryController {
     }
 
 
-    /*
     // 추천 축구 일기
-    @GetMapping("/recommend")
-    public ResponseEntity<Map<String, Object>> getRecommendDiary(@RequestHeader(value = "xAuthToken") String xAuthToken) {
+    @GetMapping("/recommend/{requestNum}")
+    public ResponseEntity<Map<String, Object>> getRecommendDiary(@RequestHeader(value = "xAuthToken") String xAuthToken, @PathVariable(value = "requestNum") int requestNum) {
         String email = jwtTokenUtil.getEmailFromToken(xAuthToken);
 
         Map<String, Object> responseBody = new HashMap<>();
 
         if (jwtTokenUtil.validateToken(xAuthToken, email)) {
-            List<DiaryRecommendDto> response = (email);
+            System.out.println("추천 축구 일기 조회");
+            System.out.println("requestNum: " + requestNum);
+            List<DiaryRecommendDto> response = diaryRecommendService.getRecommendDiary(email, requestNum);
 
             responseBody.put("status", HttpStatus.OK.value());
             responseBody.put("message", "success");
@@ -276,5 +279,5 @@ public class DiaryController {
         }
     }
 
-     */
+
 }

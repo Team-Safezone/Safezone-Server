@@ -7,6 +7,8 @@ import KickIt.server.domain.member.entity.MemberRepository;
 import KickIt.server.domain.teams.entity.SquadRepository;
 import KickIt.server.domain.teams.service.TeamNameConvertService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.sql.Timestamp;
@@ -41,23 +43,13 @@ public class DiaryDataParser {
     }
 
     // 유저의 다이어리 가져오기
-    public List<Diary> getDiaryInfo(String email) {
+    public Page<Diary> getDiaryInfo(String email, Pageable pageable) {
         Member member = memberRepository.findByEmail(email)
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 사용자입니다."));
 
-        List<Diary> myDiary = diaryRepository.findByMemberId(member.getId());
+        Page<Diary> myDiary = diaryRepository.findByMemberId(member.getId(), pageable);
 
         return myDiary;
-    }
-
-    // 추천 축구 일기 가져오기
-    public List<Diary> getRecommendDiary(String email, LocalDateTime sevenDaysAgo) {
-        Member member = memberRepository.findByEmail(email)
-                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 사용자입니다."));
-
-        List<Diary> recommendDiary = diaryRepository.getRecommendDiary(member.getId(), sevenDaysAgo);
-
-        return recommendDiary;
     }
 
 
