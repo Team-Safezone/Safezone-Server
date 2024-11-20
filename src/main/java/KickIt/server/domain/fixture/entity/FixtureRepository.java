@@ -99,4 +99,12 @@ public interface FixtureRepository extends JpaRepository<Fixture, Long>{
             "AND f.date < CURRENT_TIMESTAMP " +
             "ORDER BY f.date DESC LIMIT 1")
     Optional<Fixture> findByFavTeamsAndPriorityPastWhen1(@Param("team1") String team1);
+
+    // 일기 조회를 위한 이전 경기 일정 한달 단위로 찾기
+    @Query("SELECT f FROM Fixture f WHERE YEAR(f.date) = :year AND MONTH(f.date) = :month AND (f.date < CURRENT_TIMESTAMP)")
+    List<Fixture> findLastByMonth(@Param("year") int year, @Param("month") int month);
+
+    // 일기 조회를 위한 특정 팀의 이전 경기 일정 한달 단위로 찾기
+    @Query("SELECT f FROM Fixture f WHERE YEAR(f.date) = :year AND MONTH(f.date) = :month AND (f.homeTeam = :team OR f.awayTeam = :team) AND (f.date < CURRENT_TIMESTAMP)")
+    List<Fixture> findLastByMonthAndTeam(@Param("year") int year, @Param("month") int month, @Param("team") String team);
 }

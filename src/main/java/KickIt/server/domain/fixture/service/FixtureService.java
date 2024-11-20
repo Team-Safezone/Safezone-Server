@@ -129,7 +129,7 @@ public class FixtureService {
     public FixtureDto.DiaryFixtureResponse findDiaryFixturesByMonth(int year, int month){
         List<FixtureDto.DiaryFixture> diaryFixtures = new ArrayList<>();
         // 가져온 경기 리스트
-        List<Fixture> fixtureList = fixtureRepository.findByMonth(year, month);
+        List<Fixture> fixtureList = fixtureRepository.findLastByMonth(year, month);
 
         Boolean isLeftExist; // 이전 달에 경기 존재하는지 여부
         Boolean isRightExist; // 다음 달에 경기 존재하는지 여부
@@ -185,7 +185,7 @@ public class FixtureService {
     public FixtureDto.DiaryFixtureResponse findDiaryFixturesByMonthAndTeam(int year, int month, String team){
         List<FixtureDto.DiaryFixture> diaryFixtures = new ArrayList<>();
         // 가져온 경기 리스트
-        List<Fixture> fixtureList = fixtureRepository.findByMonthAndTeam(year, month, team);
+        List<Fixture> fixtureList = fixtureRepository.findLastByMonthAndTeam(year, month, team);
 
         Boolean isLeftExist; // 이전 달에 경기 존재하는지 여부
         Boolean isRightExist; // 다음 달에 경기 존재하는지 여부
