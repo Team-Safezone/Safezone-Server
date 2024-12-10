@@ -33,6 +33,7 @@ public class LineupPredictionService {
 
     @Transactional
     public HttpStatus saveLineupPredictions(LineupPrediction lineupPrediction){
+        /*
         // member id와 fixture id로 중복 검사해서 중복 데이터 존재 -> 저장하지 x.
         if(lineupPredictionRepository.findByMemberAndFixture(lineupPrediction.getMember().getId(), lineupPrediction.getFixture().getId()).isPresent()){
             return HttpStatus.CONFLICT;
@@ -50,6 +51,19 @@ public class LineupPredictionService {
                 memberService.gainPoint(lineupPrediction.getMember(), 1);
                 return HttpStatus.OK;
             }
+        }
+         */
+        // 시연을 위해 무조건 중복 저장
+        try{
+            lineupPrediction.setLastUpdated();
+            lineupPredictionRepository.save(lineupPrediction);
+        }
+        catch (Exception e){
+            return HttpStatus.INTERNAL_SERVER_ERROR;
+        }
+        finally {
+            memberService.gainPoint(lineupPrediction.getMember(), 1);
+            return HttpStatus.OK;
         }
     }
 
