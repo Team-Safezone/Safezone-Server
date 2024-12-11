@@ -1,10 +1,8 @@
 package KickIt.server.domain.scorePrediction.entity;
 
 import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Optional;
@@ -27,9 +25,4 @@ public interface ScorePredictionRepository extends JpaRepository<ScorePrediction
 
     @Query("SELECT COUNT(s) FROM ScorePrediction s WHERE s.fixture.id = :fixtureId AND s.homeTeamScore < s.awayTeamScore")
     Integer findAwayWinningParticipants(@Param("fixtureId") Long fixtureId);
-
-    @Modifying
-    @Transactional
-    @Query(value = "DELETE FROM ScorePrediction s WHERE s.member.id = :memberId")
-    void deleteAllScorePredictionById(@Param("memberId") Long memberId);
 }

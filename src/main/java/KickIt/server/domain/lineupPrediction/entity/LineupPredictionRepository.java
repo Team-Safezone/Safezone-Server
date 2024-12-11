@@ -2,10 +2,8 @@ package KickIt.server.domain.lineupPrediction.entity;
 
 import KickIt.server.domain.teams.entity.Player;
 import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Optional;
@@ -37,9 +35,4 @@ public interface LineupPredictionRepository extends JpaRepository<LineupPredicti
 
     @Query(value = "SELECT COUNT(l) FROM LineupPrediction l WHERE l.fixture.id = :fixtureId AND l.awayTeamForm = :avgAwayFormation")
     Integer findAvgAwayTeamFormParticipant(@Param("fixtureId") Long fixtureId, @Param("avgAwayFormation") Integer avgAwayFormation);
-
-    @Modifying
-    @Transactional
-    @Query(value = "DELETE FROM LineupPrediction l WHERE l.member.id = :memberId")
-    void deleteAllLineupPredictionById(@Param("memberId") Long memberId);
 }

@@ -7,7 +7,6 @@ import KickIt.server.domain.member.entity.MemberRepository;
 import KickIt.server.domain.member.service.MemberService;
 import KickIt.server.domain.scorePrediction.dto.ScorePredictionDto;
 import KickIt.server.domain.scorePrediction.entity.ScorePrediction;
-import KickIt.server.domain.scorePrediction.entity.ScorePredictionRepository;
 import KickIt.server.domain.scorePrediction.service.ScorePredictionService;
 import KickIt.server.jwt.JwtTokenUtil;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,8 +30,6 @@ public class ScorePredictionController {
     FixtureRepository fixtureRepository;
     @Autowired
     ScorePredictionService scorePredictionService;
-    @Autowired
-    ScorePredictionRepository scorePredictionRepository;
 
     @PostMapping("/save")
     public ResponseEntity<Map<String, Object>> saveScorePrediction(@RequestHeader(value = "xAuthToken") String xAuthToken, @RequestParam("matchId") Long matchId, @RequestBody ScorePredictionDto.ScorePredictionSaveRequest scorePredictionSaveRequest){
@@ -225,29 +222,6 @@ public class ScorePredictionController {
             responseBody.put("message", "해당 사용자 없음");
             responseBody.put("isSuccess", false);
             return new ResponseEntity<>(responseBody, HttpStatus.NOT_FOUND);
-        }
-    }
-
-    // 해당 사용자의 선발 라인업 예측 결과 전부 삭제
-    @DeleteMapping("/delete")
-    public ResponseEntity<Map<String, Object>> deleteUserScorePrediction(@RequestHeader(value = "xAuthToken") String xAuthToken) {
-        String memberEmail = jwtTokenUtil.getEmailFromToken(xAuthToken);
-        Member member = memberRepository.findByEmailAndAuthProvider(memberEmail, memberService.transAuth("kakao")).orElse(null);
-        Map<String, Object> responseBody = new HashMap<>();
-        try{
-            scorePredictionRepository.deleteAllScorePredictionById(member.getId());
-        }
-        catch (Exception e){
-            responseBody.put("status", HttpStatus.INTERNAL_SERVER_ERROR.value());
-            responseBody.put("message", e);
-            responseBody.put("isSuccess", true);
-            return new ResponseEntity<>(responseBody, HttpStatus.INTERNAL_SERVER_ERROR);
-        }
-        finally {
-            responseBody.put("status", HttpStatus.OK.value());
-            responseBody.put("message", "success");
-            responseBody.put("isSuccess", true);
-            return new ResponseEntity<>(responseBody, HttpStatus.OK);
         }
     }
 }
