@@ -4,6 +4,7 @@ import KickIt.server.domain.fixture.entity.Fixture;
 import KickIt.server.domain.fixture.entity.FixtureRepository;
 import KickIt.server.domain.lineupPrediction.dto.LineupPredictionDto;
 import KickIt.server.domain.lineupPrediction.entity.LineupPrediction;
+import KickIt.server.domain.lineupPrediction.entity.LineupPredictionRepository;
 import KickIt.server.domain.lineupPrediction.entity.PredictionPlayer;
 import KickIt.server.domain.lineupPrediction.service.LineupPredictionService;
 import KickIt.server.domain.member.entity.MemberRepository;
@@ -35,6 +36,8 @@ public class LineupPredictionController {
     JwtTokenUtil jwtTokenUtil;
     @Autowired
     MemberService memberService;
+    @Autowired
+    LineupPredictionRepository lineupPredictionRepository;
 
     // 입력 받은 정보 바탕으로 사용자의 경기 선발 라인업 예측을 DB에 POST
     // JWT 될 때까지 일단 member id로 처리 -> 차후 변경 예정
@@ -363,6 +366,29 @@ public class LineupPredictionController {
             responseBody.put("message", "해당 경기 없음");
             responseBody.put("isSuccess", false);
             return new ResponseEntity<>(responseBody, HttpStatus.NOT_FOUND);
+        }
+    }
+
+    // 해당 사용자의 선발 라인업 예측 결과 전부 삭제
+    @DeleteMapping("/delete")
+    public ResponseEntity<Map<String, Object>> deleteUserLineupPrediction(@RequestHeader(value = "xAuthToken") String xAuthToken) {
+        String memberEmail = jwtTokenUtil.getEmailFromToken(xAuthToken);
+        Member member = memberRepository.findByEmailAndAuthProvider(memberEmail, memberService.transAuth("kakao")).orElse(null);
+        Map<String, Object> responseBody = new HashMap<>();
+        try{
+            lineupPredictionRepository.deleteAllLineupPredictionById(member.getId());
+        }
+        catch (Exception e){
+            responseBody.put("status", HttpStatus.INTERNAL_SERVER_ERROR.value());
+            responseBody.put("message", e);
+            responseBody.put("isSuccess", true);
+            return new ResponseEntity<>(responseBody, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+        finally {
+            responseBody.put("status", HttpStatus.OK.value());
+            responseBody.put("message", "success");
+            responseBody.put("isSuccess", true);
+            return new ResponseEntity<>(responseBody, HttpStatus.OK);
         }
     }
 
